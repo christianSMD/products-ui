@@ -1,0 +1,62 @@
+<div class="side-menu">
+    <mat-selection-list #sideMenus [multiple]="false">
+        <mat-list-option class="menu-item" routerLink="/">
+            <mat-icon matListIcon>home</mat-icon>
+            <h3>Home</h3>
+        </mat-list-option>
+        <mat-divider></mat-divider>
+        <mat-list-option class="menu-item">
+            <mat-icon matListIcon>dashboard</mat-icon>
+            <h3>Dashboard</h3>
+        </mat-list-option>
+        <mat-divider></mat-divider>
+        <mat-list-option class="menu-item" routerLink="/products/categories">
+            <mat-icon matListIcon>format_list_bulleted</mat-icon>
+            <h3>Categories</h3>
+        </mat-list-option>
+        <mat-divider></mat-divider>
+        <mat-list-option class="menu-item" [matMenuTriggerFor]="productsMenu">
+            <mat-icon matListIcon>archive</mat-icon>
+            <h3>Products</h3>
+        </mat-list-option>
+        <mat-menu #productsMenu="matMenu">
+            <button mat-menu-item routerLink="/products">
+                <mat-icon matListIcon>archive</mat-icon>
+                <span>Products</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item routerLink="/products/new">
+                <mat-icon>add_circle</mat-icon>
+                <span>Add New</span>
+            </button>
+            <button mat-menu-item routerLink="/products/tags">
+                <mat-icon>sell</mat-icon>
+                <span>Tags</span>
+            </button>
+            <button mat-menu-item>
+                <mat-icon>settings_suggest</mat-icon>
+                <span>Attributes</span>
+            </button>
+        </mat-menu>
+    </mat-selection-list>
+</div>
+<form class="search" [formGroup]="searchForm">
+    <mat-form-field appearance="legacy" color="accent" style="width: 100%; margin-top: 2rem; text-align: center;">
+        <mat-label>Search Brand:</mat-label>
+        <input matInput formControlName="query">
+        <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+</form>
+<div class="brands">
+    <mat-selection-list #brands [multiple]="false">
+        <mat-list-option class="brand" *ngFor="let brand of listBrands" [value]="brand">
+            <button mat-stroked-button color="basic" (click)="selectBrand(brand)">
+                {{brand}}
+            </button>
+        </mat-list-option>
+    </mat-selection-list>
+</div>
+<div style="padding-top: 2rem; text-align: center;">
+    <hr>
+    <p>{{brands.selectedOptions.selected[0]?.value}}</p>
+</div>

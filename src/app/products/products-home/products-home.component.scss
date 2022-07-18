@@ -1,0 +1,41 @@
+table {
+    width: 100%;
+    overflow-x: scroll;
+}
+
+.mat-row:hover {
+    background-color: rgb(243, 243, 243);
+}
+
+.mat-column-id {
+    width: 20px;
+    border-right: 1px solid rgba(255, 134, 53, 0.76);
+    margin-right: 10px;
+    text-align: center;
+}
+
+.mat-column-sku {
+    width: 8rem;
+    padding-left: 10px;
+}
+
+.mat-column-parent {
+    width: 8rem;
+    padding-left: 10px;
+}
+
+.mat-column-name {
+    width: 10rem;
+}
+
+.mat-column-type {
+    width: 5rem;
+}
+
+.mat-column-brand {
+    width: 8rem;
+}
+
+.mat-column-description {
+    width: 30rem;
+}

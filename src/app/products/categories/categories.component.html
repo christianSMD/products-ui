@@ -1,0 +1,192 @@
+<p>
+    <a routerLink="../">Products</a> / Categories
+</p>
+<mat-card>
+    <mat-tab-group dynamicHeight (selectedTabChange)="clearSelectedCat()">
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <!-- <mat-icon>add_circle_outline</mat-icon> -->
+                Manage Categories
+            </ng-template>
+            <div class="row">
+                <div class="col-md-3">
+                    <mat-card style="margin-top: 1rem; margin-bottom: 9rem">
+                        <h2>Categories</h2>
+                        <mat-divider></mat-divider>
+                        <div style="margin-top: 2rem;">
+                            <ul class="catList">
+                                <li *ngFor="let category of categoriesList | parent: '0'" >{{ category.name }} <a class="editCat" (click)="selectCategory(category.id)">edit</a>
+                                    <ul>
+                                        <li *ngFor="let child_1 of categoriesList | parent: category.id">{{ child_1.name }} <a class="editCat"  (click)="selectCategory(child_1.id)">edit</a>
+                                            <ul>
+                                                <li *ngFor="let child_2 of categoriesList | parent: child_1.id">{{ child_2.name }} <a class="editCat"  (click)="selectCategory(child_2.id)">edit</a>
+                                                    <ul>
+                                                        <li *ngFor="let child_3 of categoriesList | parent: child_2.id">{{ child_3.name }} <a class="editCat"  (click)="selectCategory(child_3.id)">edit</a>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </mat-card>
+                    
+                </div>
+                <div class="col-md-4" *ngIf="selectedCatName !== ''">
+                    <mat-card style="margin-top: 1rem; margin-bottom: 9rem">
+                        <h2>{{ selectedCatName }} Attributes</h2>
+                        <mat-divider></mat-divider>
+
+                        <div style="margin-top: 2rem;">
+
+                            <form [formGroup]="categoryForm"> 
+                                <ng-container formArrayName="attributes">
+                                    <ng-container *ngFor="let x of attributes.controls; let index = index">
+                                        <div [formGroupName]="index">
+                                            <mat-grid-list cols="4" rowHeight="80px">
+                                                <mat-grid-tile colspan="3" style="justify-content: flex-start !important;">
+                                                    <mat-form-field appearance="outline">
+                                                        <mat-label>Attribute Name</mat-label>
+                                                        <input matInput id="attrName" type="text" formControlName="attrName" placeholder="E.g. colour" required>
+                                                    </mat-form-field>
+                                                </mat-grid-tile>
+                                                <mat-grid-tile colspan="1">
+                                                    <button class="mb-3" mat-mini-fab type="button" (click)="removeNewAttribute(index)" color="warn">
+                                                        <mat-icon>delete</mat-icon>
+                                                    </button>
+                                                </mat-grid-tile>
+                                            </mat-grid-list>                
+                                        </div>
+                                        
+                                    </ng-container>
+                                </ng-container>
+                                <button mat-raised-button type="button" color="basic" (click)="addNewAttribute()" style="margin-left: 1rem;">
+                                    <mat-icon>add_circle_outline</mat-icon>
+                                    Add Attribute
+                                </button><hr>
+                                <button mat-raised-button type="submit" color="primary" (click)="updateAttributes('update')" style="margin-left: 1rem;">Save Changes</button>
+                                
+                            </form>
+
+                            
+                        </div>
+                    </mat-card>
+                </div>
+
+                <div class="col-md-5" [hidden]="selectedCatName == ''">
+                    <mat-card style="margin-top: 1rem; margin-bottom: 9rem;">
+                        <h2>{{ selectedCatName }} Details</h2>
+                        <mat-divider></mat-divider>
+                        <form [formGroup]="updateCategory" style="margin-top: 2rem;">
+                            <mat-grid-list cols="3" rowHeight="80px">
+                                <mat-grid-tile>
+                                    <mat-form-field appearance="outline" style="width: 100%;">
+                                        <mat-label>Category Name</mat-label>
+                                        <input name="name" matInput formControlName="name" class="capitalize" placeholder="Edit Category Name">
+                                    </mat-form-field>
+                                </mat-grid-tile>
+                                <mat-grid-tile>
+                                    <mat-form-field appearance="outline" style="width: 100%;">
+                                        <mat-label>Parent Category</mat-label>
+                                        <input name="parent" matInput formControlName="parent" class="capitalize" placeholder="Enter Category Name">
+                                    </mat-form-field>
+                                    <!-- <mat-form-field appearance="outline" style="width: 100%;">
+                                        <mat-label>Parent Category</mat-label>
+                                        <mat-select name="categories" formControlName="parent">
+                                            <mat-option value="{{ category.id }}" *ngFor="let category of categoriesList | parent : 'category.parent'">
+                                                {{ category.name }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field> -->
+                                </mat-grid-tile>
+                                <mat-grid-tile>
+                                    <button class="mb-3" mat-raised-button type="submit" color="primary" (click)="addNewCategory()">Save Changes</button>
+                                </mat-grid-tile>
+                            </mat-grid-list>
+                        </form>
+                    </mat-card>
+                </div>
+            </div>
+        </mat-tab>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <mat-icon>add_circle_outline</mat-icon>
+                New Category
+            </ng-template>
+            <div class="row">
+                <div class="col-md-5">
+                    <mat-card style="margin-top: 1rem; margin-bottom: 9rem">
+                        <h2>New Category</h2>
+                        <mat-divider></mat-divider>
+                        <div style="margin-top: 2rem;">
+                            <form [formGroup]="addCategory" (ngSubmit)="addNewCategory()">
+                                <mat-grid-list cols="3" rowHeight="80px">
+                                    <mat-grid-tile>
+                                        <mat-form-field appearance="outline" style="width: 100%;">
+                                            <mat-label>Category Name</mat-label>
+                                            <input name="category_name" matInput formControlName="name" class="capitalize" placeholder="Enter Category Name" required>
+                                        </mat-form-field>
+                                    </mat-grid-tile>
+                                    <mat-grid-tile>
+                                        <mat-form-field appearance="outline" style="width: 100%;">
+                                            <mat-label>Parent Category</mat-label>
+                                            <mat-select name="categories" formControlName="parent" (selectionChange)="selectParentCategory($event)">
+                                                <mat-option [value]="category.id" *ngFor="let category of categoriesList">
+                                                    {{ category.name }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </mat-grid-tile>
+                                    <mat-grid-tile>
+                                        <button class="mb-3" mat-raised-button type="submit" color="primary" [disabled]="disableSaveCatBtn">{{saveCatBtnText}}</button>
+                                    </mat-grid-tile>
+                                </mat-grid-list>
+                            </form>
+                        </div>
+                    </mat-card>
+                </div>
+                <div class="col-md-7">
+                    <mat-card style="margin-top: 1rem; margin-bottom: 9rem">
+                        <h2>
+                            <span *ngIf="attrCount < 1">{{ newCategoryName }} Attributes</span>
+                            <span *ngIf="attrCount == 1">Adding {{ attrCount }} attribute</span>
+                            <span *ngIf="attrCount > 1">Adding {{ attrCount }} Attributes</span>
+                        </h2>
+                        <mat-divider></mat-divider>
+                        <div style="margin-top: 2rem;">
+                            <form [formGroup]="categoryForm" > 
+                                <ng-container formArrayName="attributes">
+                                    <ng-container *ngFor="let x of attributes.controls; let index = index">
+                                        <div [formGroupName]="index">
+                                            <mat-grid-list cols="2" rowHeight="80px">
+                                                <mat-grid-tile>
+                                                    <mat-form-field appearance="outline" style="width: 100%;">
+                                                        <mat-label>Attribute Name</mat-label>
+                                                        <input  matInput id="attrName" type="text" formControlName="attrName" placeholder="E.g. colour" required>
+                                                    </mat-form-field>
+                                                </mat-grid-tile>
+                                                <mat-grid-tile>
+                                                    <!-- <button class="mb-3" mat-raised-button type="button" (click)="removeNewAttribute(index)" color="warn"><mat-icon>delete</mat-icon> Remove</button> -->
+                                                </mat-grid-tile>
+                                            </mat-grid-list>                
+                                        </div>
+                                    </ng-container>
+                                </ng-container>
+                                <button mat-raised-button type="button" color="accent" [disabled]="disableAddAttrBtn" (click)="addNewAttribute()" style="margin-left: 1rem;">
+                                    <mat-icon>add_circle_outline</mat-icon>
+                                    Add Attribute
+                                </button>
+                                <div *ngIf="attrCount > 0">
+                                    <hr>
+                                    <button mat-raised-button type="submit" color="primary" [disabled]="disableSaveAttrBtn" (click)="updateAttributes('new')" style="margin-left: 1rem;">{{saveAttrBtnText}}</button>
+                                </div><br><br>
+                                <button mat-raised-button type="button" color="primary" [hidden]="!goToCategoriesBtn" (click)="refresh()" style="margin-left: 1rem;">Go To Categories</button>
+                            </form>
+                        </div>
+                    </mat-card>
+                </div>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</mat-card>

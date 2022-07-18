@@ -1,0 +1,83 @@
+<p>Products</p>
+<button mat-raised-button class="m-1" routerLink="add/new">
+  <mat-icon>add</mat-icon> Add New Product
+</button>
+<button mat-raised-button class="m-1" (click)="exporter.exportTable('csv',{fileName:'products_system'})">
+  <mat-icon>download</mat-icon> Export Products
+</button>
+<button mat-raised-button class="m-1" disabled>
+  <mat-icon>file_upload</mat-icon> Import Products
+</button>
+<button mat-raised-button class="m-1" routerLink="categories">
+  <mat-icon>list</mat-icon> Manage Categories
+</button>
+
+<div class="row">
+  <div class="col-md-8 mt-3">
+    <mat-form-field appearance="legacy" color="primary" style="width: 30%;">
+      <mat-label>Search</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Search for sku, mame, brand, description etc" #input>
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+    <div class="mat-elevation-z8">
+      <mat-progress-bar color="accent" *ngIf="productsLoader == true" mode="indeterminate"></mat-progress-bar>
+      <table matTableExporter mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)" #exporter="matTableExporter">
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+          <td mat-cell *matCellDef="let row"> {{row.id}} </td>
+        </ng-container>
+        <!-- SKU Column -->
+        <ng-container matColumnDef="sku">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> SKU </th>
+          <td mat-cell *matCellDef="let row"> {{row.sku}} </td>
+        </ng-container>
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+          <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+        </ng-container>
+        <!-- Brand Column -->
+        <ng-container matColumnDef="brand">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Brand </th>
+          <td mat-cell *matCellDef="let row"> {{ getBrandName(row.brand_type_id) }} </td>
+        </ng-container>
+        <!-- Description Column -->
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
+          <td mat-cell *matCellDef="let row"> {{row.short_description}} </td>
+        </ng-container>
+        <!-- Parent Column -->
+        <!-- <ng-container matColumnDef="parent">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Parent </th>
+          <td mat-cell *matCellDef="let row">
+            <span *ngIf="row.parent =='true'"><mat-icon matSuffix>format_list_numbered</mat-icon></span>
+            <span *ngIf="row.parent !='true'">{{row.parent}}</span>
+          </td>
+        </ng-container> -->
+        <!-- Categories Column -->
+        <!-- <ng-container matColumnDef="categories">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Categories </th>
+          <td mat-cell *matCellDef="let row"> {{row.categories}} </td>
+        </ng-container> -->
+        <!-- View Column -->
+        <ng-container matColumnDef="view">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>  </th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-stroked-button routerLink="{{row.sku}}" style="background-color: rgb(245, 245, 245); font-size: smaller;color: rgb(155, 155, 155);">
+              Details
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <!-- Row shown when there is no matching data. -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+        </tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of products"></mat-paginator>
+    </div>
+  </div>
+  <div class="col-md-4"></div>
+</div>
