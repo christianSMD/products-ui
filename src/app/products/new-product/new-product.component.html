@@ -200,7 +200,7 @@
                   <div class="file-box" *ngFor="let file of savedFiles" cdkDrag>
                     <div class="row">
                       <div class="col-md-4">
-                        <img class="sort-img" alt="{{ file.path }}" src="http://127.0.0.1:8000/storage/{{filePath(file.path)}}"  width="304" height="236">
+                        <img class="sort-img" alt="{{ file.path }}" src="{{ storageUrl + filePath(file.path) }}"  width="304" height="236">
                       </div>
                       <div class="col-md-8">
                         <!-- <select class="form-control" [(ngModel)]="ft" (change)="updateFileType($event)">
@@ -214,7 +214,6 @@
                           </mat-select>
                         </mat-form-field>
 
-
                       </div>
                     </div>
                   </div>
@@ -223,7 +222,7 @@
               <div class="col-md-9">
                 <div class="row">
                   <div class="col-md-2" *ngFor="let file of savedFiles">
-                    <img class="tile-img" alt="{{ file.path }}" src="http://127.0.0.1:8000/storage/{{filePath(file.path)}}"  width="140" height="160">
+                    <img class="tile-img" alt="{{ file.path }}" src="{{ storageUrl + filePath(file.path) }}"  width="140" height="160">
                   </div>
                 </div>
               </div>

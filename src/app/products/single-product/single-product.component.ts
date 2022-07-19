@@ -55,11 +55,14 @@ export class SingleProductComponent implements OnInit {
   progressColor: ThemePalette = 'primary';
   progressMode: ProgressSpinnerMode = 'determinate';
 
+  storageUrl: string;
+
   constructor(public navbar: NavbarService, public treeNav: TreeService, private api: ApiService, private _snackBar: MatSnackBar, private route: ActivatedRoute, private formBuilder : FormBuilder) { 
 
   }
 
   ngOnInit(): void {
+    this.storageUrl = this.api.getStorageUrl();
     this.navbar.show();
     this.treeNav.hide();
     this.route.params.subscribe((params: Params) => {

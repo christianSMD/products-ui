@@ -166,7 +166,7 @@
                         <mat-chip color="accent" *ngIf="i == 0" selected>Primary</mat-chip>
                       </mat-chip-list>
                       <span matBadge="{{i+1}}" *ngIf="i > 0" matBadgeOverlap="false" matBadgeColor="accent"></span>
-                      <img class="sort-img" alt="{{ file.path }}" src="http://127.0.0.1:8000/storage/{{filePath(file.path)}}"  width="304" height="236">
+                      <img class="sort-img" alt="{{ file.path }}" src="{{ storageUrl + filePath(file.path) }}"  width="304" height="236">
                     </div>
                     <div class="col-md-8">
                       <mat-form-field appearance="outline" style="width: 90%;">
@@ -184,7 +184,7 @@
             <div class="col-md-9">
               <div class="row">
                 <div class="col-md-2" *ngFor="let file of savedFiles">
-                  <img *ngIf="file.type_id != 55" class="tile-img" alt="{{ file.path }}" src="http://127.0.0.1:8000/storage/{{filePath(file.path)}}"  width="140" height="160">
+                  <img *ngIf="file.type_id != 55" class="tile-img" alt="{{ file.path }}" src="{{ storageUrl + filePath(file.path) }}"  width="140" height="160">
                 </div>
               </div>
             </div>
@@ -221,7 +221,7 @@
   
 </div>
 <div class="col-md-2">
-  <div class="text-muted">
+  <!-- <div class="text-muted">
     <mat-card>
       <mat-card-content>
         <mat-list role="list">
@@ -256,7 +256,7 @@
      <h3 style="text-align: center;">{{ progressPercentage() }}% Complete</h3>
 
     </mat-card>
-  </div>
+  </div> -->
 </div>
 </div>
 

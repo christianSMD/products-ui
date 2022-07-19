@@ -57,7 +57,7 @@ export class NewProductComponent implements OnInit {
 
   newProductCategories: Category[] = [];
   attributesFields: any[] = [];
-  saveAttrBtnText = "Save Attributes";
+  saveAttrBtnText = "Save and Continue";
   attrCount: number;
   disableSaveAttrBtn = false;
 
@@ -68,11 +68,13 @@ export class NewProductComponent implements OnInit {
   doneBtn = false;
 
   savedFiles: any[] = [];
+  storageUrl: string;
   
   constructor(public navbar: NavbarService, private api: ApiService, private formBuilder : FormBuilder, private _snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
     this.attrCount = 0;
+    this.storageUrl = this.api.getStorageUrl();
     this.navbar.show();
     this.getAllTypes();
     this.getAllCategories();
@@ -173,7 +175,6 @@ export class NewProductComponent implements OnInit {
           category_id: vals[i]
         }).subscribe({
           next:(res)=>{
-            this.nextBtn = true;
             this.prevBtn = true;
             this.getProductCategories();
             this.openSnackBar('Category Added 😃', 'Okay');

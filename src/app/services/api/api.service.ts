@@ -9,11 +9,16 @@ import { Observable } from 'rxjs';
 export class ApiService {
 
   private baseUrl = 'http://127.0.0.1:8000/api/';
+  private storageUrl = 'http://127.0.0.1:8000/storage/';
 
   constructor(private http : HttpClient) { }
 
   public getBaseUrl() {
     return this.baseUrl;
+  }
+
+  public getStorageUrl () {
+    return this.storageUrl;
   }
 
   public POST (endpoint: string, data : any){
