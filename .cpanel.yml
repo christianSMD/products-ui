@@ -1,4 +1,4 @@
  deployment:
   tasks:
     - export DEPLOYPATH=/home/smdtegproducts/public_html
-    - /bin/cp -R /home/smdtegproducts/repositories/products-ui/dist $DEPLOYPATH
+    - /bin/cp -R /home/smdtegproducts/repositories/products-ui/dist/products-system $DEPLOYPATH
