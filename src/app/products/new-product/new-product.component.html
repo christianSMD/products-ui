@@ -170,7 +170,7 @@
                   <option *ngFor="let type of typesList | typeGroup : 'File'" value="{{ type.id }}">{{ type.name }}</option>
                 </select><br>
                 <input class="form-control" type="file" (change)="onChange($event)" multiple><br>
-                <button mat-raised-button color="primary" (click)="onUpload()">Upload File</button>
+                <button mat-raised-button color="primary" (click)="onUpload('55')">Upload File</button>
                 <hr>
                 <div class="container" *ngIf="loading">
                   <h3>Loading ...</h3>
@@ -236,7 +236,7 @@
                   <option *ngFor="let type of typesList | typeGroup : 'Image'" value="{{ type.id }}">{{ type.name }}</option>
                 </select><br> -->
                 <input class="form-control" type="file" (change)="onChange($event)" multiple><br>
-                <button mat-raised-button color="primary" (click)="onUpload()">Upload Media</button>
+                <button mat-raised-button color="primary" (click)="onUpload('47')">Upload Media</button>
               </div>
               <div class="col-md-8">
                 <div class="container" *ngIf="loading">

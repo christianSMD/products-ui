@@ -1,263 +1,263 @@
 <p>
-    <a routerLink="/products">Products </a> / Product Details / {{ productName }}
+  <a routerLink="/products">Products </a> / Product Details / {{ productName }}
 </p>
 
 <div class="row">
-  <div class="col-md-10">
-    <mat-card>
-      <mat-tab-group>
-        <mat-tab label="General Details">
-          <form [formGroup]="productForm">
-            <div class="mt-5" style="overflow: hidden !important;">
-              <div class="row">
-                <div class="col-md-6">
-                  <mat-form-field appearance="outline" style="width: 90%;">
-                    <mat-label>SKU</mat-label>
-                    <input #sku matInput formControlName="sku" placeholder="Enter Product SKU">
-                    <mat-icon matSuffix>qr_code_2</mat-icon>
-                  </mat-form-field>
-                  <mat-form-field appearance="outline" style="width: 90%;">
-                    <mat-label>Product Name</mat-label>
-                    <input #name matInput formControlName="name" placeholder="Enter Product Name">
-                    <mat-icon matSuffix>create</mat-icon>
-                  </mat-form-field>
-                  <mat-form-field appearance="outline" style="width: 90%;">
-                    <mat-label>Product Brand</mat-label>
-                    <mat-select #brand matInput formControlName="brand_type_id">
-                      <mat-option *ngFor="let type of typesList | typeGroup : 'Brand'" value="{{ type.id }}">{{ type.name }}</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                  <mat-form-field style="width: 90%;" appearance="outline">
-                    <mat-label>Short Description</mat-label>
-                    <textarea #short_description rows="7" matInput formControlName="short_description" placeholder="Enter short product description"></textarea>
-                  </mat-form-field>
-                  <mat-form-field style="width: 90%;" appearance="outline">
-                    <mat-label>Description</mat-label>
-                    <textarea #description rows="15" matInput formControlName="description" placeholder="Enter product description..."></textarea>
-                  </mat-form-field>
-                </div>
-                <div class="col-md-6">
-                  <mat-checkbox #is_in_development formControlName="is_in_development">Is In Development</mat-checkbox><br>
-                  <mat-checkbox #is_eol formControlName="is_eol">Is EOL</mat-checkbox><br>
-                  <mat-checkbox #is_active formControlName="is_active">Is Active</mat-checkbox><hr>
-                  <button mat-raised-button  [disabled]="!productForm.dirty" type="submit" color="primary" (click)="updateProduct()">Save Changes</button>
+<div class="col-md-10">
+  <mat-card>
+    <mat-tab-group>
+      <mat-tab label="General Details">
+        <form [formGroup]="productForm">
+          <div class="mt-5" style="overflow: hidden !important;">
+            <div class="row">
+              <div class="col-md-6">
+                <mat-form-field appearance="outline" style="width: 90%;">
+                  <mat-label>SKU</mat-label>
+                  <input #sku matInput formControlName="sku" placeholder="Enter Product SKU">
+                  <mat-icon matSuffix>qr_code_2</mat-icon>
+                </mat-form-field>
+                <mat-form-field appearance="outline" style="width: 90%;">
+                  <mat-label>Product Name</mat-label>
+                  <input #name matInput formControlName="name" placeholder="Enter Product Name">
+                  <mat-icon matSuffix>create</mat-icon>
+                </mat-form-field>
+                <mat-form-field appearance="outline" style="width: 90%;">
+                  <mat-label>Product Brand</mat-label>
+                  <mat-select #brand matInput formControlName="brand_type_id">
+                    <mat-option *ngFor="let type of typesList | typeGroup : 'Brand'" value="{{ type.id }}">{{ type.name }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field style="width: 90%;" appearance="outline">
+                  <mat-label>Short Description</mat-label>
+                  <textarea #short_description rows="7" matInput formControlName="short_description" placeholder="Enter short product description"></textarea>
+                </mat-form-field>
+                <mat-form-field style="width: 90%;" appearance="outline">
+                  <mat-label>Description</mat-label>
+                  <textarea #description rows="15" matInput formControlName="description" placeholder="Enter product description..."></textarea>
+                </mat-form-field>
+              </div>
+              <div class="col-md-6">
+                <mat-checkbox #is_in_development formControlName="is_in_development">Is In Development</mat-checkbox><br>
+                <mat-checkbox #is_eol formControlName="is_eol">Is EOL</mat-checkbox><br>
+                <mat-checkbox #is_active formControlName="is_active">Is Active</mat-checkbox><hr>
+                <button mat-raised-button  [disabled]="!productForm.dirty" type="submit" color="primary" (click)="updateProduct()">Save Changes</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </mat-tab>
+      <mat-tab label="Product Attributes">
+        <div class="mt-5 custom-tab form-border" style="overflow: hidden !important;">
+          <form [formGroup]="productFormAttributes">
+            <ng-container formArrayName="attributes">
+              <ng-container *ngFor="let x of attributes.controls; let index = index">
+                  <div [formGroupName]="index">
+                      <mat-grid-list cols="3" rowHeight="80px">
+                          <mat-grid-tile>
+                              <mat-form-field appearance="outline" style="width: 100%;">
+                                  <!-- <mat-label>Attribute Name</mat-label> -->
+                                  <input matInput id="attrName" type="text" formControlName="attrName" placeholder="Enter Value" required readonly>
+                              </mat-form-field>
+                          </mat-grid-tile>
+                          <mat-grid-tile>
+                              <mat-form-field appearance="outline" style="width: 100%;">
+                                  <!-- <mat-label>Attribute Value</mat-label> -->
+                                  <input matInput id="attrValue" type="text" formControlName="attrValue" placeholder="Enter Value" required>
+                              </mat-form-field>
+                          </mat-grid-tile>
+                          <mat-grid-tile>
+                              <!-- <button class="mb-3" mat-raised-button type="button" (click)="removeNewAttribute(index)" color="warn"><mat-icon>delete</mat-icon> Remove This Field</button> -->
+                          </mat-grid-tile>
+                      </mat-grid-list>                
+                  </div>
+              </ng-container>
+            </ng-container>
+            <!-- <button mat-raised-button type="button" color="accent" (click)="addNewAttribute()" style="margin-left: 1rem;">
+              <mat-icon>add_circle_outline</mat-icon>
+              Add Attribute
+            </button> -->
+            <button mat-raised-button type="submit" [disabled]="!productFormAttributes.dirty" color="primary" (click)="updateAttributes()" style="margin-left: 1rem;">{{saveAttrBtnText}}</button>
+          </form>
+        </div>
+      </mat-tab>
+      <mat-tab label="Packaging">
+        <form [formGroup]="productFormPackaging">
+          <div class="mt-5 custom-tab" style="overflow: hidden !important;">
+            <div class="row form-border">
+              <div class="col-md-6">
+                <mat-form-field appearance="outline">
+                  <mat-label>Choose Packaging Type:</mat-label>
+                  <mat-select name="packaging_type_id" formControlName="packaging_type_id">
+                      <mat-option [value]="type.id" *ngFor="let type of typesList | typeGroup : 'Packaging'">
+                          {{ type.name }}
+                      </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Weight (KG)</mat-label>
+                  <input matInput formControlName="weight" placeholder="Enter Product Weight">
+                  <mat-icon matSuffix>fitness_center</mat-icon>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Dimensions(cm): Length</mat-label>
+                  <input matInput formControlName="length" placeholder="Enter Product Length">
+                  <mat-icon matSuffix>design_services</mat-icon>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Dimensions(cm): Width</mat-label>
+                  <input matInput formControlName="width" placeholder="Enter Product Width">
+                  <mat-icon matSuffix>design_services</mat-icon>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Dimensions(cm): Height</mat-label>
+                  <input matInput formControlName="height" placeholder="Enter Product Height">
+                  <mat-icon matSuffix>design_services</mat-icon>
+                </mat-form-field>
+              </div>
+              <div class="col-md-6">
+                <div class="m-3">
+                  <button [disabled]="!productFormPackaging.dirty" (click)="updatePackaging()" mat-raised-button type="submit" color="primary">Save Packaging</button>  
                 </div>
               </div>
             </div>
-          </form>
-        </mat-tab>
-        <mat-tab label="Product Attributes">
-          <div class="mt-5 custom-tab form-border" style="overflow: hidden !important;">
-            <form [formGroup]="productFormAttributes">
-              <ng-container formArrayName="attributes">
-                <ng-container *ngFor="let x of attributes.controls; let index = index">
-                    <div [formGroupName]="index">
-                        <mat-grid-list cols="3" rowHeight="80px">
-                            <mat-grid-tile>
-                                <mat-form-field appearance="outline" style="width: 100%;">
-                                    <!-- <mat-label>Attribute Name</mat-label> -->
-                                    <input matInput id="attrName" type="text" formControlName="attrName" placeholder="Enter Value" required readonly>
-                                </mat-form-field>
-                            </mat-grid-tile>
-                            <mat-grid-tile>
-                                <mat-form-field appearance="outline" style="width: 100%;">
-                                    <!-- <mat-label>Attribute Value</mat-label> -->
-                                    <input matInput id="attrValue" type="text" formControlName="attrValue" placeholder="Enter Value" required>
-                                </mat-form-field>
-                            </mat-grid-tile>
-                            <mat-grid-tile>
-                                <!-- <button class="mb-3" mat-raised-button type="button" (click)="removeNewAttribute(index)" color="warn"><mat-icon>delete</mat-icon> Remove This Field</button> -->
-                            </mat-grid-tile>
-                        </mat-grid-list>                
-                    </div>
-                </ng-container>
-              </ng-container>
-              <!-- <button mat-raised-button type="button" color="accent" (click)="addNewAttribute()" style="margin-left: 1rem;">
-                <mat-icon>add_circle_outline</mat-icon>
-                Add Attribute
-              </button> -->
-              <button mat-raised-button type="submit" [disabled]="!productFormAttributes.dirty" color="primary" (click)="updateAttributes()" style="margin-left: 1rem;">{{saveAttrBtnText}}</button>
-            </form>
           </div>
-        </mat-tab>
-        <mat-tab label="Packaging">
-          <form [formGroup]="productFormPackaging">
-            <div class="mt-5 custom-tab" style="overflow: hidden !important;">
-              <div class="row form-border">
-                <div class="col-md-6">
-                  <mat-form-field appearance="outline">
-                    <mat-label>Choose Packaging Type:</mat-label>
-                    <mat-select name="packaging_type_id" formControlName="packaging_type_id">
-                        <mat-option [value]="type.id" *ngFor="let type of typesList | typeGroup : 'Packaging'">
-                            {{ type.name }}
-                        </mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                  <mat-form-field appearance="outline">
-                    <mat-label>Weight (KG)</mat-label>
-                    <input matInput formControlName="weight" placeholder="Enter Product Weight">
-                    <mat-icon matSuffix>fitness_center</mat-icon>
-                  </mat-form-field>
-                  <mat-form-field appearance="outline">
-                    <mat-label>Dimensions(cm): Length</mat-label>
-                    <input matInput formControlName="length" placeholder="Enter Product Length">
-                    <mat-icon matSuffix>design_services</mat-icon>
-                  </mat-form-field>
-                  <mat-form-field appearance="outline">
-                    <mat-label>Dimensions(cm): Width</mat-label>
-                    <input matInput formControlName="width" placeholder="Enter Product Width">
-                    <mat-icon matSuffix>design_services</mat-icon>
-                  </mat-form-field>
-                  <mat-form-field appearance="outline">
-                    <mat-label>Dimensions(cm): Height</mat-label>
-                    <input matInput formControlName="height" placeholder="Enter Product Height">
-                    <mat-icon matSuffix>design_services</mat-icon>
-                  </mat-form-field>
-                </div>
-                <div class="col-md-6">
-                  <div class="m-3">
-                    <button [disabled]="!productFormPackaging.dirty" (click)="updatePackaging()" mat-raised-button type="submit" color="primary">Save Packaging</button>  
+        </form>
+      </mat-tab>
+      <mat-tab  label="Files">
+        <div class="mt-5 custom-tab" style="overflow: hidden !important;">
+          <div class="row">
+            <div class="col-md-4">
+              <select class="form-control" (change)="setFocusType($event)">
+                <option *ngFor="let type of typesList | typeGroup : 'File'" value="{{ type.id }}">{{ type.name }}</option>
+              </select><br>
+              <input class="form-control" type="file" (change)="onChange($event)" multiple><br>
+              <button mat-raised-button color="primary" (click)="onUpload('55')">Upload File</button>
+              <hr>
+              <div class="container" *ngIf="loading">
+                <h3>Loading ...</h3>
+              </div>
+              <div class="progress" style="height:10px;width:100%;">
+                <div class="progress-bar bg-success" [style]="uploadProgressBar"></div>
+              </div>
+              <div *ngIf="messages.length" class="message">
+                <ul *ngFor="let msg of messages; let i = index">
+                  <li>{{ msg }}</li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <ul>
+                <li *ngFor="let file of savedFiles">{{file.name}}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="Media">
+        <div class="mt-5 custom-tab" style="overflow: hidden !important;">
+          <div class="row">   
+            <div class="col-md-3">
+              <div cdkDropList class="file-list" (cdkDropListDropped)="drop($event)">
+                <div class="file-box" *ngFor="let file of savedFiles; let i = index">
+                  <div class="row" cdkDrag>
+                    <div class="col-md-4">
+                      
+                      <mat-chip-list>
+                        <mat-chip color="accent" *ngIf="i == 0" selected>Primary</mat-chip>
+                      </mat-chip-list>
+                      <span matBadge="{{i+1}}" *ngIf="i > 0" matBadgeOverlap="false" matBadgeColor="accent"></span>
+                      <img class="sort-img" alt="{{ file.path }}" src="http://127.0.0.1:8000/storage/{{filePath(file.path)}}"  width="304" height="236">
+                    </div>
+                    <div class="col-md-8">
+                      <mat-form-field appearance="outline" style="width: 90%;">
+                        <mat-label>{{ returnTypeName(file.type_id) }}</mat-label>
+                        <mat-select>
+                          <mat-option (onSelectionChange)="updateFileType(file.id, type.id)" *ngFor="let type of typesList | typeGroup : 'Image'" value="{{ type.id }}">{{ type.name }}</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                      
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </form>
-        </mat-tab>
-        <mat-tab  label="Files">
-          <div class="mt-5 custom-tab" style="overflow: hidden !important;">
-            <div class="row">
-              <div class="col-md-4">
-                <select class="form-control" (change)="setFocusType($event)">
-                  <option *ngFor="let type of typesList | typeGroup : 'File'" value="{{ type.id }}">{{ type.name }}</option>
-                </select><br>
-                <input class="form-control" type="file" (change)="onChange($event)" multiple><br>
-                <button mat-raised-button color="primary" (click)="onUpload()">Upload File</button>
-                <hr>
-                <div class="container" *ngIf="loading">
-                  <h3>Loading ...</h3>
-                </div>
-                <div class="progress" style="height:10px;width:100%;">
-                  <div class="progress-bar bg-success" [style]="uploadProgressBar"></div>
-                </div>
-                <div *ngIf="messages.length" class="message">
-                  <ul *ngFor="let msg of messages; let i = index">
-                    <li>{{ msg }}</li>
-                  </ul>
+            <div class="col-md-9">
+              <div class="row">
+                <div class="col-md-2" *ngFor="let file of savedFiles">
+                  <img *ngIf="file.type_id != 55" class="tile-img" alt="{{ file.path }}" src="http://127.0.0.1:8000/storage/{{filePath(file.path)}}"  width="140" height="160">
                 </div>
               </div>
-              <div class="col-md-8">
-                <ul>
-                  <li *ngFor="let file of savedFiles">{{file.name}}</li>
+            </div>
+          </div>
+        </div>
+        <mat-card>
+          <div class="row">
+            <div class="col-md-4 form-border">
+              <!-- <select class="form-control" (change)="setFocusType($event)">
+                <option *ngFor="let type of typesList | typeGroup : 'Image'" value="{{ type.id }}">{{ type.name }}</option>
+              </select><br> -->
+              <input class="form-control" type="file" (change)="onChange($event)" multiple><br>
+              <button mat-raised-button color="primary" (click)="onUpload('47')">Upload Media</button>
+            </div>
+            <div class="col-md-8">
+              <div class="container" *ngIf="loading">
+                <h3>Loading ...</h3>
+              </div>
+              <div class="progress" style="height:10px;width:100%;">
+                <div class="progress-bar bg-success" [style]="uploadProgressBar"></div>
+              </div>
+              <div *ngIf="messages.length" class="message">
+                <ul *ngFor="let msg of messages; let i = index">
+                  <li>{{ msg }}</li>
                 </ul>
               </div>
             </div>
           </div>
-        </mat-tab>
-        <mat-tab label="Media">
-          <div class="mt-5 custom-tab" style="overflow: hidden !important;">
-            <div class="row">   
-              <div class="col-md-3">
-                <div cdkDropList class="file-list" (cdkDropListDropped)="drop($event)">
-                  <div class="file-box" *ngFor="let file of savedFiles; let i = index">
-                    <div class="row" cdkDrag>
-                      <div class="col-md-4">
-                        
-                        <mat-chip-list>
-                          <mat-chip color="accent" *ngIf="i == 0" selected>Primary</mat-chip>
-                        </mat-chip-list>
-                        <span matBadge="{{i+1}}" *ngIf="i > 0" matBadgeOverlap="false" matBadgeColor="accent"></span>
-                        <img class="sort-img" alt="{{ file.path }}" src="http://127.0.0.1:8000/storage/{{filePath(file.path)}}"  width="304" height="236">
-                      </div>
-                      <div class="col-md-8">
-                        <mat-form-field appearance="outline" style="width: 90%;">
-                          <mat-label>{{ returnTypeName(file.type_id) }}</mat-label>
-                          <mat-select>
-                            <mat-option (onSelectionChange)="updateFileType(file.id, type.id)" *ngFor="let type of typesList | typeGroup : 'Image'" value="{{ type.id }}">{{ type.name }}</mat-option>
-                          </mat-select>
-                        </mat-form-field>
-                        
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-9">
-                <div class="row">
-                  <div class="col-md-2" *ngFor="let file of savedFiles">
-                    <img *ngIf="file.type_id != 55" class="tile-img" alt="{{ file.path }}" src="http://127.0.0.1:8000/storage/{{filePath(file.path)}}"  width="140" height="160">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <mat-card>
-            <div class="row">
-              <div class="col-md-4 form-border">
-                <!-- <select class="form-control" (change)="setFocusType($event)">
-                  <option *ngFor="let type of typesList | typeGroup : 'Image'" value="{{ type.id }}">{{ type.name }}</option>
-                </select><br> -->
-                <input class="form-control" type="file" (change)="onChange($event)" multiple><br>
-                <button mat-raised-button color="primary" (click)="onUpload()">Upload Media</button>
-              </div>
-              <div class="col-md-8">
-                <div class="container" *ngIf="loading">
-                  <h3>Loading ...</h3>
-                </div>
-                <div class="progress" style="height:10px;width:100%;">
-                  <div class="progress-bar bg-success" [style]="uploadProgressBar"></div>
-                </div>
-                <div *ngIf="messages.length" class="message">
-                  <ul *ngFor="let msg of messages; let i = index">
-                    <li>{{ msg }}</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </mat-card>
-        </mat-tab>
-  
-      </mat-tab-group>
-    </mat-card>
-    
-  </div>
-  <div class="col-md-2">
-    <div class="text-muted">
-      <mat-card>
-        <mat-card-content>
-          <mat-list role="list">
-            <mat-list-item role="listitem">
-              <mat-icon>check_circle</mat-icon> Product Details
-            </mat-list-item>
-            <mat-list-item role="listitem">
-              <mat-icon>check_circle</mat-icon> Attributes
-            </mat-list-item>
-            <mat-list-item role="listitem">
-              <mat-icon>radio_button_unchecked</mat-icon> Packaging
-            </mat-list-item>
-            <mat-list-item role="listitem">
-              <mat-icon>check_circle</mat-icon> Documents
-            </mat-list-item>
-            <mat-list-item role="listitem">
-              <mat-icon>check_circle</mat-icon> Media
-            </mat-list-item>
-          </mat-list>
-        </mat-card-content>
-        <hr>
-        <mat-grid-list cols="3" rowHeight="100px">
-          <mat-grid-tile colspan="3">
-            <mat-progress-spinner
-              [color]="progressColor"
-              [mode]="progressMode"
-              [value]="progressPercentage()">
-            </mat-progress-spinner>
-          </mat-grid-tile>
-        </mat-grid-list>
-        <br>
-       <h3 style="text-align: center;">{{ progressPercentage() }}% Complete</h3>
+        </mat-card>
+      </mat-tab>
 
-      </mat-card>
-    </div>
+    </mat-tab-group>
+  </mat-card>
+  
+</div>
+<div class="col-md-2">
+  <div class="text-muted">
+    <mat-card>
+      <mat-card-content>
+        <mat-list role="list">
+          <mat-list-item role="listitem">
+            <mat-icon>check_circle</mat-icon> Product Details
+          </mat-list-item>
+          <mat-list-item role="listitem">
+            <mat-icon>check_circle</mat-icon> Attributes
+          </mat-list-item>
+          <mat-list-item role="listitem">
+            <mat-icon>radio_button_unchecked</mat-icon> Packaging
+          </mat-list-item>
+          <mat-list-item role="listitem">
+            <mat-icon>check_circle</mat-icon> Documents
+          </mat-list-item>
+          <mat-list-item role="listitem">
+            <mat-icon>check_circle</mat-icon> Media
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+      <hr>
+      <mat-grid-list cols="3" rowHeight="100px">
+        <mat-grid-tile colspan="3">
+          <mat-progress-spinner
+            [color]="progressColor"
+            [mode]="progressMode"
+            [value]="progressPercentage()">
+          </mat-progress-spinner>
+        </mat-grid-tile>
+      </mat-grid-list>
+      <br>
+     <h3 style="text-align: center;">{{ progressPercentage() }}% Complete</h3>
+
+    </mat-card>
   </div>
+</div>
 </div>
 
 

@@ -239,37 +239,44 @@ export class NewProductComponent implements OnInit {
     }
   }
 
-  onUpload() {
+  onUpload(fileTypeId: string) {
     this.loading = !this.loading;
-    for(let x = 0; x < this.files.length; x ++) {
-      console.log('Uploading file ' + this.files[x].name);
-      this.api.upload('uploading-file-api', {
-        file: this.files[x],
-        name: this.files[x].name,
-        product_id: this.newProductId,
-        product_sku: this.newProductSKU,
-        type_id: this.focusType
-      }).subscribe(
-        (event: any) => {
-          if (typeof (event) === 'object') {
-            this.shortLink = event.link;
-            this.loading = false; 
-          }
-          if (event.type === HttpEventType.UploadProgress) {
-            this.uploadProgress = Math.round(100 * event.loaded / event.total);
-            this.uploadProgressBar = `width:${this.uploadProgress}%;height:10px`;
-          } else if (event instanceof HttpResponse) {
-            const msg = this.files[x].name + ' ploaded the file successfully.';
+    console.log('Files being uploaded: ', this.files.length);
+    if (this.files.length > 0) {
+      for(let x = 0; x < this.files.length; x ++) {
+        console.log('Uploading file ' + this.files[x].name);
+        this.api.upload('uploading-file-api', {
+          file: this.files[x],
+          name: this.files[x].name,
+          product_id: this.newProductId,
+          product_sku: this.newProductSKU,
+          type_id: fileTypeId
+        }).subscribe(
+          (event: any) => {
+            if (typeof (event) === 'object') {
+              this.shortLink = event.link;
+              this.loading = false; 
+            }
+            if (event.type === HttpEventType.UploadProgress) {
+              this.uploadProgress = Math.round(100 * event.loaded / event.total);
+              this.uploadProgressBar = `width:${this.uploadProgress}%;height:10px`;
+            } else if (event instanceof HttpResponse) {
+              const msg = this.files[x].name + ' ploaded the file successfully.';
+              this.messages.push(msg);
+            } 
+            this.getFiles();
+          }, (err: any) => {
+            this.uploadProgress = 0;
+            const msg = '' + this.files[x].name + ' could not upload the file: ';
             this.messages.push(msg);
-          } 
-          this.getFiles();
-        }, (err: any) => {
-          this.uploadProgress = 0;
-          const msg = '' + this.files[x].name + ' could not upload the file: ';
-          this.messages.push(msg);
-        }
-      );
+          }
+        );
+      }
+    } else {
+      this.openSnackBar('Please select files', 'Okay')
+      this.loading = false;
     }
+    
   }
 
   setFocusType(event: any) {
