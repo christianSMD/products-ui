@@ -8,8 +8,8 @@ import { Observable } from 'rxjs';
 })
 export class ApiService {
 
-  private baseUrl = 'http://127.0.0.1:8000/api/';
-  private storageUrl = 'http://127.0.0.1:8000/storage/';
+  private baseUrl = 'https://products.smdtechnologies.com/public/api/';
+  private storageUrl = 'https://products.smdtechnologies.com/public/storage/';
 
   constructor(private http : HttpClient) { }
 
