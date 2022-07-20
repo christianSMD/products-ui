@@ -8,6 +8,7 @@
   <mat-icon>download</mat-icon> Export Products
 </button>
 
+
 <div class="row">
   <div class="col-md-8 mt-3">
     <mat-form-field appearance="legacy" color="primary" style="width: 30%;">
@@ -43,11 +44,12 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
           <td mat-cell *matCellDef="let row"> {{row.short_description}} </td>
         </ng-container>
-
+        <!-- Parent Column -->
+        <!-- View Column -->
         <ng-container matColumnDef="view">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>  </th>
           <td mat-cell *matCellDef="let row">
-            <button mat-stroked-button routerLink="{{row.sku}}" style="background-color: rgb(245, 245, 245); font-size: smaller;color: rgb(155, 155, 155);">
+            <button mat-stroked-button routerLink="../../{{row.sku}}" style="background-color: rgb(245, 245, 245); font-size: smaller;color: rgb(155, 155, 155);">
               Details
             </button>
           </td>

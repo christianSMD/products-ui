@@ -33,7 +33,6 @@ export class SidenavComponent {
   getAllTypes() {
     this.api.GET('types').subscribe({
       next:(res)=>{
-        console.log(res);
         this.brandsLoader = false;
         for (let index = 0; index < res.length; index++) {
           if (res[index].grouping == 'Brand') {
@@ -45,6 +44,13 @@ export class SidenavComponent {
       }
     });
   }
+
+  // searchBrand(e: any) {
+  //   console.log('original', this.listBrands);
+  //   console.log('searching...', this.searchForm.value);
+  //   this.listBrands =  this.listBrands.filter(item => item == this.searchForm.value);
+  //   console.log('results', this.listBrands);
+  // }
 
   selectBrand(brand: String): void {
     this.router.navigate(['products/brand', brand.toLowerCase()]);

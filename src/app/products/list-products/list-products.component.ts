@@ -76,10 +76,8 @@ export class ListProductsComponent extends CdkTableExporterModule implements OnI
     this.productsLoader = true;
     this.api.GET('products').subscribe({
       next:(res)=>{
-        console.log('Products', res);
         this.productsLoader = false;
         this.productsList = res.filter(item => item.brand_type_id == this.typeId);
-        console.log('Brand', this.productsList)
         this.dataSource = new MatTableDataSource(this.productsList);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
@@ -106,7 +104,6 @@ export class ListProductsComponent extends CdkTableExporterModule implements OnI
       next:(res)=>{
         for (let i = 0; i < res.length; i++) {
           if ((res[i].name).toLocaleLowerCase() == this.brand.toLocaleLowerCase()) {
-            console.log('Found type id', res[i].id);
             this.typeId = res[i].id;
           }
         }

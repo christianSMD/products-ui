@@ -32,13 +32,13 @@
         </mat-menu>
     </mat-selection-list>
 </div>
-<form class="search" [formGroup]="searchForm">
+<!-- <form class="search" [formGroup]="searchForm">
     <mat-form-field appearance="legacy" color="accent" style="width: 100%; margin-top: 2rem; text-align: center;">
         <mat-label>Search Brand:</mat-label>
-        <input matInput formControlName="query">
+        <input matInput formControlName="query" (keyup)="searchBrand($event)">
         <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
-</form>
+</form> -->
 <div class="brands">
     <mat-selection-list #brands [multiple]="false">
         <mat-list-option class="brand" *ngFor="let brand of listBrands" [value]="brand">
