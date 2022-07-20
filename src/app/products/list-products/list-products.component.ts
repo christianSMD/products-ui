@@ -1,92 +1,130 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
-import { NavbarService } from 'src/app/services/navbar/navbar.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ApiService } from 'src/app/services/api/api.service';
+import { NavbarService } from '../../services/navbar/navbar.service';
+import { SidenavService } from '../../services/sidenav/sidenav.service';
+import { TreeService } from '../../services/tree/tree.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Product } from 'src/app/interfaces/product';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { TreeService } from 'src/app/services/tree/tree.service';
+import { Type } from 'src/app/interfaces/type';
+import { Category } from 'src/app/interfaces/category';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { CdkTableExporterModule } from 'cdk-table-exporter';
+import { ActivatedRoute, Params } from '@angular/router';
 
 @Component({
   selector: 'app-list-products',
   templateUrl: './list-products.component.html',
   styleUrls: ['./list-products.component.scss']
 })
-export class ListProductsComponent implements OnInit, AfterViewInit {
+export class ListProductsComponent extends CdkTableExporterModule implements OnInit {
 
-  brandSeries: string[];
-  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
-  dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
+  productsList: Product[] = [];
+  categoriesList: Category[] = [];
+  typesList: Type[] = [];
+  displayedColumns: string[] = ['id', 'sku', 'name', 'brand', 'description', 'view'];
+  dataSource: MatTableDataSource<Product>;
+  productsLoader = false;
   urlParam: string;
   brand: string;
-  searchSeiriesForm !: FormGroup;
+  typeId: string;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
 
-  constructor(private route: ActivatedRoute, public topNav: NavbarService, public treeNav: TreeService, private formBuilder : FormBuilder) { }
+  constructor(
+    public navbar: NavbarService, 
+    public sideNav: SidenavService,
+    public topNav: NavbarService,
+    public treeNav: TreeService,
+    private api: ApiService, 
+    private route: ActivatedRoute,
+    private _snackBar: MatSnackBar,
+    private _liveAnnouncer: LiveAnnouncer
+  ) {
+    super();
+  }
 
   ngOnInit(): void {
     this.topNav.show();
-    this.treeNav.show();
-    
-    this.searchSeiriesForm = this.formBuilder.group({
-      query : ['']
-    })
+    this.sideNav.show();
+    this.treeNav.hide();
+    this.getAllTypes();
+    this.getAllProducts();
   }
 
-
   ngAfterViewInit(): void {
-
     this.route.params.subscribe((params: Params) => {
       this.urlParam = params['brand'];
       this.brand = this.urlParam.toUpperCase();
-      
-      //For Presentation:
-      if(this.brand.toLocaleLowerCase() == 'volkano') {
-        this.brandSeries = ['Active Clamp', 'Awake', 'Peak', 'Endeavour', 'Dialogue', 'Active Tech', 'Tech Stamina', 'Session', 'Routine', 'Storm'];
-      }
-
-      if(this.brand.toLocaleLowerCase()  == 'amplify') {
-        this.brandSeries = ['Silo', 'Bongo', 'Dupla', 'Radium', 'Mercury', 'Linked', 'Sport Compete', 'Zodiac', 'Sport Athletic', 'Note X'];
-      }
-
-      if(this.brand.toLocaleLowerCase()  == 'bounce') {
-        this.brandSeries = ['Onyx', 'Adapt', 'Chase', 'Clef S', 'Cord', 'Boomer', 'Tremor', 'Rumble', 'Circuit', 'Bachata'];
-      }
-
+      this.getAllTypes();
+      this.getAllProducts();
     });
+  }
 
-    this.dataSource.paginator = this.paginator;
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
 
+  getAllProducts() {
+    this.productsLoader = true;
+    this.api.GET('products').subscribe({
+      next:(res)=>{
+        console.log('Products', res);
+        this.productsLoader = false;
+        this.productsList = res.filter(item => item.brand_type_id == this.typeId);
+        console.log('Brand', this.productsList)
+        this.dataSource = new MatTableDataSource(this.productsList);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      }, error:(res)=>{
+        this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
+      }
+    });
+  }
+
+  openSnackBar(message: string, action: string) {
+    this._snackBar.open(message, action);
+  }
+
+  announceSortChange(sortState: Sort) {
+    if (sortState.direction) {
+      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
+    } else {
+      this._liveAnnouncer.announce('Sorting cleared');
+    }
+  }
+
+  getAllTypes() {
+    this.api.GET('types').subscribe({
+      next:(res)=>{
+        for (let i = 0; i < res.length; i++) {
+          if ((res[i].name).toLocaleLowerCase() == this.brand.toLocaleLowerCase()) {
+            console.log('Found type id', res[i].id);
+            this.typeId = res[i].id;
+          }
+        }
+      }, error:(res)=>{
+        console.log(res);
+      }
+    });
+  }
+
+  getBrandName(id: string) {
+     let i = 0;
+     i = parseInt(id) - 1;
+     if(this.typesList[i] == undefined) {
+      return '';
+    }
+     return this.typesList[i].name;
   }
 
 }
 
-export interface PeriodicElement {
-  name: string;
-  position: number;
-  weight: number;
-  symbol: string;
-}
 
-const ELEMENT_DATA: PeriodicElement[] = [
-  {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
-  {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
-  {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-  {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-  {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-  {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
-  {position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N'},
-  {position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O'},
-  {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
-  {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
-  {position: 11, name: 'Sodium', weight: 22.9897, symbol: 'Na'},
-  {position: 12, name: 'Magnesium', weight: 24.305, symbol: 'Mg'},
-  {position: 13, name: 'Aluminum', weight: 26.9815, symbol: 'Al'},
-  {position: 14, name: 'Silicon', weight: 28.0855, symbol: 'Si'},
-  {position: 15, name: 'Phosphorus', weight: 30.9738, symbol: 'P'},
-  {position: 16, name: 'Sulfur', weight: 32.065, symbol: 'S'},
-  {position: 17, name: 'Chlorine', weight: 35.453, symbol: 'Cl'},
-  {position: 18, name: 'Argon', weight: 39.948, symbol: 'Ar'},
-  {position: 19, name: 'Potassium', weight: 39.0983, symbol: 'K'},
-  {position: 20, name: 'Calcium', weight: 40.078, symbol: 'Ca'},
-];

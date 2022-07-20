@@ -9,7 +9,7 @@ import { SingleProductComponent } from './single-product/single-product.componen
 const routes: Routes = [
   { path: '', component: ProductsHomeComponent },
   { path: ':sku', component: SingleProductComponent },
-  { path: 'list/:brand', component: ListProductsComponent },
+  { path: 'brand/:brand', component: ListProductsComponent },
   { path: 'add/new', component: NewProductComponent },
   { path: 'categories/manage', component: CategoriesComponent }
 ];
