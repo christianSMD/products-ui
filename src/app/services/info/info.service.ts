@@ -13,7 +13,7 @@ interface Role {
 })
 export class InfoService {
 
-  public title = "SMD Technologies (development)";
+  public title = "SMD Technologies";
   public userValue: User;
 
   constructor(public api: ApiService) { }
