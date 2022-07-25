@@ -10,7 +10,7 @@ export class ApiService {
 
   private baseUrl = 'https://products.smdtechnologies.com/public/api/';
   private storageUrl = 'https://products.smdtechnologies.com/public/storage/';
-  public domainUrl = 'https://products.smdtechnologies.com/login';
+  public domainUrl = 'https://products.smdtechnologies.com/#/login';
 
   constructor(private http : HttpClient) { }
 
