@@ -37,7 +37,7 @@
                 <h3>Products</h3>
             </mat-list-option>
             <mat-menu #productsMenu="matMenu">
-                <button mat-menu-item routerLink="/products">
+                <button mat-menu-item routerLink="/">
                     <mat-icon matListIcon>archive</mat-icon>
                     <span>Products</span>
                 </button>
@@ -58,14 +58,9 @@
                 <h3>Users</h3>
             </mat-list-option>
             <mat-menu #usersMenu="matMenu">
-                <button mat-menu-item routerLink="/users">
+                <button mat-menu-item routerLink="users/manage">
                     <mat-icon matListIcon>group</mat-icon>
                     <span>Manage Users</span>
-                </button>
-                <mat-divider></mat-divider>
-                <button mat-menu-item routerLink="/users">
-                    <mat-icon>person_add</mat-icon>
-                    <span>Add User</span>
                 </button>
             </mat-menu>
         </mat-selection-list>

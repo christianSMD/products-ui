@@ -27,6 +27,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   displayedColumns: string[] = ['id', 'sku', 'name', 'brand', 'description', 'view'];
   dataSource: MatTableDataSource<Product>;
   productsLoader = false;
+  loggedIn = false;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -42,15 +43,20 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     private info: InfoService
   ) {
     super();
+    this.info.isUserLoggedIn.subscribe(value => {
+      this.loggedIn = value;
+    });
   }
 
   ngOnInit(): void {
+    if(this.loggedIn) {
+      this.topNav.show();
+      this.sideNav.show();
+      this.treeNav.hide();
+      this.getAllProducts();
+      this.getAllTypes();
+    }
     this.info.auth();
-    this.topNav.show();
-    this.sideNav.show();
-    this.treeNav.hide();
-    this.getAllProducts();
-    this.getAllTypes();
   }
 
   applyFilter(event: Event) {

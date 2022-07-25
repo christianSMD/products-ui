@@ -1,4 +1,10 @@
-<p>Products</p>
+<div style="text-align: center;" *ngIf="!loggedIn">
+  <h2>WELCOME!</h2>
+  <mat-progress-bar color="accent" mode="indeterminate"></mat-progress-bar>
+</div>
+
+<div *ngIf="loggedIn">
+  <p>Products</p>
 <button mat-raised-button class="m-1" routerLink="add/new">
   <mat-icon>add</mat-icon> Add New Product
 </button>
@@ -80,4 +86,6 @@
     </div>
   </div>
   <div class="col-md-4"></div>
+</div>
+
 </div>

@@ -57,7 +57,12 @@ export class SingleProductComponent implements OnInit {
 
   storageUrl: string;
 
-  constructor(public navbar: NavbarService, public treeNav: TreeService, private api: ApiService, private _snackBar: MatSnackBar, private route: ActivatedRoute, private formBuilder : FormBuilder) { 
+  constructor(public navbar: NavbarService,
+    public treeNav: TreeService,
+    private api: ApiService,
+    private _snackBar: MatSnackBar,
+    private route: ActivatedRoute,
+    private formBuilder : FormBuilder){ 
 
   }
 

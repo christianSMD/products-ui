@@ -52,7 +52,7 @@ export class LoginComponent implements OnInit {
             localStorage.setItem('logged_in_user_id', res.user.id);
             localStorage.setItem('user_token', res.token);
             this.info.role(0); // Trigger local storage for permissions
-            this.router.navigate(['/products']);
+            this.router.navigate(['/']);
           } else {
             this.openSnackBar('⛔ Your account has not been approved. ' , 'Okay');
           }
