@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { User } from 'src/app/interfaces/user';
 import { ApiService } from '../api/api.service';
+import { BehaviorSubject } from 'rxjs';
 
 interface Role {
   id: string;
@@ -15,6 +16,7 @@ export class InfoService {
 
   public title = "SMD Technologies";
   public userValue: User;
+  public isUserLoggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(public api: ApiService) { }
 

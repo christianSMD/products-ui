@@ -34,6 +34,7 @@ export class TopNavComponent implements OnInit {
 
   logout() {
     this.openSnackBar('Logging out...', '');
+    this.info.isUserLoggedIn.next(false);
     localStorage.clear();
     this.api.POST(`logout`, this.userEmail).subscribe({
       next:(res)=> {

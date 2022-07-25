@@ -46,6 +46,7 @@ export class LoginComponent implements OnInit {
         next:(res)=>{
           console.log('res',res);
           if (res.user.is_active == 1) {
+            this.info.isUserLoggedIn.next(true);
             localStorage.setItem('logged_in_user_email', res.user.email);
             localStorage.setItem('logged_in_user_name', res.user.name);
             localStorage.setItem('logged_in_user_id', res.user.id);
@@ -53,7 +54,7 @@ export class LoginComponent implements OnInit {
             this.info.role(0); // Trigger local storage for permissions
             this.router.navigate(['/products']);
           } else {
-            this.openSnackBar('⛔ Your account has not been approved ' , 'Okay');
+            this.openSnackBar('⛔ Your account has not been approved. ' , 'Okay');
           }
           
         },

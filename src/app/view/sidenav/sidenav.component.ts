@@ -16,6 +16,7 @@ export class SidenavComponent {
   listBrands: string[] = [];
   searchForm !: FormGroup;
   brandsLoader = false;
+  loggedIn: boolean;
 
   constructor(
     public sideNav: SidenavService, 
@@ -23,7 +24,11 @@ export class SidenavComponent {
     private formBuilder : FormBuilder,
     private api: ApiService,
     private info: InfoService
-  ) { }
+  ) { 
+    this.info.isUserLoggedIn.subscribe(value => {
+      this.loggedIn = value;
+    });
+  }
 
   ngOnInit(): void {
     this.getAllTypes();

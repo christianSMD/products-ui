@@ -1,60 +1,61 @@
 .brands {
-    height: 500px;
-    overflow-y: auto;
+  height: 500px;
+  overflow-y: auto;
 }
 
 .side-menu {
-    background-color: #F44336;
-    background-image: url("../../../../5.jpg");
-    min-height: 200px;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
+  background-color: #F44336;
+  background-image: url("../../../../5.jpg");
+  min-height: 200px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 
-    margin-top: -20px;
-    margin-left: -18px;
-    margin-right: -25px;
-    padding: 1rem;
+  margin-top: -20px;
+  margin-left: -18px;
+  margin-right: -25px;
+  padding: 1rem;
 }
 
 .menu-item {
-    color: #FFF;
-    text-transform: uppercase;
-    font-size: 15px;
-    padding-top: 1rem;
+  color: #FFF;
+  text-transform: uppercase;
+  font-size: 15px;
+  padding-top: 1rem;
+  background-color: #00000056;
 }
 
 .brand {
-    color: #FFF;
-    text-transform: uppercase;
-    font-size: 14px;
+  color: #FFF;
+  text-transform: uppercase;
+  font-size: 14px;
 }
 
 mat-label {
-    color: rgb(107, 107, 107);
+  color: rgb(107, 107, 107);
 }
 
 
 // SCROLL BAR
 /* width */
 ::-webkit-scrollbar {
-    width: 10px;
-  }
-  
-  /* Track */
-  ::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 5px grey; 
-    border-radius: 3px;
-  }
-   
-  /* Handle */
-  ::-webkit-scrollbar-thumb {
-    background: #f443362b; 
-    border-radius: 3px;
-  }
-  
-  /* Handle on hover */
-  ::-webkit-scrollbar-thumb:hover {
-    background: #F44336; 
-  }
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px rgb(104, 104, 104); 
+  border-radius: 3px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #f443362b; 
+  border-radius: 3px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #F44336; 
+}
 
