@@ -36,6 +36,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { TokenInterceptorService } from './services/interceptor/token-interceptor.service';
+import { ProfileComponent } from './profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { TokenInterceptorService } from './services/interceptor/token-intercepto
     HomeComponent,
     TreeComponent,
     ParentPipe,
-    UsersComponent
+    UsersComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,
