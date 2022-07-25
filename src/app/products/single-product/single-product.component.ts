@@ -128,7 +128,7 @@ export class SingleProductComponent implements OnInit {
             this.detailProgress++;
           }
           this.productForm = this.formBuilder.group({
-            sku : [this.product.sku, Validators.required],
+            sku : [{value: this.product.sku, disabled: true}, Validators.required],
             name : [this.product.name, Validators.required],
             brand_type_id : [this.product.brand_type_id, Validators.required],
             description : [this.product.description, Validators.required],

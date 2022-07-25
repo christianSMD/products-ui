@@ -6,6 +6,7 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { User } from '../interfaces/user';
 import { ApiService } from '../services/api/api.service';
+import { InfoService } from '../services/info/info.service';
 import { NavbarService } from '../services/navbar/navbar.service';
 import { SidenavService } from '../services/sidenav/sidenav.service';
 import { TreeService } from '../services/tree/tree.service';
@@ -18,7 +19,7 @@ import { TreeService } from '../services/tree/tree.service';
 export class UsersComponent implements OnInit {
 
   users: User[] = [];
-  displayedColumns: string [] = ['id', 'name', 'surname', 'email', 'created'];
+  displayedColumns: string [] = ['id', 'name', 'surname', 'email', 'created_at', 'view'];
   dataSource: MatTableDataSource<User>;
   usersLoader = false;
 
@@ -32,10 +33,12 @@ export class UsersComponent implements OnInit {
     private api: ApiService, 
     private _snackBar: MatSnackBar,
     public treeNav: TreeService,
+    private info: InfoService,
     private _liveAnnouncer: LiveAnnouncer
   ) { }
 
   ngOnInit(): void {
+    this.info.auth();
     this.topNav.show();
     this.sideNav.show();
     this.treeNav.hide();
@@ -46,7 +49,7 @@ export class UsersComponent implements OnInit {
     this.usersLoader = true;
     this.api.GET('users').subscribe({
       next:(res)=>{
-        console.log(res);
+        console.log('Users: ', res);
         this.usersLoader = false;
         this.users = res;
         this.dataSource = new MatTableDataSource(this.users);

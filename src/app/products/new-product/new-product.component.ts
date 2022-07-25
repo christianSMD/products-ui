@@ -11,6 +11,7 @@ import { MatListOption } from '@angular/material/list'
 import { Observable } from 'rxjs';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { InfoService } from 'src/app/services/info/info.service';
 
 @Component({
   selector: 'app-new-product',
@@ -69,10 +70,13 @@ export class NewProductComponent implements OnInit {
 
   savedFiles: any[] = [];
   storageUrl: string;
+
+  skuPattern = "^[a-zA-Z0-9_-]{4,12}$";
   
-  constructor(public navbar: NavbarService, private api: ApiService, private formBuilder : FormBuilder, private _snackBar: MatSnackBar) {}
+  constructor(public navbar: NavbarService, private api: ApiService, private formBuilder : FormBuilder, private _snackBar: MatSnackBar, public info: InfoService) {}
 
   ngOnInit(): void {
+    this.info.auth();
     this.attrCount = 0;
     this.storageUrl = this.api.getStorageUrl();
     this.navbar.show();
@@ -80,7 +84,7 @@ export class NewProductComponent implements OnInit {
     this.getAllCategories();
 
     this.newProductForm = this.formBuilder.group({
-      sku : ['', Validators.required],
+      sku : ['', [Validators.required, Validators.pattern(this.skuPattern)]],
       name : ['', Validators.required],
       brand_type_id : ['', Validators.required],
       description : ['', Validators.required],
@@ -107,6 +111,10 @@ export class NewProductComponent implements OnInit {
 
   get attributes() {
     return this.newProductFormAttributes.get('attributes') as FormArray
+  }
+
+  get sku() {
+    return this.newProductForm.get('sku');
   }
 
   setParent(): void {
@@ -413,6 +421,10 @@ export class NewProductComponent implements OnInit {
 
   filePath(p: string) {
     return p.substring(7);
+  }
+
+  checkSku(e: any) {
+    
   }
 
 }

@@ -13,6 +13,7 @@ import { Category } from 'src/app/interfaces/category';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { CdkTableExporterModule } from 'cdk-table-exporter';
 import { ActivatedRoute, Params } from '@angular/router';
+import { InfoService } from 'src/app/services/info/info.service';
 
 @Component({
   selector: 'app-list-products',
@@ -42,12 +43,14 @@ export class ListProductsComponent extends CdkTableExporterModule implements OnI
     private api: ApiService, 
     private route: ActivatedRoute,
     private _snackBar: MatSnackBar,
-    private _liveAnnouncer: LiveAnnouncer
+    private _liveAnnouncer: LiveAnnouncer,
+    public info: InfoService
   ) {
     super();
   }
 
   ngOnInit(): void {
+    this.info.auth();
     this.topNav.show();
     this.sideNav.show();
     this.treeNav.hide();
@@ -76,8 +79,10 @@ export class ListProductsComponent extends CdkTableExporterModule implements OnI
     this.productsLoader = true;
     this.api.GET('products').subscribe({
       next:(res)=>{
+        console.log('Products', res);
         this.productsLoader = false;
         this.productsList = res.filter(item => item.brand_type_id == this.typeId);
+        console.log('Brand', this.productsList)
         this.dataSource = new MatTableDataSource(this.productsList);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
@@ -104,6 +109,7 @@ export class ListProductsComponent extends CdkTableExporterModule implements OnI
       next:(res)=>{
         for (let i = 0; i < res.length; i++) {
           if ((res[i].name).toLocaleLowerCase() == this.brand.toLocaleLowerCase()) {
+            console.log('Found type id', res[i].id);
             this.typeId = res[i].id;
           }
         }

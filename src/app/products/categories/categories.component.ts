@@ -4,6 +4,7 @@ import { ApiService } from 'src/app/services/api/api.service';
 import { NavbarService } from 'src/app/services/navbar/navbar.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Category } from 'src/app/interfaces/category';
+import { InfoService } from 'src/app/services/info/info.service';
 declare var swal: any;
 
 @Component({
@@ -38,13 +39,22 @@ export class CategoriesComponent implements OnInit {
   saveAttrBtnText = "Save Attributes";
   goToCategoriesBtn = false;
   hasParent = false;
-
-  constructor(public navbar: NavbarService, private api: ApiService, private formBuilder : FormBuilder, private _snackBar: MatSnackBar) {}
+  roles: any[] = [];
+  permission = false;
+  constructor(
+    public navbar: NavbarService, 
+    private api: ApiService, 
+    private formBuilder : FormBuilder, 
+    private _snackBar: MatSnackBar, 
+    public info: InfoService
+  ) {}
 
   ngOnInit(): void {
+    this.info.auth();
     this.attrCount = 0;
     this.navbar.show();
     this.getAllCategories();
+    this.permission = this.info.role(60);
     this.addCategory = this.formBuilder.group({
       name : ['', Validators.required],
       parent : ['0'],

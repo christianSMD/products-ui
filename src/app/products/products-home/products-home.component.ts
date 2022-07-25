@@ -12,6 +12,7 @@ import { Type } from 'src/app/interfaces/type';
 import { Category } from 'src/app/interfaces/category';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { CdkTableExporterModule } from 'cdk-table-exporter';
+import { InfoService } from 'src/app/services/info/info.service';
 
 @Component({
   selector: 'app-products-home',
@@ -37,12 +38,14 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     public treeNav: TreeService,
     private api: ApiService, 
     private _snackBar: MatSnackBar,
-    private _liveAnnouncer: LiveAnnouncer
+    private _liveAnnouncer: LiveAnnouncer,
+    private info: InfoService
   ) {
     super();
   }
 
   ngOnInit(): void {
+    this.info.auth();
     this.topNav.show();
     this.sideNav.show();
     this.treeNav.hide();

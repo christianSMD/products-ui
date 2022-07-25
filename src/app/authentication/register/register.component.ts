@@ -42,7 +42,7 @@ export class RegisterComponent implements OnInit {
           localStorage.setItem('psToken', res.token);
           localStorage.setItem('psName', res.user.name);
           localStorage.setItem('psEmail', res.user.email);
-          this.router.navigate(['/']);
+          this.router.navigate(['/login']);
         },
         error:(res)=>{
           alert(res.message);

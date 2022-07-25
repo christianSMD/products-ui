@@ -11,7 +11,7 @@
                 <div class="col-md-6">
                   <mat-form-field appearance="outline" style="width: 90%;">
                     <mat-label>SKU</mat-label>
-                    <input #sku matInput formControlName="sku" placeholder="Enter Product SKU">
+                    <input #sku matInput formControlName="sku" placeholder="Enter Product SKU" (keyup)="checkSku($event)">
                     <mat-icon matSuffix>qr_code_2</mat-icon>
                   </mat-form-field>
                   <mat-form-field appearance="outline" style="width: 90%;">

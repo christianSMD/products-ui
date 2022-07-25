@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api/api.service';
+import { InfoService } from 'src/app/services/info/info.service';
 import { SidenavService } from 'src/app/services/sidenav/sidenav.service';
 
 @Component({
@@ -20,7 +21,8 @@ export class SidenavComponent {
     public sideNav: SidenavService, 
     private router: Router,
     private formBuilder : FormBuilder,
-    private api: ApiService
+    private api: ApiService,
+    private info: InfoService
   ) { }
 
   ngOnInit(): void {
@@ -28,11 +30,13 @@ export class SidenavComponent {
     this.searchForm = this.formBuilder.group({
       query : ['']
     })
+    this.permission(60);
   }
 
   getAllTypes() {
     this.api.GET('types').subscribe({
       next:(res)=>{
+        console.log(res);
         this.brandsLoader = false;
         for (let index = 0; index < res.length; index++) {
           if (res[index].grouping == 'Brand') {
@@ -51,6 +55,12 @@ export class SidenavComponent {
   //   this.listBrands =  this.listBrands.filter(item => item == this.searchForm.value);
   //   console.log('results', this.listBrands);
   // }
+
+  permission(type_id: number) {
+    console.log('permissions for:', type_id);
+    console.log('permission:', this.info.role(type_id));
+  }
+
 
   selectBrand(brand: String): void {
     this.router.navigate(['products/brand', brand.toLowerCase()]);
