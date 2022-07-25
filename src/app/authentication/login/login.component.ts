@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit {
             this.info.role(0); // Trigger local storage for permissions
             this.router.navigate(['/products']);
           } else {
-            this.openSnackBar('⛔ Your account has not been approved: ' , 'Okay');
+            this.openSnackBar('⛔ Your account has not been approved ' , 'Okay');
           }
           
         },
