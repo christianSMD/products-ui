@@ -9,15 +9,11 @@ const routes: Routes = [
   { path: 'authentication', loadChildren: () => import('./authentication/authentication.module').then(m => m.AuthenticationModule) },
   { path: 'products', loadChildren: () => import('./products/products.module').then(m => m.ProductsModule) },
   { path: 'users', component: UsersComponent },
-  { path: 'users', component: UsersComponent },
   { path: 'profile/:id', component: ProfileComponent}
 ];
 
 @NgModule({
-  imports: [
-    //RouterModule.forRoot(routes, { useHash: true })
-    RouterModule.forRoot(routes)
-  ],
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
