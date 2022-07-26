@@ -5,7 +5,7 @@
 
 <div *ngIf="product">
   <p>
-    <a routerLink="/">Products </a> / Product Details / {{ productName }}
+    <a routerLink="/products">Products </a> / Product Details / {{ productName }}
   </p>
   <div class="row" >
     <div class="col-md-10">
@@ -270,9 +270,3 @@
 <div *ngIf="!product">
   <p *ngIf="!productsLoader">Product code "<strong>{{ sku }}</strong>" does not exist.</p>
 </div>
-
-
-
-
-
-

@@ -1,16 +1,10 @@
-<p>
-  Home
-</p>
-
-<button mat-raised-button class="m-1" routerLink="/products">
-  <mat-icon>archives</mat-icon>
-   Products
-</button>
-
-<!-- <button mat-raised-button class="m-1" routerLink="/products/categories">
-  <mat-icon>list</mat-icon>
-  Categories
-</button> -->
-
-
-
+<div style="text-align: center;" *ngIf="!loggedIn">
+  <p>Please Wait...</p>
+  <mat-progress-bar color="accent" mode="indeterminate"></mat-progress-bar>
+</div>
+<div *ngIf="loggedIn">
+  <button mat-raised-button class="m-1" routerLink="/products">
+    <mat-icon>archives</mat-icon>
+     Products
+  </button>  
+</div>
