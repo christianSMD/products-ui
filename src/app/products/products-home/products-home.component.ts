@@ -46,9 +46,6 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     super();
     this.info.isUserLoggedIn.subscribe(value => {
       this.loggedIn = value;
-      console.log('value: ', value);
-      this.info.isUserLoggedIn.next(true);
-      console.log('value now: ', value);
     });
   }
 
