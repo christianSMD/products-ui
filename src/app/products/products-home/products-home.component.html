@@ -1,5 +1,5 @@
 <div style="text-align: center;" *ngIf="!loggedIn">
-  <h2>WELCOME!</h2>
+  <p>Please Wait...</p>
   <mat-progress-bar color="accent" mode="indeterminate"></mat-progress-bar>
 </div>
 
@@ -8,7 +8,7 @@
 <button mat-raised-button class="m-1" routerLink="add/new">
   <mat-icon>add</mat-icon> Add New Product
 </button>
-<button mat-raised-button class="m-1" (click)="exporter.exportTable('csv',{fileName:'products_system'})">
+<button mat-raised-button class="m-1"  routerLink="products/export">
   <mat-icon>download</mat-icon> Export Products
 </button>
 <button mat-raised-button class="m-1" disabled>

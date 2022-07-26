@@ -37,6 +37,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { TokenInterceptorService } from './services/interceptor/token-interceptor.service';
 import { ProfileComponent } from './profile/profile.component';
+import { ExportComponent } from './export/export.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,8 @@ import { ProfileComponent } from './profile/profile.component';
     TreeComponent,
     ParentPipe,
     UsersComponent,
-    ProfileComponent
+    ProfileComponent,
+    ExportComponent
   ],
   imports: [
     BrowserModule,

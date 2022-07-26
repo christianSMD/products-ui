@@ -83,6 +83,12 @@ export class NewProductComponent implements OnInit {
     this.getAllTypes();
     this.getAllCategories();
 
+    window.addEventListener("beforeunload", function (e) {
+      const confirmationMessage = "\o/";
+      e.returnValue = '';
+      return confirmationMessage;
+    });
+
     this.newProductForm = this.formBuilder.group({
       sku : ['', [Validators.required, Validators.pattern(this.skuPattern)]],
       name : ['', Validators.required],
