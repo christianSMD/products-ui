@@ -68,7 +68,7 @@ export class SidenavComponent {
 
 
   selectBrand(brand: String): void {
-    this.router.navigate(['products/brand', brand.toLowerCase()]);
+    this.router.navigate(['/brand', brand.toLowerCase()]);
   }
 
 }

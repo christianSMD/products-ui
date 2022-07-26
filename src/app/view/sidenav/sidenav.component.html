@@ -18,12 +18,12 @@
 <div *ngIf="loggedIn">
     <div class="side-menu">
         <mat-selection-list #sideMenus [multiple]="false">
-            <mat-list-option class="menu-item" routerLink="products">
+            <mat-list-option class="menu-item" routerLink="/">
                 <mat-icon matListIcon>archive</mat-icon>
                 <h3>Products</h3>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option class="menu-item" routerLink="/products/categories/manage">
+            <mat-list-option class="menu-item" routerLink="categories/manage">
                 <mat-icon matListIcon>format_list_bulleted</mat-icon>
                 <h3>Categories</h3>
             </mat-list-option>

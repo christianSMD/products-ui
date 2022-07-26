@@ -2,7 +2,7 @@ import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { File } from 'src/app/interfaces/file';
 import { Type } from 'src/app/interfaces/type';
 import { ApiService } from 'src/app/services/api/api.service';
@@ -61,20 +61,18 @@ export class SingleProductComponent implements OnInit {
     public treeNav: TreeService,
     private api: ApiService,
     private _snackBar: MatSnackBar,
-    private route: ActivatedRoute,
-    private formBuilder : FormBuilder){ 
-
-  }
+    private route: ActivatedRoute, 
+    private router: Router,
+    private formBuilder : FormBuilder
+  ) { }
 
   ngOnInit(): void {
     this.storageUrl = this.api.getStorageUrl();
     this.navbar.show();
     this.treeNav.hide();
     this.route.params.subscribe((params: Params) => {
-      //this.id = params['id'];
       this.sku = params['sku'];
     });
-    console.log('ID: ', this.sku);
     this.getDetails(this.sku);
     this.getAllTypes();
 
@@ -102,7 +100,16 @@ export class SingleProductComponent implements OnInit {
     this.productFormAttributes = this.formBuilder.group({
       attributes: this.formBuilder.array([])
     });
+
     this.getproductCategories();
+
+    if(this.sku == 'products' || this.sku == 'product') {
+      this.router.navigate(['/']);
+    }
+
+    if(this.sku == 'users' || this.sku == 'user') {
+      this.router.navigate(['/users/manage']);
+    }
   }
 
   get attributes() {

@@ -24,7 +24,8 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   productsList: Product[] = [];
   categoriesList: Category[] = [];
   typesList: Type[] = [];
-  displayedColumns: string[] = ['id', 'sku', 'name', 'brand', 'description', 'view'];
+  packagingList: any[] = [];
+  displayedColumns: string[] = ['id', 'sku', 'name', 'brand', 'description','view'];
   dataSource: MatTableDataSource<Product>;
   productsLoader = false;
   loggedIn = false;
@@ -45,6 +46,9 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     super();
     this.info.isUserLoggedIn.subscribe(value => {
       this.loggedIn = value;
+      console.log('value: ', value);
+      this.info.isUserLoggedIn.next(true);
+      console.log('value now: ', value);
     });
   }
 
@@ -57,6 +61,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
       this.getAllTypes();
     }
     this.info.auth();
+    console.log('isUserLoggedIn:', this.loggedIn);
   }
 
   applyFilter(event: Event) {
@@ -107,12 +112,12 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   }
 
   getBrandName(id: string) {
-     let i = 0;
-     i = parseInt(id) - 1;
-     if(this.typesList[i] == undefined) {
+    let i = 0;
+    i = parseInt(id) - 1;
+    if(this.typesList[i] == undefined) {
       return '';
     }
-     return this.typesList[i].name;
+    return this.typesList[i].name;
   }
 
 }
