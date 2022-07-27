@@ -13,7 +13,7 @@
                     <mat-card style="margin-top: 1rem; margin-bottom: 9rem">
                         <h2>Categories</h2>
                         <mat-divider></mat-divider>
-                        <div style="margin-top: 2rem;">
+                        <div style="margin-top: 2rem; font-size: small;">
                             <ul class="catList">
                                 <li *ngFor="let category of categoriesList | parent: '0'" >{{ category.name }} <a class="editCat" (click)="selectCategory(category.id)">edit</a>
                                     <ul>

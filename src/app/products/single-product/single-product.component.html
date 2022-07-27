@@ -45,7 +45,7 @@
                     <mat-checkbox #is_in_development formControlName="is_in_development">Is In Development</mat-checkbox><br>
                     <mat-checkbox #is_eol formControlName="is_eol">Is EOL</mat-checkbox><br>
                     <mat-checkbox #is_active formControlName="is_active">Is Active</mat-checkbox><hr>
-                    <button mat-raised-button  [disabled]="!productForm.dirty" type="submit" color="primary" (click)="updateProduct()">Save Changes</button>
+                    <button mat-raised-button  [disabled]="!productForm.dirty" *ngIf="editRole" type="submit" color="primary" (click)="updateProduct()">Save Changes</button>
                   </div>
                 </div>
               </div>
@@ -81,7 +81,7 @@
                   <mat-icon>add_circle_outline</mat-icon>
                   Add Attribute
                 </button> -->
-                <button mat-raised-button type="submit" [disabled]="!productFormAttributes.dirty" color="primary" (click)="updateAttributes()" style="margin-left: 1rem;">{{saveAttrBtnText}}</button>
+                <button mat-raised-button type="submit" *ngIf="editRole" [disabled]="!productFormAttributes.dirty" color="primary" (click)="updateAttributes()" style="margin-left: 1rem;">{{saveAttrBtnText}}</button>
               </form>
             </div>
           </mat-tab>
@@ -121,7 +121,7 @@
                   </div>
                   <div class="col-md-6">
                     <div class="m-3">
-                      <button [disabled]="!productFormPackaging.dirty" (click)="updatePackaging()" mat-raised-button type="submit" color="primary">Save Packaging</button>  
+                      <button *ngIf="editRole" [disabled]="!productFormPackaging.dirty" (click)="updatePackaging()" mat-raised-button type="submit" color="primary">Save Packaging</button>  
                     </div>
                   </div>
                 </div>
@@ -132,22 +132,28 @@
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <div class="row">
                 <div class="col-md-4">
-                  <select class="form-control" (change)="setFocusType($event)">
-                    <option *ngFor="let type of typesList | typeGroup : 'File'" value="{{ type.id }}">{{ type.name }}</option>
-                  </select><br>
-                  <input class="form-control" type="file" (change)="onChange($event)" multiple><br>
-                  <button mat-raised-button color="primary" (click)="onUpload('55')">Upload File</button>
-                  <hr>
-                  <div class="container" *ngIf="loading">
-                    <h3>Loading ...</h3>
+                  <div *ngFor="uploadRole">
+                    <select class="form-control" (change)="setFocusType($event)">
+                      <option *ngFor="let type of typesList | typeGroup : 'File'" value="{{ type.id }}">{{ type.name }}</option>
+                    </select><br>
+                    <input class="form-control" type="file" (change)="onChange($event)" multiple><br>
+                    <button mat-raised-button color="primary" (click)="onUpload('55')">Upload File</button>
+                    <hr>
+                    <div class="container" *ngIf="loading">
+                      <h3>Loading ...</h3>
+                    </div>
+                    <div class="progress" style="height:10px;width:100%;">
+                      <div class="progress-bar bg-success" [style]="uploadProgressBar"></div>
+                    </div>
+                    <div *ngIf="messages.length" class="message">
+                      <ul *ngFor="let msg of messages; let i = index">
+                        <li>{{ msg }}</li>
+                      </ul>
+                    </div>
                   </div>
-                  <div class="progress" style="height:10px;width:100%;">
-                    <div class="progress-bar bg-success" [style]="uploadProgressBar"></div>
-                  </div>
-                  <div *ngIf="messages.length" class="message">
-                    <ul *ngFor="let msg of messages; let i = index">
-                      <li>{{ msg }}</li>
-                    </ul>
+                  <div *ngIf="!uploadRole" class="upload-role">
+                      <p>You do not have permissions to upload files</p>
+                      <mat-icon>upload_file</mat-icon>
                   </div>
                 </div>
                 <div class="col-md-8">
@@ -166,7 +172,6 @@
                     <div class="file-box" *ngFor="let file of savedFiles; let i = index">
                       <div class="row" cdkDrag>
                         <div class="col-md-4">
-                          
                           <mat-chip-list>
                             <mat-chip color="accent" *ngIf="i == 0" selected>Primary</mat-chip>
                           </mat-chip-list>
@@ -180,7 +185,6 @@
                               <mat-option (onSelectionChange)="updateFileType(file.id, type.id)" *ngFor="let type of typesList | typeGroup : 'Image'" value="{{ type.id }}">{{ type.name }}</mat-option>
                             </mat-select>
                           </mat-form-field>
-                          
                         </div>
                       </div>
                     </div>
@@ -196,11 +200,8 @@
               </div>
             </div>
             <mat-card>
-              <div class="row">
+              <div *ngIf="uploadRole" class="row">
                 <div class="col-md-4 form-border">
-                  <!-- <select class="form-control" (change)="setFocusType($event)">
-                    <option *ngFor="let type of typesList | typeGroup : 'Image'" value="{{ type.id }}">{{ type.name }}</option>
-                  </select><br> -->
                   <input class="form-control" type="file" (change)="onChange($event)" multiple><br>
                   <button mat-raised-button color="primary" (click)="onUpload('47')">Upload Media</button>
                 </div>
@@ -218,6 +219,16 @@
                   </div>
                 </div>
               </div>
+
+              <div *ngIf="!uploadRole" class="row">
+                <div class="col-md-12">
+                  <div class="upload-role">
+                    <p>You do not have permissions to upload media</p>
+                    <mat-icon>hide_image</mat-icon>
+                  </div>
+                </div>
+              </div>
+
             </mat-card>
           </mat-tab>
     

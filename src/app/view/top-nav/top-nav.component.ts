@@ -55,5 +55,10 @@ export class TopNavComponent implements OnInit {
     this._snackBar.open(message, action);
   }
 
+  openProfile(): void {
+    const link = '/profile/' + this.info.getUserId();
+    this.router.navigate([link]);
+  }
+
 
 }

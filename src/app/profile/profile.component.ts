@@ -2,7 +2,7 @@ import { ValueConverter } from '@angular/compiler/src/render3/view/template';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { User } from '../interfaces/user';
 import { ApiService } from '../services/api/api.service';
 import { InfoService } from '../services/info/info.service';
@@ -28,24 +28,31 @@ export class ProfileComponent implements OnInit {
   userForm !: FormGroup;
   rolesForm !: FormGroup
   isActive = false;
+  authRole: boolean = false;
 
   constructor(
     public navbar: NavbarService, 
     public treeNav: TreeService, 
     private api: ApiService, 
     private _snackBar: MatSnackBar, 
-    private route: ActivatedRoute, 
+    private route: ActivatedRoute,
+    private router: Router,
     private formBuilder : FormBuilder,
     private info: InfoService
   ) { }
 
   ngOnInit(): void {
+    this.authRole = this.info.role(58);
     this.info.auth();
     this.navbar.show();
     this.treeNav.hide();
     this.getAllTypes();
     this.route.params.subscribe((params: Params) => {
       this.id = params['id'];
+      if(!this.authRole && this.id !== this.info.getUserId()) {
+        this.openSnackBar("⛔ You don't have persmissions to access this user.", 'Okay');
+        this.router.navigate(['/']);
+      }
       this.getUserDetails();
     });
   }

@@ -12,6 +12,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Category } from 'src/app/interfaces/category';
 import { ThemePalette } from '@angular/material/core';
 import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
+import { InfoService } from 'src/app/services/info/info.service';
 
 @Component({
   selector: 'app-single-product',
@@ -51,11 +52,12 @@ export class SingleProductComponent implements OnInit {
   productAttributes: any[] = [];
   ft = '';
   detailProgress: number = 0;
-
   progressColor: ThemePalette = 'primary';
   progressMode: ProgressSpinnerMode = 'determinate';
-
   storageUrl: string;
+
+  editRole: boolean = false;
+  uploadRole: boolean = false;
 
   constructor(public navbar: NavbarService,
     public treeNav: TreeService,
@@ -63,10 +65,13 @@ export class SingleProductComponent implements OnInit {
     private _snackBar: MatSnackBar,
     private route: ActivatedRoute, 
     private router: Router,
-    private formBuilder : FormBuilder
+    private formBuilder : FormBuilder,
+    private info: InfoService
   ) { }
 
   ngOnInit(): void {
+    this.editRole = this.info.role(56);
+    this.uploadRole = this.info.role(57);
     this.storageUrl = this.api.getStorageUrl();
     this.navbar.show();
     this.treeNav.hide();
@@ -101,7 +106,7 @@ export class SingleProductComponent implements OnInit {
       attributes: this.formBuilder.array([])
     });
 
-    this.getproductCategories();
+    this.getProductCategories();
 
     if(this.sku == 'products' || this.sku == 'product') {
       this.router.navigate(['/']);
@@ -116,10 +121,10 @@ export class SingleProductComponent implements OnInit {
     return this.productFormAttributes.get('attributes') as FormArray
   }
 
-    getDetails(sku: string): void {
-      console.log('Details for ', sku);
-      this.productsLoader = true;
-      this.api.GET(`products/${sku}`).subscribe({
+  getDetails(sku: string): void {
+    console.log('Details for ', sku);
+    this.productsLoader = true;
+    this.api.GET(`products/${sku}`).subscribe({
       next:(res)=>{
         this.productsLoader = false;
         if (res.length > 0) {
@@ -163,7 +168,7 @@ export class SingleProductComponent implements OnInit {
    * @todo Get categories asigned to product.
    * @todo Loop each category for attributes.
    */
-   getproductCategories(): void {
+   getProductCategories(): void {
     this.api.GET(`product-categories/search/${this.id}`).subscribe({
       next:(res)=>{
         this.productCategories = res;
@@ -416,6 +421,4 @@ export class SingleProductComponent implements OnInit {
     }
     return p;
   }
-
-
 }

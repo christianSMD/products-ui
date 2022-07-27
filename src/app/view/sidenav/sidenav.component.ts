@@ -17,6 +17,7 @@ export class SidenavComponent {
   searchForm !: FormGroup;
   brandsLoader = false;
   loggedIn: boolean;
+  authRole: boolean = false;
 
   constructor(
     public sideNav: SidenavService, 
@@ -35,7 +36,7 @@ export class SidenavComponent {
     this.searchForm = this.formBuilder.group({
       query : ['']
     })
-    this.permission(60);
+    this.authRole = this.info.role(58);
   }
 
   getAllTypes() {
@@ -60,12 +61,6 @@ export class SidenavComponent {
   //   this.listBrands =  this.listBrands.filter(item => item == this.searchForm.value);
   //   console.log('results', this.listBrands);
   // }
-
-  permission(type_id: number) {
-    console.log('permissions for:', type_id);
-    console.log('permission:', this.info.role(type_id));
-  }
-
 
   selectBrand(brand: String): void {
     this.router.navigate(['/brand', brand.toLowerCase()]);

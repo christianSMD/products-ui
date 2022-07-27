@@ -1,4 +1,3 @@
-<p>profile works!</p>
 <p>Profile / 
     <span> {{ (user) ? user.name + ' ' + user.surname : '...'}}</span>
 </p>
@@ -44,65 +43,77 @@
                 <mat-divider></mat-divider>
                 <div class="row" style="margin-top: 2rem;">
                     <h3>Account: 
-                        <span style="padding: 3px; background: green; border-radius: 6px; color: white;" *ngIf="isActive">✅ Active</span>
-                        <span style="padding: 3px; background: orange;; border-radius: 6px; color: white;" *ngIf="!isActive">⛔ Inctive</span>
+                        <span style="color: green;" *ngIf="isActive">
+                            ✅ <i>active</i>
+                        </span>
+                        <span style="color: orange;" *ngIf="!isActive">
+                            ⛔ <li>inctive</li>
+                        </span>
                     </h3>
-                    <div class="col-md-6">
+                    <div class="col-md-6" *ngIf="authRole">
                         <mat-form-field appearance="outline" style="width: 100%;">
-                            <mat-label>Change Status: {{isActive}}</mat-label>
+                            <mat-label>Change Status: </mat-label>
                             <mat-select #is_active formControlName="is_active" (selectionChange)="account($event)">
                                 <mat-option value="1">Active</mat-option>
                                 <mat-option value="2">Inactive</mat-option>
                             </mat-select>
                         </mat-form-field>
+                        <button type="submit" mat-raised-button color="primary" (click)="update()">Update</button>
                     </div>
                 </div>
-                <button type="submit" (click)="update()">update</button>
+                
             </form>
         </mat-card>
     </div>
     <div class="col-md-3">
         <mat-card>
-					<h2>User Roles</h2>
-          <mat-divider></mat-divider>
-					<div class="row" style="margin-top: 2rem;">
-						<div class="col-md-12">
-							<div class="row">
-								<div class="col-md-8">
-									<mat-form-field appearance="outline" style="width: 100%;">
-										<mat-label>Add Role:</mat-label>
-										<mat-select #r (selectionChange)="setRole($event)">
-												<mat-option [value]="role.id" *ngFor="let role of roles">
-														{{ role.name }}
-												</mat-option>
-										</mat-select>
-									</mat-form-field>
-								</div>
-								<div class="col-md-4">
-									<button type="submit" class="btn btn-success" style="width: 100%; margin-top: 9px;" (click)="addRole()">
-										☑ Add
-									</button>
-								</div>
-							</div>
-							<button type="button" mat-raised-button color="primary" style="width: 100%;">Active Roles</button>
-						</div>
-						<div class="col-md-12">
-							<div class="mat-elevation-z8 p-3">
-								<div class="role" *ngFor="let role of userRoles">
-									<div class="row">
-										<div class="col-md-8">
-											✔ {{ roleName(role.type_id) }} 
-										</div>
-										<div class="col-md-4">
-											<button mat-icon-button color="accent" (click)="removeRole(role.id)" >
-												<mat-icon>delete_outline</mat-icon>
-											</button>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
+            <h2>User Roles</h2>
+            <mat-divider></mat-divider>
+            <div *ngIf="authRole" class="row" style="margin-top: 2rem;">
+                <div class="col-md-12">
+                    <mat-form-field appearance="outline" style="width: 100%;">
+                        <mat-label>Add Role:</mat-label>
+                        <mat-select #r (selectionChange)="setRole($event)">
+                            <mat-option [value]="role.id" *ngFor="let role of roles">
+                                {{ role.name }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <button type="submit" mat-raised-button color="accent" style="width: 100%;" (click)="addRole()">Add Role</button>
+                </div>
+                <div class="col-md-12">
+                    <div class="mat-elevation-z8 p-3">
+                        <div class="role" *ngFor="let role of userRoles">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    ✔ {{ roleName(role.type_id) }} 
+                                </div>
+                                <div class="col-md-4">
+                                    <button mat-icon-button color="accent" (click)="removeRole(role.id)" >
+                                        <mat-icon>delete_outline</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="!authRole" class="row" style="margin-top: 2rem;">
+                <div class="col-md-12">
+                    <div class="mat-elevation-z8 p-3">
+                        <div class="role" *ngFor="let role of userRoles">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    ✔ {{ roleName(role.type_id) }} 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
         </mat-card>
     </div>
 </div>

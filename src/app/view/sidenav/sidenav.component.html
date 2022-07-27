@@ -28,7 +28,7 @@
                 <h3>Categories</h3>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option class="menu-item" [matMenuTriggerFor]="usersMenu">
+            <mat-list-option class="menu-item" [matMenuTriggerFor]="usersMenu" *ngIf="authRole">
                 <mat-icon matListIcon>groups</mat-icon>
                 <h3>Users</h3>
             </mat-list-option>

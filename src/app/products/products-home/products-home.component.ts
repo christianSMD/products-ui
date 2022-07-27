@@ -29,6 +29,8 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   dataSource: MatTableDataSource<Product>;
   productsLoader = false;
   loggedIn = false;
+  addProductRole = false;
+  addCategoryRole = false;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -50,12 +52,15 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   }
 
   ngOnInit(): void {
+    console.log('ngOnInit()');
     if(this.loggedIn) {
       this.topNav.show();
       this.sideNav.show();
       this.treeNav.hide();
       this.getAllProducts();
       this.getAllTypes();
+      this.addProductRole = this.info.role(61);
+      this.addCategoryRole = this.info.role(60);
     }
     this.info.auth();
     console.log('isUserLoggedIn:', this.loggedIn);
@@ -115,6 +120,14 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
       return '';
     }
     return this.typesList[i].name;
+  }
+
+  permission(role: number) {
+    console.log('Role check');
+    if(this.info.role(role)) {
+      return true;
+    }
+    return false;
   }
 
 }
