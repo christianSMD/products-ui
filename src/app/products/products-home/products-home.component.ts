@@ -13,6 +13,7 @@ import { Category } from 'src/app/interfaces/category';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { CdkTableExporterModule } from 'cdk-table-exporter';
 import { InfoService } from 'src/app/services/info/info.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-products-home',
@@ -43,7 +44,8 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     private api: ApiService, 
     private _snackBar: MatSnackBar,
     private _liveAnnouncer: LiveAnnouncer,
-    private info: InfoService
+    private info: InfoService,
+    private router: Router
   ) {
     super();
     this.info.isUserLoggedIn.subscribe(value => {
@@ -61,6 +63,8 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
       this.getAllTypes();
       this.addProductRole = this.info.role(61);
       this.addCategoryRole = this.info.role(60);
+    } else {
+      this.router.navigate(['login']);
     }
     this.info.auth();
     console.log('isUserLoggedIn:', this.loggedIn);
