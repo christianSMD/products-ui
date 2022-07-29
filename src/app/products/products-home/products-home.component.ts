@@ -65,7 +65,14 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
       this.addProductRole = this.info.role(61);
       this.addCategoryRole = this.info.role(60);
     } else {
-      this.router.navigate(['login']);
+      if (localStorage.getItem('logged_in_user_email')) {
+        this.loggedIn = true;
+        this.addProductRole = this.info.role(61);
+        this.addCategoryRole = this.info.role(60);
+      } else {
+        this.router.navigate(['login']);
+      }
+      
     }
     this.info.auth();
     console.log('isUserLoggedIn:', this.loggedIn);
