@@ -23,16 +23,56 @@ export class ExportComponent extends CdkTableExporterModule implements OnInit{
 
   productsList: Product[] = [];
   categoriesList: Category[] = [];
+  productCategoryList: any[] = [];
   typesList: Type[] = [];
   images: any[] = [];
   
-  //displayedColumns: string[] = ['type', 'sku', 'name', 'published', 'featured', 'visibility', 'catalog', 'shortDescription', 'description',	'tax',	'inStock',	'weight','height', 'width', 'height', 'price', 'reviews',	'categories',	'tags',	'images',	'parent', 'Attribute 1 name', 'attribute_1'];
-  //displayedColumns: string[] = ['type', 'sku', 'name', 'published', 'featured', 'visibility', 'catalog', 'shortDescription', 'description',	'weight','height', 'width', 'height', 'categories',	'images'];
-  displayedColumns: string[] = ['id', 'sku', 'name', 'brand', 'description', 'images','view'];
+  displayedColumns: string[] = [
+    'type',
+    'sku', 
+    'name', 
+    'published', 
+    'featured', 
+    'visibility', 
+    'shortDescription', 
+    'description',	
+    'tax',	
+    'inStock',
+    'weight',
+    'width', 
+    'height', 
+    'price', 
+    'reviews',	
+    'categories',	
+    'tags',	
+    'images',	
+    'parent', 
+    'attr1Name', 
+    'attr1Value', 
+    'attr2Name', 
+    'attr2Value', 
+    'attr3Name', 
+    'attr3Value',
+    'attr4Name', 
+    'attr4Value',
+    'attr5Name', 
+    'attr5Value',
+    'attr6Name', 
+    'attr6Value',
+    'attr7Name', 
+    'attr7Value',
+    'attr8Name', 
+    'attr8Value',
+    'attr9Name', 
+    'attr9Value',
+    'attr10Name', 
+    'attr10Value',
+  ];
 
   dataSource: MatTableDataSource<Product>;
   productsLoader = false;
   loggedIn = false;
+  storageUrl: string;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -54,6 +94,7 @@ export class ExportComponent extends CdkTableExporterModule implements OnInit{
   }
 
   ngOnInit(): void {
+    
     if(this.loggedIn) {
       this.topNav.show();
       this.sideNav.show();
@@ -61,6 +102,9 @@ export class ExportComponent extends CdkTableExporterModule implements OnInit{
       this.getAllProducts();
       this.getAllTypes();
       this.getImages();
+      this.getProductCategories();
+      this.getAllCategories();
+      this.storageUrl = this.api.getStorageUrl();
     }
     this.info.auth();
   }
@@ -89,6 +133,17 @@ export class ExportComponent extends CdkTableExporterModule implements OnInit{
     });
   }
 
+  getAllCategories(): void {
+    this.api.GET('categories').subscribe({
+      next:(res)=>{
+        console.log('Categories' , res);
+        this.categoriesList = res;
+      }, error:(res)=>{
+        this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
+      }
+    });
+  }
+
   getImages() {
     this.productsLoader = true;
     this.api.GET('images').subscribe({
@@ -102,7 +157,6 @@ export class ExportComponent extends CdkTableExporterModule implements OnInit{
   }
 
   productImages(id: number) {
-    console.log('PIs', this.images.filter(x => x.product_id == id));
     return this.images.filter(x => x.product_id == id);
   }
 
@@ -125,7 +179,18 @@ export class ExportComponent extends CdkTableExporterModule implements OnInit{
         console.log(res);
         this.typesList = res;
       }, error:(res)=>{
-        this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
+        console.log('Failed to communicate with the server: ' + res.message);
+      }
+    });
+  }
+
+  getProductCategories () {
+    this.api.GET('product-categories').subscribe({
+      next:(res)=>{
+        console.log('Products categories', res);
+        this.productCategoryList = res;
+      }, error:(res)=>{
+        console.log('Failed to communicate with the server: ' + res.message);
       }
     });
   }
@@ -137,6 +202,44 @@ export class ExportComponent extends CdkTableExporterModule implements OnInit{
       return '';
     }
      return this.typesList[i].name;
+  }
+
+  setAttributesName(a: any, i: number) {
+    const attr = JSON.parse(a)
+    if(attr.attributes[i]) {
+      return attr.attributes[i].attrName;
+    }
+    return '';
+  }
+
+  setAttributesValue(a: any, i: number) {
+    const attr = JSON.parse(a)
+    if(attr.attributes[i]) {
+      return attr.attributes[i].attrValue;
+    }
+    return '';
+  }
+
+  setProductCategories(id: number) {;
+    let catIds: any[] = [];
+    let final: any[] = [];
+    let str: string = '';
+
+    for(let x = 0; x < this.productCategoryList.length; x++) {
+      if (this.productCategoryList[x].product_id == id) {
+        catIds.push(this.productCategoryList[x].category_id);
+      }
+    }
+
+    for(let x = 0; x < catIds.length; x++) {
+      try {
+        let result = this.categoriesList.find(item => item.id == catIds[x]);
+        final.push(result!.name);
+      } catch (error) {
+        return '';
+      }
+    }
+    return final;
   }
 
 }
