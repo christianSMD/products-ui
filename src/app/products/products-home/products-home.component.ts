@@ -54,7 +54,8 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   }
 
   ngOnInit(): void {
-    console.log('ngOnInit()');
+    console.log('products-home ngOnInit()');
+    console.log('Direct Local Storage', localStorage.getItem('logged_in_user_email'));
     if(this.loggedIn) {
       this.topNav.show();
       this.sideNav.show();
@@ -68,6 +69,20 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     }
     this.info.auth();
     console.log('isUserLoggedIn:', this.loggedIn);
+  }
+
+  ngAfterContentInit(): void {
+    console.log('products-home ngAfterContentInit()');
+    if(this.loggedIn) {
+      this.addProductRole = this.info.role(61);
+      this.addCategoryRole = this.info.role(60);
+    } else {
+      this.router.navigate(['login']);
+    }
+  }
+
+  ngOnDestroy(): void {
+    console.log('products-home toggleDestroy()');
   }
 
   applyFilter(event: Event) {
