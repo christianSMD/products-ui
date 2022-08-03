@@ -24,9 +24,9 @@ export class NewProductComponent implements OnInit {
   newProductCategoriesForm !: FormGroup;
   newProductFormAttributes !: FormGroup;
   newProductFormPackaging !: FormGroup;
-
   productsList: Product[] = [];
   categoriesList: Category[] = [];
+  selectedCategories: any[] = [];
   typesList: Type[] = [];
   displayedColumns: string[] = ['id', 'sku', 'name', 'brand', 'description'];
   dataSource: MatTableDataSource<Product>;
@@ -36,41 +36,32 @@ export class NewProductComponent implements OnInit {
   typesLoader = false;
   parent = false;
   frontImage = false;
-
   //These will be returned after product has been successfully added
   newProductId = 0;
   newProductSKU = '';
   newProductName = '';
-
   // Variable to store shortLink from api response
   shortLink: string = "";
   loading: boolean = false; // Flag variable
   files: any[] = []; // Variable to store fill
-
   images : string[] = [];
-
   //For uploading
   messages: string[] = [];
   imageInfos?: Observable<any>;
   uploadProgress = 0;
   uploadProgressBar = 'width:0%;height:20px';
   focusType: string = '47';
-
   newProductCategories: Category[] = [];
   attributesFields: any[] = [];
   saveAttrBtnText = "Save and Continue";
   attrCount: number;
   disableSaveAttrBtn = false;
-
   activeTabIndex = 0;
-
   nextBtn = false;
   prevBtn = false;
   doneBtn = false;
-
   savedFiles: any[] = [];
   storageUrl: string;
-
   skuPattern = "^[a-zA-Z0-9_-]{4,12}$";
   
   constructor(public navbar: NavbarService, private api: ApiService, private formBuilder : FormBuilder, private _snackBar: MatSnackBar, public info: InfoService) {}
@@ -179,9 +170,8 @@ export class NewProductComponent implements OnInit {
     });
   }
 
-  saveCategories(options: MatListOption[]) {
-    const vals = options.map(selected => selected.value);
-    console.log("Vals,", vals);
+  saveCategories() {
+    const vals = this.selectedCategories;
     if (vals.length > 0) {
       for(let i=0; i < vals.length; i++) {
         this.api.POST('product-categories', {
@@ -431,6 +421,16 @@ export class NewProductComponent implements OnInit {
 
   checkSku(e: any) {
     
+  }
+
+  checkedItem (v: any) {
+    const i = this.selectedCategories.indexOf(v);
+    if(i < 0) {
+      this.selectedCategories.push(v);
+    } else {
+      this.selectedCategories.splice(i, 1);
+    }
+    console.log(this.selectedCategories);
   }
 
 }

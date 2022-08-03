@@ -41,6 +41,8 @@ export class CategoriesComponent implements OnInit {
   hasParent = false;
   roles: any[] = [];
   permission = false;
+  tempLength = 0;
+
   constructor(
     public navbar: NavbarService, 
     private api: ApiService, 
@@ -57,15 +59,15 @@ export class CategoriesComponent implements OnInit {
     this.permission = this.info.role(60);
     this.addCategory = this.formBuilder.group({
       name : ['', Validators.required],
-      parent : ['0'],
+      parent : [{value: '', disabled: true}, Validators],
     });
     this.updateCategory = this.formBuilder.group({
       name : ['', Validators.required],
-      parent : [''],
+      parent : [{value: '', disabled: true}],
     });
     this.categoryForm = this.formBuilder.group({
       attributes: this.formBuilder.array([])
-    })
+    });
   }
 
   /**
@@ -130,22 +132,27 @@ export class CategoriesComponent implements OnInit {
    * @param action - Can be 'New' or 'Update' 
    */
   updateAttributes(action: string): void {
-    this.disableSaveAttrBtn = true;
-    this.disableAddAttrBtn = true;
-    this.goToCategoriesBtn = true;
-    this.saveAttrBtnText = "Saving...";
-    //let formObj = this.categoryForm.getRawValue();
-    let formObj = this.categoryForm.value.attributes;
-    let catId = (action == 'new') ? this.newCategoryId : this.selectedCatId;
-    this.api.POST(`categories/update/${catId}`, formObj).subscribe({
-      next:(res)=> {
-        this.saveAttrBtnText = "Attributes Saved";
-        this.openSnackBar(this.attrCount + ' attributes added', 'Okay');
-        this.getAllCategories();
-      }, error:(res)=> {
-        this.openSnackBar(res.message, 'Okay');
-      }
-    });
+    if (this.attributes.valid) {
+      this.disableSaveAttrBtn = true;
+      this.disableAddAttrBtn = true;
+      this.goToCategoriesBtn = true;
+      this.saveAttrBtnText = "Saving...";
+      //let formObj = this.categoryForm.getRawValue();
+      let formObj = this.categoryForm.value.attributes;
+      let catId = (action == 'new') ? this.newCategoryId : this.selectedCatId;
+      this.api.POST(`categories/update/${catId}`, formObj).subscribe({
+        next:(res)=> {
+          this.saveAttrBtnText = "Attributes Saved";
+          this.openSnackBar(this.attrCount + ' attributes added', 'Okay');
+          this.getAllCategories();
+        }, error:(res)=> {
+          this.openSnackBar(res.message, 'Okay');
+        }
+      });
+    } else {
+      this.openSnackBar('Please enter value', 'Okay');
+    }
+    
   }
 
   /**
@@ -156,6 +163,7 @@ export class CategoriesComponent implements OnInit {
   selectCategory(i: any): void {
     this.clearSelectedCat();
     console.log("Selected: " + JSON.parse(i));
+    console.log(this.attributes);
     try {
       let obj = this.categoriesList.find(x => x.id === i);
       console.log("Category : ", obj);
@@ -191,12 +199,12 @@ export class CategoriesComponent implements OnInit {
       this.selectedCatParentName = obj?.name!;
       this.updateCategory = this.formBuilder.group({
         name : [this.selectedCatName, Validators.required],
-        parent : [this.selectedCatParentName],
+        parent : [{value: this.selectedCatParentName, disabled: true}],
       });
     } else  {
       this.updateCategory = this.formBuilder.group({
         name : [this.selectedCatName, Validators.required],
-        parent : [''],
+        parent : [{value: '', disabled: true}],
       });
     }
   }
@@ -230,8 +238,17 @@ export class CategoriesComponent implements OnInit {
   /**
    * @todo Reloads page.
    */
-  refresh(): void {
+  refresh (): void {
     location.reload();
+  }
+
+  /**
+   * @todo Hides parent attribute fields
+   */
+  hasValue () {
+    if (this.tempLength == 0) {
+      this.tempLength = this.attributes.value.length;
+    }
   }
 
 }

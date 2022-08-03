@@ -421,4 +421,6 @@ export class SingleProductComponent implements OnInit {
     }
     return p;
   }
+
+
 }

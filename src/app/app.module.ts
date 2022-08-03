@@ -37,7 +37,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { TokenInterceptorService } from './services/interceptor/token-interceptor.service';
 import { ProfileComponent } from './profile/profile.component';
-import { ExportComponent } from './export/export.component';
+import { ExportComponent } from './products/export/export.component';
 
 @NgModule({
   declarations: [

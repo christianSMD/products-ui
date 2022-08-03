@@ -48,25 +48,65 @@
             </div>
           </form>
         </mat-tab>
-        <mat-tab disabled label="2. Select Categories">
+        <mat-tab label="2. Select Categories">
           <div class="mt-5 custom-tab" style="overflow: hidden !important;">
             <form>
               <div class="row form-border">
                 <div class="col-md-6" style="background-color: rgb(241, 241, 241);">
                   
-                  <mat-selection-list #categories required>
+                  <!-- <mat-selection-list #categories required>
                     <mat-spinner color="accent" [diameter]="30" *ngIf="categoriesLoader == true" class="m-4"></mat-spinner>
                       <mat-list-option *ngFor="let category of categoriesList" [value]="category.id">
                         {{category.name}}
                       </mat-list-option>
-                    </mat-selection-list>
-                  <mat-divider></mat-divider>
+                  </mat-selection-list> -->
+
+                  <section class="categories-section">
+                    <ul>
+                      <li class="categories-list" *ngFor="let category of categoriesList | parent: '0'" >
+                        <span>
+                          <mat-checkbox (click)="checkedItem(category.id)">{{ category.name }}</mat-checkbox>
+                        </span>
+                        <span>
+                          <ul>
+                            <li class="categories-list" *ngFor="let child_1 of categoriesList | parent: category.id">
+                              <mat-checkbox (click)="checkedItem(child_1.id)">{{ child_1.name }}</mat-checkbox>
+                              <ul>
+                                <li class="categories-list" *ngFor="let child_2 of categoriesList | parent: child_1.id">
+                                  <mat-checkbox (click)="checkedItem(child_2.id)">{{ child_2.name }}</mat-checkbox>
+                                  <ul>
+                                    <li class="categories-list" *ngFor="let child_3 of categoriesList | parent: child_2.id">
+                                      <mat-checkbox (click)="checkedItem(child_3.id)">{{ child_3.name }}</mat-checkbox>
+                                      <ul>
+                                        <li class="categories-list" *ngFor="let child_4 of categoriesList | parent: child_3.id">
+                                          <mat-checkbox (click)="checkedItem(child_4.id)">{{ child_4.name }}</mat-checkbox>
+                                          <ul>
+                                            <li class="categories-list" *ngFor="let child_5 of categoriesList | parent: child_4.id">
+                                              <mat-checkbox (click)="checkedItem(child_5.id)">{{ child_5.name }}</mat-checkbox>
+                                              <ul>
+                                                <li class="categories-list" *ngFor="let child_6 of categoriesList | parent: child_5.id">
+                                                  <mat-checkbox (click)="checkedItem(child_6.id)">{{ child_6.name }}</mat-checkbox>
+                                                </li>
+                                              </ul>
+                                            </li>
+                                          </ul>
+                                        </li>
+                                      </ul>
+                                    </li>
+                                  </ul>
+                                </li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </span>
+                      </li>
+                    </ul>   
+                  </section>
+
                 </div>
                 <div class="col-md-6">
-                  <strong> Categories selected: {{categories.selectedOptions.selected.length}}</strong>
-                  <hr>
                   <div *ngIf="newProductId!=0">
-                    <button mat-raised-button type="submit" color="primary" (click)="saveCategories(categories.selectedOptions.selected)">Save Categories</button>
+                    <button mat-raised-button type="submit" color="primary" (click)="saveCategories()">Save Categories</button>
                   </div>
                   <div *ngIf="newProductId==0">
                     <p><mat-icon>warning</mat-icon> Please save product first.</p>

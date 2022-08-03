@@ -132,7 +132,7 @@
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <div class="row">
                 <div class="col-md-4">
-                  <div *ngFor="uploadRole">
+                  <div *ngIf="uploadRole">
                     <select class="form-control" (change)="setFocusType($event)">
                       <option *ngFor="let type of typesList | typeGroup : 'File'" value="{{ type.id }}">{{ type.name }}</option>
                     </select><br>
@@ -158,7 +158,9 @@
                 </div>
                 <div class="col-md-8">
                   <ul>
-                    <li *ngFor="let file of savedFiles">{{file.name}}</li>
+                    <li *ngFor="let file of savedFiles" style="list-style: none;">
+                      <div *ngIf="file.type_id == 53 || file.type_id == 54 || file.type_id == 55">📑 {{ file.name }}</div>
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -168,7 +170,7 @@
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <div class="row">   
                 <div class="col-md-3">
-                  <div cdkDropList class="file-list" (cdkDropListDropped)="drop($event)">
+                  <div cdkDropList class="file-list" (cdkDropListDropped)="drop($event)" *ngIf="savedFiles.length > 0">
                     <div class="file-box" *ngFor="let file of savedFiles; let i = index">
                       <div class="row" cdkDrag>
                         <div class="col-md-4">

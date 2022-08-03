@@ -10,9 +10,9 @@ import { Category } from 'src/app/interfaces/category';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { CdkTableExporterModule } from 'cdk-table-exporter';
 import { InfoService } from 'src/app/services/info/info.service';
-import { NavbarService } from '../services/navbar/navbar.service';
-import { SidenavService } from '../services/sidenav/sidenav.service';
-import { TreeService } from '../services/tree/tree.service';
+import { NavbarService } from '../../services/navbar/navbar.service';
+import { SidenavService } from '../../services/sidenav/sidenav.service';
+import { TreeService } from '../../services/tree/tree.service';
 
 @Component({
   selector: 'app-export',
