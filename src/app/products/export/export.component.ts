@@ -94,7 +94,7 @@ export class ExportComponent extends CdkTableExporterModule implements OnInit{
   }
 
   ngOnInit(): void {
-    
+    console.log("EXPORT");
     if(this.loggedIn) {
       this.topNav.show();
       this.sideNav.show();

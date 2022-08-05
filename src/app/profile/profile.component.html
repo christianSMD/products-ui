@@ -1,73 +1,84 @@
-<p>Profile / 
-    <span> {{ (user) ? user.name + ' ' + user.surname : '...'}}</span>
-</p>
+<p>👤 Profile / <span> {{ (user) ? user.name + ' ' + user.surname : '...' }}</span></p>
+<p>{{ notFound }}</p>
 <div *ngIf="user" class="row">
     <div class="col-md-9">
         <mat-card>
-            <h3>{{ (user) ? user.name +"'s": '...'}} Details</h3>
+            <h3>{{ (user) ? user.name +"'s": '...'}} Details
+                <span style="color: rgb(11, 235, 11); font-size: smaller;" *ngIf="isActive">
+                    ✔active
+                </span>
+                <span style="color: orange; font-size: smaller;" *ngIf="!isActive">
+                    ✖inctive
+                </span>
+            </h3>
             <mat-divider></mat-divider>
-            <form [formGroup]="userForm">
-                
+            
+            <form [formGroup]="userForm">           
                 <div class="row" style="margin-top: 2rem;">
-                    <div class="col-md-6">
-                        <mat-form-field appearance="outline" style="width: 90%;">
+                    <div class="col-md-4">
+                        <mat-form-field appearance="outline" style="width: 100%;">
                             <mat-label>Name</mat-label>
                             <input #name matInput formControlName="name" placeholder="User's Name">
                             <mat-icon matSuffix>person</mat-icon>
                         </mat-form-field>
                     </div>
-                    <div class="col-md-6">
-                        <mat-form-field appearance="outline" style="width: 90%;">
+                    <div class="col-md-4">
+                        <mat-form-field appearance="outline" style="width: 100%;">
                             <mat-label>Surname</mat-label>
                             <input #surname matInput formControlName="surname" placeholder="User's Surname">
                             <mat-icon matSuffix>person</mat-icon>
                         </mat-form-field>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <mat-form-field appearance="outline" style="width: 90%;">
+                    <div class="col-md-4">
+                        <mat-form-field appearance="outline" style="width: 100%;">
                             <mat-label>Email</mat-label>
                             <input #email matInput formControlName="email" [disabled]="(id)?true:false">
                             <mat-icon matSuffix>email</mat-icon>
                         </mat-form-field>
                     </div>
-                    <div class="col-md-6">
-                        <mat-form-field appearance="outline" style="width: 90%;">
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <mat-form-field appearance="outline" style="width: 100%;">
                             <mat-label>ID</mat-label>
                             <input #id matInput formControlName="id" [disabled]="(id)?true:false">
                             <mat-icon matSuffix>key</mat-icon>
                         </mat-form-field>
                     </div>
-                </div>
-                <mat-divider></mat-divider>
-                <div class="row" style="margin-top: 2rem;">
-                    <h3>Account: 
-                        <span style="color: green;" *ngIf="isActive">
-                            ✅ <i>active</i>
-                        </span>
-                        <span style="color: orange;" *ngIf="!isActive">
-                            ⛔ <li>inctive</li>
-                        </span>
-                    </h3>
-                    <div class="col-md-6" *ngIf="authRole">
+                    
+                    <div class="col-md-4">
                         <mat-form-field appearance="outline" style="width: 100%;">
-                            <mat-label>Change Status: </mat-label>
-                            <mat-select #is_active formControlName="is_active" (selectionChange)="account($event)">
-                                <mat-option value="1">Active</mat-option>
-                                <mat-option value="2">Inactive</mat-option>
-                            </mat-select>
+                            <mat-label>Created</mat-label>
+                            <input #id matInput formControlName="created_at" readonly>
+                            <mat-icon matSuffix>calendar_month</mat-icon>
                         </mat-form-field>
+                    </div>
+                    <div class="col-md-4">
+                        <mat-form-field appearance="outline" style="width: 100%;">
+                            <mat-label>Updated</mat-label>
+                            <input #id matInput formControlName="updated_at" readonly>
+                            <mat-icon matSuffix>calendar_month</mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-12">
+                        <div *ngIf="authRole">
+                            <mat-form-field appearance="outline" style="width: 15%;">
+                                <mat-label>Change Account Status </mat-label>
+                                <mat-select #is_active formControlName="is_active" (selectionChange)="account($event)">
+                                    <mat-option value="1">Active</mat-option>
+                                    <mat-option value="0">Inactive</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
                         <button type="submit" mat-raised-button color="primary" (click)="update()">Update</button>
                     </div>
                 </div>
-                
             </form>
         </mat-card>
     </div>
     <div class="col-md-3">
         <mat-card>
-            <h2>User Roles</h2>
+            <h3>User Roles🎖</h3>
             <mat-divider></mat-divider>
             <div *ngIf="authRole" class="row" style="margin-top: 2rem;">
                 <div class="col-md-12">
@@ -112,8 +123,6 @@
                     </div>
                 </div>
             </div>
-
-
         </mat-card>
     </div>
 </div>

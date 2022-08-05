@@ -34,10 +34,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatSelectModule } from '@angular/material/select';
 import { TokenInterceptorService } from './services/interceptor/token-interceptor.service';
 import { ProfileComponent } from './profile/profile.component';
-import { ExportComponent } from './products/export/export.component';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -49,7 +49,6 @@ import { ExportComponent } from './products/export/export.component';
     ParentPipe,
     UsersComponent,
     ProfileComponent,
-    ExportComponent
   ],
   imports: [
     BrowserModule,
@@ -81,7 +80,8 @@ import { ExportComponent } from './products/export/export.component';
     MatProgressBarModule,
     MatSortModule,
     MatSnackBarModule,
-    MatSelectModule
+    MatSelectModule,
+    MatTooltipModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true },

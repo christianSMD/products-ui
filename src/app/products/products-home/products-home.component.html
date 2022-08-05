@@ -19,7 +19,7 @@
 </button>
 
 <div class="row">
-  <div class="col-md-8 mt-3">
+  <div class="col-md-12 mt-3">
     <mat-form-field appearance="legacy" color="primary" style="width: 30%;">
       <mat-label>Search</mat-label>
       <input matInput (keyup)="applyFilter($event)" placeholder="Search for sku, mame, brand, description etc" #input>
@@ -28,37 +28,60 @@
     <div class="mat-elevation-z8">
       <mat-progress-bar color="accent" *ngIf="productsLoader == true" mode="indeterminate"></mat-progress-bar>
       <table matTableExporter mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)" #exporter="matTableExporter">
-        <!-- ID Column -->
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
           <td mat-cell *matCellDef="let row"> {{row.id}} </td>
         </ng-container>
-        <!-- SKU Column -->
         <ng-container matColumnDef="sku">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> SKU </th>
-          <td mat-cell *matCellDef="let row"> {{row.sku}} </td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> 🗝 SKU </th>
+          <td mat-cell *matCellDef="let row"> 🗝 {{row.sku}} </td>
         </ng-container>
-        <!-- Name Column -->
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
           <td mat-cell *matCellDef="let row"> {{row.name}} </td>
         </ng-container>
-        <!-- Brand Column -->
         <ng-container matColumnDef="brand">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Brand </th>
           <td mat-cell *matCellDef="let row"> {{ getBrandName(row.brand_type_id) }} </td>
         </ng-container>
-        <!-- Description Column -->
         <ng-container matColumnDef="description">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
-          <td mat-cell *matCellDef="let row"> {{row.short_description}} </td>
+          <td mat-cell *matCellDef="let row"> {{ row.short_description }} </td>
         </ng-container>
-        <!-- View Column -->
+        <ng-container matColumnDef="is_active">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Active </th>
+          <td mat-cell *matCellDef="let row">
+            <span *ngIf="row.is_active == 1" (click)="iconClick(row.sku + ' is active')"><mat-icon color="primary">check_circle</mat-icon></span>
+            <span *ngIf="row.is_active == 0" (click)="iconClick('Nothing here')"><mat-icon class="inactive">radio_button_unchecked</mat-icon></span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="is_in_development">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> In Development </th>
+          <td mat-cell *matCellDef="let row">
+            <span *ngIf="row.is_in_development == 1" (click)="iconClick(row.sku + ' is in development')"><mat-icon color="accent">check_circle</mat-icon></span>
+            <span *ngIf="row.is_in_development == 0" (click)="iconClick('Nothing here')"><mat-icon class="inactive">radio_button_unchecked</mat-icon></span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="is_eol">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> EOL </th>
+          <td mat-cell *matCellDef="let row">
+            <span *ngIf="row.is_eol == 1" (click)="iconClick(row.sku + ' is in end of life')"><mat-icon color="warn">check_circle</mat-icon></span>
+            <span *ngIf="row.is_eol == 0" (click)="iconClick('Nothing here')"><mat-icon class="inactive">radio_button_unchecked</mat-icon></span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="updated_at">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Updated </th>
+          <td mat-cell *matCellDef="let row"> 🕔 {{ row.updated_at | date:'short' }} </td>
+        </ng-container>
+        <ng-container matColumnDef="created_at">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Created </th>
+          <td mat-cell *matCellDef="let row"> 🕔 {{ row.created_at | date:'short' }} </td>
+        </ng-container>
         <ng-container matColumnDef="view">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>  </th>
           <td mat-cell *matCellDef="let row">
-            <button mat-stroked-button routerLink="{{row.sku}}" style="background-color: rgb(245, 245, 245); font-size: smaller;color: rgb(155, 155, 155);">
-              Details
+            <button mat-mini-fab matTooltip="View product details" color="basic" routerLink="{{row.sku}}" aria-label="Product details">
+              👁
             </button>
           </td>
         </ng-container>
@@ -72,7 +95,7 @@
       <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of products"></mat-paginator>
     </div>
   </div>
-  <div class="col-md-4"></div>
+  <div class="col-md-12"></div>
 </div>
 
 </div>

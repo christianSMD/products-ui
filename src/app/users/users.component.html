@@ -8,7 +8,7 @@
 
 
 <div class="row">
-  <div class="col-md-8">
+  <div class="col-sm-12 col-md-5">
     <mat-form-field appearance="legacy" color="primary">
       <mat-label>Search</mat-label>
       <input matInput (keyup)="applyFilter($event)" placeholder="Search for mame, surname, email etc" #input>
@@ -20,7 +20,7 @@
         <!-- ID Column -->
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-          <td mat-cell *matCellDef="let row"> {{row.id}} </td>
+          <td mat-cell *matCellDef="let row"> 🔑 {{row.id}} </td>
         </ng-container>
         <!-- Name Column -->
         <ng-container matColumnDef="name">
@@ -37,16 +37,18 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
           <td mat-cell *matCellDef="let row"> {{ row.email }} </td>
         </ng-container>
-        <!-- created_at Column -->
-        <ng-container matColumnDef="created_at">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Created </th>
-          <td mat-cell *matCellDef="let row"> {{row.created_at}} </td>
+        <ng-container matColumnDef="is_active">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Account Status </th>
+          <td mat-cell *matCellDef="let row">
+            <span *ngIf="row.is_active == 1">🔵 Active</span>
+            <span *ngIf="row.is_active == 0">🔴 Inactive</span>
+          </td>
         </ng-container>
         <ng-container matColumnDef="view">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>  </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> User </th>
           <td mat-cell *matCellDef="let row">
-            <button mat-stroked-button routerLink="/profile/{{row.id}}" style="background-color: rgb(245, 245, 245); font-size: smaller;color: rgb(155, 155, 155);">
-              Details
+            <button mat-mini-fab matTooltip="More about {{row.name}}" color="basic" routerLink="/profile/{{row.id}}" aria-label="User details">
+              👤
             </button>
           </td>
         </ng-container>
@@ -57,8 +59,62 @@
           <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
         </tr>
       </table>
-      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+      <mat-paginator [pageSizeOptions]="[10, 25, 100]" aria-label="Select page of users"></mat-paginator>
     </div>
   </div>
-  <div class="col-md-4"></div>
+
+  <div class="col-sm-12 col-md-7">
+    <mat-form-field appearance="legacy" color="primary">
+      <mat-label>Search Action</mat-label>
+      <input matInput (keyup)="applyFilter2($event)" placeholder="Search for mame, product etc" #input>
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+    <div>
+      <mat-progress-bar color="accent" *ngIf="usersLoader == true" mode="indeterminate"></mat-progress-bar>
+      <table matTableExporter mat-table [dataSource]="dataSource2" matSort (matSortChange)="announceSortChange($event)" #exporter="matTableExporter" style="background-color: rgb(255, 255, 239);">
+        <ng-container matColumnDef="user_id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> User </th>
+          <td mat-cell *matCellDef="let row"> {{ userName(row.user_id) }} </td>
+        </ng-container>
+        <ng-container matColumnDef="activity">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+          <td mat-cell *matCellDef="let row"> 📝 {{row.activity}} </td>
+        </ng-container>
+        <ng-container matColumnDef="product_id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> ProductID </th>
+          <td mat-cell *matCellDef="let row">
+            <span *ngIf="row.product_id == 0">-</span> 
+            <span *ngIf="row.product_id != 0">{{ row.product_id }}</span> 
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Date </th>
+          <td mat-cell *matCellDef="let row"> 🕔 {{ row.created_at | date:'short' }} </td>
+        </ng-container>
+        <ng-container matColumnDef="product">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> View Details</th>
+          <td mat-cell *matCellDef="let row">
+            <button *ngIf="row.product_id > 0" mat-stroked-button (click)="goToProduct(row.product_id)" style="background-color: rgb(245, 245, 245); font-size: smaller;color: rgb(155, 155, 155);">
+              📦 Product
+            </button>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="user">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> User </th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-mini-fab matTooltip="Info about {{userName(row.user_id)}}" color="basic" routerLink="/profile/{{row.user_id}}" aria-label="User details">
+              👤
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
+        <!-- Row shown when there is no matching data. -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
+        </tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of activities"></mat-paginator>
+    </div>
+  </div>
 </div>

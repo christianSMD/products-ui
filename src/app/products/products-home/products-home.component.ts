@@ -26,13 +26,12 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   categoriesList: Category[] = [];
   typesList: Type[] = [];
   packagingList: any[] = [];
-  displayedColumns: string[] = ['id', 'sku', 'name', 'brand', 'description','view'];
+  displayedColumns: string[] = ['id', 'sku', 'name', 'brand', 'description', 'is_active', 'is_in_development', 'is_eol', 'updated_at', 'created_at', 'view'];
   dataSource: MatTableDataSource<Product>;
   productsLoader = false;
   loggedIn = false;
   addProductRole = false;
   addCategoryRole = false;
-
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -122,7 +121,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   }
 
   openSnackBar(message: string, action: string) {
-    this._snackBar.open(message, action);
+    this._snackBar.open(message, action, { duration: 2000 });
   }
 
   announceSortChange(sortState: Sort) {
@@ -159,6 +158,10 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
       return true;
     }
     return false;
+  }
+
+  iconClick(s: string): void {
+    this.openSnackBar(s, '😉');
   }
 
 }

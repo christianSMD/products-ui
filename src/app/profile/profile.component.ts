@@ -29,6 +29,7 @@ export class ProfileComponent implements OnInit {
   rolesForm !: FormGroup
   isActive = false;
   authRole: boolean = false;
+  notFound: string = '';
 
   constructor(
     public navbar: NavbarService, 
@@ -58,22 +59,28 @@ export class ProfileComponent implements OnInit {
   }
 
   getUserDetails(): void {
-    console.log('Fetching: ', this.id);
     this.loader = true;
     this.api.GET(`users/${this.id}`).subscribe({
-      next:(res)=>{
-        this.user = res;
-        this.userForm = this.formBuilder.group({
-          name: [this.user.name, Validators.required],
-          surname: [this.user.surname, Validators.required],
-          email: [{value: this.user.email, disabled: true}],
-          id: [{value: this.user.id, disabled: true}],
-          is_active: [this.user.is_active, Validators.required],
-        });
-        this.isActive = (this.user.is_active == 1) ? true : false; 
-        this.getUserRoles();
-        this.loader = false;
-      }, error:(res)=>{
+      next:(res) => {
+        if (res) {
+          this.notFound = ""; 
+          this.user = res;
+          this.userForm = this.formBuilder.group({
+            name: [this.user.name, Validators.required],
+            surname: [this.user.surname, Validators.required],
+            email: [{value: this.user.email, disabled: true}],
+            id: [{value: this.user.id, disabled: true}],
+            is_active: [this.user.is_active],
+            created_at: [{value: this.user.created_at, disabled: true}],
+            updated_at: [{value: this.user.updated_at, disabled: true}],
+          });
+          this.isActive = (this.user.is_active == 1) ? true : false; 
+          this.getUserRoles();
+          this.loader = false;
+        } else {
+          this.notFound = "🤷‍♂️ User not found.";
+        }
+      }, error:(res) => {
         console.log(res);
       }
     });
@@ -130,6 +137,7 @@ export class ProfileComponent implements OnInit {
             console.log(res);
             this.addBtnText = "Add Role";
             this.openSnackBar('Role added', 'Okay');
+            this.info.activity(`Added new role to ${this.user.name}`, 0);
             this.getUserRoles();
           }, error:(res)=> {
             this.openSnackBar(res.message, 'Okay');
@@ -139,7 +147,6 @@ export class ProfileComponent implements OnInit {
         this.openSnackBar('🤷‍♂️ Role already added.', 'Okay');
       }
     }
-    
   }
 
   removeRole(id: number): void {
@@ -150,6 +157,7 @@ export class ProfileComponent implements OnInit {
         this.getUserRoles();
         this.roleName('');
         this.deleting = false;
+        this.info.activity(`Removed role from ${this.user.name}`, 0);
       }, error:(res)=>{
         console.log(res);
       }
@@ -177,6 +185,7 @@ export class ProfileComponent implements OnInit {
       next:(res)=>{
         console.log(res);
         this.getUserDetails();
+        this.info.activity(`Updated ${this.user.name}'s details`, 0);
       }, error:(res)=>{
         console.log(res);
       }

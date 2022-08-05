@@ -94,6 +94,7 @@ export class CategoriesComponent implements OnInit {
           this.newCategoryName = res.name;
           this.disableAddAttrBtn = false;
           this.disableSaveAttrBtn = false;
+          this.info.activity(`Added a new category: ${res.name}`, 0);
           this.saveCatBtnText = "Category Saved";
           this.getAllCategories();
           this.openSnackBar(res.name + ' Added', 'Okay');
@@ -113,7 +114,7 @@ export class CategoriesComponent implements OnInit {
     return this.categoryForm.get('attributes') as FormArray
   }
 
-  addNewAttribute() {
+  addNewAttribute(): void {
     const attrs = this.formBuilder.group({
       attrName: [],
       // attrValue: []
@@ -122,7 +123,7 @@ export class CategoriesComponent implements OnInit {
     this.attrCount = this.attrCount + 1;
   }
 
-  removeNewAttribute(i: number) {
+  removeNewAttribute(i: number): void {
     this.attributes.removeAt(i);
     this.attrCount = this.attrCount - 1;
   }
@@ -144,6 +145,7 @@ export class CategoriesComponent implements OnInit {
         next:(res)=> {
           this.saveAttrBtnText = "Attributes Saved";
           this.openSnackBar(this.attrCount + ' attributes added', 'Okay');
+          this.info.activity(`Updated attributes for category: ${catId}`, 0);
           this.getAllCategories();
         }, error:(res)=> {
           this.openSnackBar(res.message, 'Okay');
@@ -162,21 +164,16 @@ export class CategoriesComponent implements OnInit {
    */
   selectCategory(i: any): void {
     this.clearSelectedCat();
-    console.log("Selected: " + JSON.parse(i));
     console.log(this.attributes);
     try {
       let obj = this.categoriesList.find(x => x.id === i);
-      console.log("Category : ", obj);
       let fields = obj?.attributes;
       fields = JSON.parse(fields);
-      console.log("fields", fields);
       this.attributesFields = fields;
       this.selectedCatId = obj?.id as number; //or use Non-null Assertion Operator like so: obj?.id!
       this.selectedCatName = obj?.name!;
       this.selectedCatParentId = obj?.parent!;
-
       this.getParent(parseInt(this.selectedCatParentId));
-      
       for (let x = 0; x < this.attributesFields.length; x++) {
         const attrs = this.formBuilder.group({
           attrName: [this.attributesFields[x].attrName]
@@ -193,7 +190,7 @@ export class CategoriesComponent implements OnInit {
    * @description For displaying category Name and it parent's Name on the edit details form
    * @param parentId 
    */
-  getParent(parentId: number) {
+  getParent(parentId: number): void {
     if (parentId > 0) {
       let obj = this.categoriesList.find(x => x.id === parentId);
       this.selectedCatParentName = obj?.name!;
@@ -209,7 +206,7 @@ export class CategoriesComponent implements OnInit {
     }
   }
 
-  openSnackBar(message: string, action: string) {
+  openSnackBar(message: string, action: string): void {
     this._snackBar.open(message, action);
   }
 

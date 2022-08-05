@@ -35,6 +35,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatBadgeModule } from '@angular/material/badge';
+import { ExportComponent } from './export/export.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 
 @NgModule({
@@ -45,7 +47,8 @@ import { MatBadgeModule } from '@angular/material/badge';
     CategoriesComponent,
     ProductsHomeComponent,
     TypesPipe,
-    CategoriesPipe
+    CategoriesPipe,
+    ExportComponent
   ],
   imports: [
     CommonModule,
@@ -77,7 +80,9 @@ import { MatBadgeModule } from '@angular/material/badge';
     MatToolbarModule,
     DragDropModule,
     MatGridListModule,
-    MatBadgeModule
+    MatBadgeModule,
+    MatCheckboxModule,
+    MatTooltipModule
   ]
 })
 export class ProductsModule { }

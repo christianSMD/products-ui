@@ -143,8 +143,6 @@ export class NewProductComponent implements OnInit {
     this.categoriesLoader = true;
     this.api.GET('types').subscribe({
       next:(res)=>{
-        console.log('Types: ');
-        console.log(res);
         this.typesLoader = false;
         this.typesList = res;
       }, error:(res)=>{
@@ -155,13 +153,14 @@ export class NewProductComponent implements OnInit {
 
   saveProduct() {
     this.api.POST('products', this.newProductForm.value).subscribe({
-      next:(res)=>{
+      next:(res) => {
         this.newProductId = res.id;
         this.newProductSKU = res.sku;
         this.newProductName = res.name;
         this.newProductFormPackaging.patchValue({
           product_id: res.id,
         });
+        this.info.activity('Added new product', this.newProductId);
         this.openSnackBar(res.name + ' Added 😃', 'Okay');
         this.nextTab();
       }, error:(res)=>{
@@ -200,7 +199,6 @@ export class NewProductComponent implements OnInit {
     this.disableSaveAttrBtn = true;
     this.saveAttrBtnText = "Saving...";
     let formObj = this.newProductFormAttributes.getRawValue();
-    console.log('Raw attr: ', formObj);
     this.api.POST(`products/update-attributes/${this.newProductId}`, formObj).subscribe({
       next:(res)=> {
         console.log(res);
@@ -229,7 +227,6 @@ export class NewProductComponent implements OnInit {
     id=id-1;
     return this.typesList[id].name;
   }
-
 
   // On file Select
   onChange(event: any) {
@@ -268,6 +265,7 @@ export class NewProductComponent implements OnInit {
             } else if (event instanceof HttpResponse) {
               const msg = this.files[x].name + ' ploaded the file successfully.';
               this.messages.push(msg);
+              this.info.activity(`Added ${this.files.length} files`, this.newProductId);
             } 
             this.getFiles();
           }, (err: any) => {
@@ -299,12 +297,8 @@ export class NewProductComponent implements OnInit {
   getProductCategories(): void {
     this.api.GET(`product-categories/search/${this.newProductId}`).subscribe({
       next:(res)=>{
-        console.log('res: ', res);
         for (let x = 0; x < res.length; x++) {
           let attributes = JSON.parse(res[x].attributes);
-          console.log("for " + res[x].name, attributes);
-          console.log(res[x].name + " has " + attributes.length);
-
           for (let y = 0; y < attributes.length; y++) {
             const i = this.attributes.value.findIndex((object: any) => object.attrName === attributes[y].attrName);
             if (i === -1) {
@@ -315,10 +309,8 @@ export class NewProductComponent implements OnInit {
               this.attributes.push(attrs);
               this.attrCount = this.attrCount + 1;
             }
-            
           }
         }
-        console.log("this.attributes", this.attributes);
       }, error:(res)=> {
         console.log(res);
       }
@@ -334,7 +326,6 @@ export class NewProductComponent implements OnInit {
     const tabCount = 6;
     this.activeTabIndex = (this.activeTabIndex + 1) % tabCount;
     this.doneBtn = (this.activeTabIndex > 4) ? true : false;
-    console.log('Tab: ', this.activeTabIndex);
     if (this.activeTabIndex == 2) {
       this.nextBtn = false;
     }
@@ -353,7 +344,6 @@ export class NewProductComponent implements OnInit {
     this.api.GET(`product-files/${this.newProductId}`).subscribe({
       next:(res)=>{
         this.savedFiles = res;
-        console.log("Unortered files", this.savedFiles);
         this.getProductImageOrder();
       }, error:(res)=> {
         console.log(res);
@@ -368,7 +358,6 @@ export class NewProductComponent implements OnInit {
    getProductImageOrder(): void {
     this.api.GET(`image-order/search/${this.newProductId}`).subscribe({
       next:(res)=>{
-        console.log("Order length", res.length);
         if(res.length > 0) {
           const imgOrder = JSON.parse(res[0].order_list);
           let orderedImages: any[] = [];
@@ -395,6 +384,7 @@ export class NewProductComponent implements OnInit {
     this.api.POST(`image-order/`, { product_id: this.newProductId, order_list: data }).subscribe({
       next:(res)=>{
         console.log(res);
+        this.info.activity('Rearranged images', this.newProductId);
       }, error:(res)=>{
         console.log(res);
       }
@@ -403,12 +393,10 @@ export class NewProductComponent implements OnInit {
   }
 
   updateFileType(fileId: number, fileTypeId: number) {
-
-    console.log('fileType: ' + fileTypeId);
-    console.log('fileId: ' + fileId);
     this.api.POST(`product-files/update-fileType/${fileId}`, { type_id: fileTypeId }).subscribe({
       next:(res)=>{
         console.log(res);
+        this.info.activity('Updated file type', this.newProductId);
       }, error:(res)=>{
         console.log(res);
       }
@@ -432,5 +420,4 @@ export class NewProductComponent implements OnInit {
     }
     console.log(this.selectedCategories);
   }
-
 }

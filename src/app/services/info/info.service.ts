@@ -86,6 +86,20 @@ export class InfoService {
     return false;
   }
 
+  public activity (activity: string, product_id: number): void {
+    this.api.POST('activity', {
+      activity: activity,
+      user_id: this.getUserId(),
+      product_id: product_id
+    }).subscribe({
+      next:(res)=>{
+         console.log(res);
+      }, error:(res)=>{
+        console.log(res);
+      }
+    });
+  }
+
   /**
    * @returns true or false
    * @todo Checks if user's email is set

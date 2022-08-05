@@ -8,10 +8,9 @@ table {
 }
 
 .mat-column-id {
-    width: 20px;
+    width: 25px;
     border-right: 1px solid rgba(255, 134, 53, 0.76);
-    margin-right: 10px;
-    text-align: center;
+    margin-right: 12px;
 }
 
 .mat-column-sku {
@@ -38,4 +37,8 @@ table {
 
 .mat-column-description {
     width: 30rem;
+}
+
+.inactive {
+    color: rgb(206, 206, 206);
 }
