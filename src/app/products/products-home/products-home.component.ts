@@ -14,6 +14,7 @@ import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { CdkTableExporterModule } from 'cdk-table-exporter';
 import { InfoService } from 'src/app/services/info/info.service';
 import { Router } from '@angular/router';
+import { BlockUI, NgBlockUI } from 'ng-block-ui';
 
 @Component({
   selector: 'app-products-home',
@@ -34,6 +35,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   addCategoryRole = false;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @BlockUI() blockUI: NgBlockUI;
 
   constructor(
     public navbar: NavbarService, 
@@ -56,17 +58,12 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
 
     this.info.isRefreshed();
 
-    if(this.loggedIn) {
-      this.topNav.show();
-      this.sideNav.show();
-      this.treeNav.hide();
-      this.getAllProducts();
-      this.getAllTypes();
-      this.addProductRole = this.info.role(61);
-      this.addCategoryRole = this.info.role(60);
+    console.log(Date.now());
+
+    if(localStorage.getItem('blockui') == 'yes') {
+      this.blockUI.start(`${this.info.greeting()} ${this.info.getUserName()}!`);
     } else {
-      if (localStorage.getItem('logged_in_user_email')) {
-        this.loggedIn = true;
+      if(this.loggedIn) {
         this.topNav.show();
         this.sideNav.show();
         this.treeNav.hide();
@@ -75,10 +72,22 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
         this.addProductRole = this.info.role(61);
         this.addCategoryRole = this.info.role(60);
       } else {
-        this.router.navigate(['login']);
+        if (localStorage.getItem('logged_in_user_email')) {
+          this.loggedIn = true;
+          this.topNav.show();
+          this.sideNav.show();
+          this.treeNav.hide();
+          this.getAllProducts();
+          this.getAllTypes();
+          this.addProductRole = this.info.role(61);
+          this.addCategoryRole = this.info.role(60);
+        } else {
+          this.router.navigate(['login']);
+        }
+        
       }
-      
     }
+
     this.info.auth();
     console.log('isUserLoggedIn:', this.loggedIn);
   }
@@ -106,6 +115,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   }
 
   getAllProducts() {
+    this.blockUI.start('Loading products..');
     this.productsLoader = true;
     this.api.GET('products').subscribe({
       next:(res)=>{
@@ -115,6 +125,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
         this.dataSource = new MatTableDataSource(this.productsList);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
+        this.blockUI.stop();
       }, error:(res)=>{
         this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
       }

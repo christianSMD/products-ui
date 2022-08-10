@@ -38,6 +38,7 @@ import { TokenInterceptorService } from './services/interceptor/token-intercepto
 import { ProfileComponent } from './profile/profile.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { BlockUIModule  } from 'ng-block-ui';
 
 @NgModule({
   declarations: [
@@ -81,7 +82,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatSortModule,
     MatSnackBarModule,
     MatSelectModule,
-    MatTooltipModule
+    MatTooltipModule,
+    BlockUIModule.forRoot(),
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true },

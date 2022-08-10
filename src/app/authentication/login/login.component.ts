@@ -52,6 +52,7 @@ export class LoginComponent implements OnInit {
             localStorage.setItem('logged_in_user_id', res.user.id);
             localStorage.setItem('user_token', res.token);
             localStorage.setItem('refreshed', 'no');
+            localStorage.setItem('blockui', 'yes');
             this.info.role(0); // Trigger local storage for permissions
             this.router.navigate(['/']);
           } else {

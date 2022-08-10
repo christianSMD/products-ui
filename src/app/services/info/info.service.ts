@@ -14,9 +14,10 @@ interface Role {
 })
 export class InfoService {
 
-  public title = "SMD Technologies (development)";
+  public title = "SMD Technologies";
   public userValue: User;
   public isUserLoggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
 
   constructor(public api: ApiService) { }
 
@@ -129,8 +130,24 @@ export class InfoService {
   public isRefreshed(): void {
     if (localStorage.getItem('refreshed') == 'no') {
       localStorage.setItem('refreshed', 'yes');
-      location.reload();
+      setTimeout(function () { 
+        localStorage.setItem('blockui', 'no');
+        location.reload();
+      }, 3000)
     }
   }
 
+  /**
+   * This is to get the current time
+   */
+  public greeting() {
+    const time = new Date().getHours();
+    if (time < 10) {
+      return "Good morning";
+    } else if (time < 20) {
+      return "Good day";
+    } else {
+      return "Good evening";
+    }
+  }
 }
