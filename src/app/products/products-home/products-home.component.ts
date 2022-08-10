@@ -53,8 +53,9 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   }
 
   ngOnInit(): void {
-    console.log('products-home ngOnInit()');
-    console.log('Direct Local Storage', localStorage.getItem('logged_in_user_email'));
+
+    this.info.isRefreshed();
+
     if(this.loggedIn) {
       this.topNav.show();
       this.sideNav.show();

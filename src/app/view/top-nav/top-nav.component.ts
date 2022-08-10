@@ -18,6 +18,7 @@ export class TopNavComponent implements OnInit {
 
   title: string;
   userEmail: string;
+  userName: string;
 
   constructor(
     public nav: NavbarService, 
@@ -30,6 +31,7 @@ export class TopNavComponent implements OnInit {
   ngOnInit(): void {
     this.title = this.info.getTitle();
     this.userEmail = <string>this.info.getUserEmail();
+    this.userName = <string>this.info.getUserName();
   }
 
   logout() {

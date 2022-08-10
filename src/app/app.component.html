@@ -1,4 +1,4 @@
-<div id="wrapper" style="height: 100% !important;">
+<div id="wrapper">
     <div id="content">
         <!-- Page -->
         <mat-drawer-container class="main-container" autosize>
@@ -12,7 +12,6 @@
             <!-- Top navbar -->
             <app-top-nav></app-top-nav>
             <!-- /Top navbar -->
-
             <!-- content -->
             <div class="content-area">
                 <div class="sidebar-toggler">
@@ -26,10 +25,12 @@
                 <!--  Router content -->
                 <div class="router-content">
                     <router-outlet></router-outlet> 
+                    <button class="home animate pop"  mat-fab aria-label="home" color="accent" routerLink="/" >
+                        <mat-icon>home</mat-icon>
+                    </button>
                 </div>
             </div>
             <!-- /content -->
-
             <!-- /Wrapper-->
         </mat-drawer-container>
         <!-- /Page -->

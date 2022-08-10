@@ -63,6 +63,7 @@ export class NewProductComponent implements OnInit {
   savedFiles: any[] = [];
   storageUrl: string;
   skuPattern = "^[a-zA-Z0-9_-]{4,12}$";
+  invalidSku = true
   
   constructor(public navbar: NavbarService, private api: ApiService, private formBuilder : FormBuilder, private _snackBar: MatSnackBar, public info: InfoService) {}
 
@@ -407,8 +408,9 @@ export class NewProductComponent implements OnInit {
     return p.substring(7);
   }
 
-  checkSku(e: any) {
-    
+  checkSku(x: any) {
+    let status  = this.newProductForm.get('sku')?.status;
+    this.invalidSku = (status?.toLocaleLowerCase() == 'invalid') ? true : false;
   }
 
   checkedItem (v: any) {

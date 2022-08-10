@@ -51,6 +51,7 @@ export class LoginComponent implements OnInit {
             localStorage.setItem('logged_in_user_name', res.user.name);
             localStorage.setItem('logged_in_user_id', res.user.id);
             localStorage.setItem('user_token', res.token);
+            localStorage.setItem('refreshed', 'no');
             this.info.role(0); // Trigger local storage for permissions
             this.router.navigate(['/']);
           } else {
@@ -69,6 +70,10 @@ export class LoginComponent implements OnInit {
 
   openSnackBar(message: string, action: string) {
     this._snackBar.open(message, action);
+  }
+
+  particles () {
+    
   }
 
 }

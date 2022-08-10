@@ -20,23 +20,22 @@
             <span>Logout</span>
         </button>
     </mat-menu> -->
-    <!-- <span *ngIf="userEmail" style="font-size: 14px;">{{ userEmail }} </span> -->
-    <button  mat-mini-fab aria-label="home" routerLink="/" (click)="returnEmail()">
-        <mat-icon>home</mat-icon>
-    </button>
-    <button mat-mini-fab [matMenuTriggerFor]="menu" aria-label="profule" (click)="returnEmail()">
+    <span *ngIf="userEmail" style="font-size: 14px;">{{ userName }} </span>
+    
+    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="profule" (click)="returnEmail()">
         <mat-icon>person_pin</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
         <button mat-menu-item (click)="openProfile()">
             <mat-icon>person</mat-icon>
-            <span>{{userEmail}}</span>
+            <span>My Account</span>
         </button>
         <button mat-menu-item (click)="logout()">
             <mat-icon>lock_person</mat-icon>
             <span>Logout</span>
         </button>
     </mat-menu>
+    
 
 </mat-toolbar>
   

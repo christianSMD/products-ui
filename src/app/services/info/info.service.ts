@@ -14,7 +14,7 @@ interface Role {
 })
 export class InfoService {
 
-  public title = "SMD Technologies";
+  public title = "SMD Technologies (development)";
   public userValue: User;
   public isUserLoggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
@@ -124,6 +124,13 @@ export class InfoService {
    */
   public loginUrl() {
     return this.api.domainUrl;
+  }
+
+  public isRefreshed(): void {
+    if (localStorage.getItem('refreshed') == 'no') {
+      localStorage.setItem('refreshed', 'yes');
+      location.reload();
+    }
   }
 
 }
