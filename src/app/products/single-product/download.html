@@ -1,0 +1,9 @@
+<h1 mat-dialog-title>Hi</h1>
+<div mat-dialog-content>
+  <p>Donwload {{ data.storageUrl + data.downloadLink }}</p>
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button color="warn" (click)="onNoClick()">Cancel</button>
+  <a href="{{ data.storageUrl + data.downloadLink }}" download>ok</a>
+</div>
+                  
