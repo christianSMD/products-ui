@@ -21,18 +21,21 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
   templateUrl: './products-home.component.html',
   styleUrls: ['./products-home.component.scss']
 })
-export class ProductsHomeComponent extends CdkTableExporterModule implements OnInit{
+export class ProductsHomeComponent extends CdkTableExporterModule implements OnInit {
 
   productsList: Product[] = [];
   categoriesList: Category[] = [];
   typesList: Type[] = [];
   packagingList: any[] = [];
-  displayedColumns: string[] = ['id', 'sku', 'name', 'brand', 'description', 'is_active', 'is_in_development', 'is_eol', 'updated_at', 'created_at', 'view'];
+  displayedColumns: string[] = ['id', 'thumbnail', 'sku', 'name', 'brand', 'description', 'is_active', 'is_in_development', 'is_eol', 'updated_at', 'created_at', 'view'];
   dataSource: MatTableDataSource<Product>;
   productsLoader = false;
   loggedIn = false;
   addProductRole = false;
   addCategoryRole = false;
+  viewAllProductsRole = false;
+  storageUrl: string;
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @BlockUI() blockUI: NgBlockUI;
@@ -56,14 +59,19 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
 
   ngOnInit(): void {
 
+    window.scroll({ 
+      top: 0, 
+      left: 0, 
+      behavior: 'smooth' 
+    });
+    
     this.info.isRefreshed();
-
     console.log(Date.now());
-
     if(localStorage.getItem('blockui') == 'yes') {
       this.blockUI.start(`${this.info.greeting()} ${this.info.getUserName()}!`);
     } else {
       if(this.loggedIn) {
+        this.viewAllProductsRole = this.info.role(68);
         this.topNav.show();
         this.sideNav.show();
         this.treeNav.hide();
@@ -71,8 +79,10 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
         this.getAllTypes();
         this.addProductRole = this.info.role(61);
         this.addCategoryRole = this.info.role(60);
+        this.storageUrl = this.api.getStorageUrl();
       } else {
         if (localStorage.getItem('logged_in_user_email')) {
+          this.viewAllProductsRole = this.info.role(68);
           this.loggedIn = true;
           this.topNav.show();
           this.sideNav.show();
@@ -81,11 +91,12 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
           this.getAllTypes();
           this.addProductRole = this.info.role(61);
           this.addCategoryRole = this.info.role(60);
+          
         } else {
           this.router.navigate(['login']);
         }
-        
       }
+      console.log('On inint Role: ' + this.viewAllProductsRole);
     }
 
     this.info.auth();
@@ -115,9 +126,15 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   }
 
   getAllProducts() {
+    let url: string = 'products-verified';
+    if (this.viewAllProductsRole) {
+      url = 'products';
+    }
+    console.log('Role: ' + this.viewAllProductsRole);
+    console.log('Url: ' + url);
     this.blockUI.start('Loading products..');
     this.productsLoader = true;
-    this.api.GET('products').subscribe({
+    this.api.GET(url).subscribe({
       next:(res)=>{
         console.log(res);
         this.productsLoader = false;
@@ -174,6 +191,10 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
 
   iconClick(s: string): void {
     this.openSnackBar(s, '😉');
+  }
+
+  filePath(p: string) {
+    return p.substring(7);
   }
 
 }

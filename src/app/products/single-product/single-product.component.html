@@ -7,51 +7,110 @@
   <p>
     <a routerLink="/">Products </a> / Product Details / {{ productName }}
   </p>
+
   <div class="row" >
-    <div class="col-md-10">
+    <div class="col-md-12">
       <mat-card>
         <mat-tab-group>
           <mat-tab label="General Details">
-            <form [formGroup]="productForm">
-              <div class="mt-5" style="overflow: hidden !important;">
-                <div class="row">
-                  <div class="col-md-6">
-                    <mat-form-field appearance="outline" style="width: 90%;">
-                      <mat-label>SKU</mat-label>
-                      <input #sku matInput formControlName="sku" placeholder="Enter Product SKU">
-                      <mat-icon matSuffix>qr_code_2</mat-icon>
-                    </mat-form-field>
-                    <mat-form-field appearance="outline" style="width: 90%;">
-                      <mat-label>Product Name</mat-label>
-                      <input #name matInput formControlName="name" placeholder="Enter Product Name">
-                      <mat-icon matSuffix>create</mat-icon>
-                    </mat-form-field>
-                    <mat-form-field appearance="outline" style="width: 90%;">
-                      <mat-label>Product Brand</mat-label>
-                      <mat-select #brand matInput formControlName="brand_type_id">
-                        <mat-option *ngFor="let type of typesList | typeGroup : 'Brand'" value="{{ type.id }}">{{ type.name }}</mat-option>
-                      </mat-select>
-                    </mat-form-field>
-                    <mat-form-field style="width: 90%;" appearance="outline">
-                      <mat-label>Short Description</mat-label>
-                      <textarea #short_description rows="7" matInput formControlName="short_description" placeholder="Enter short product description"></textarea>
-                    </mat-form-field>
-                    <mat-form-field style="width: 90%;" appearance="outline">
-                      <mat-label>Description</mat-label>
-                      <textarea #description rows="15" matInput formControlName="description" placeholder="Enter product description..."></textarea>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-md-6">
-                    <mat-checkbox #is_in_development formControlName="is_in_development">Is In Development</mat-checkbox><br>
-                    <mat-checkbox #is_eol formControlName="is_eol">Is EOL</mat-checkbox><br>
-                    <mat-checkbox #is_active formControlName="is_active">Is Active</mat-checkbox><hr>
-                    <button mat-raised-button  [disabled]="!productForm.dirty" *ngIf="editRole" type="submit" color="primary" (click)="updateProduct()">Save Changes</button>
+              <form [formGroup]="productForm">
+                <div class="mt-5" style="overflow: hidden !important;">
+                  <div class="row">
+                    <div class="col-md-6 scrollable-div">
+                      <mat-form-field appearance="outline" style="width: 90%;">
+                        <mat-label>SKU</mat-label>
+                        <input #sku matInput formControlName="sku" placeholder="Enter Product SKU">
+                        <mat-icon matSuffix>qr_code_2</mat-icon>
+                      </mat-form-field>
+                      <mat-form-field appearance="outline" style="width: 90%;">
+                        <mat-label>Product Name</mat-label>
+                        <input #name matInput formControlName="name" placeholder="Enter Product Name">
+                        <mat-icon matSuffix>create</mat-icon>
+                      </mat-form-field>
+                      <mat-form-field appearance="outline" style="width: 90%;">
+                        <mat-label>Product Brand</mat-label>
+                        <mat-select #brand matInput formControlName="brand_type_id">
+                          <mat-option *ngFor="let type of typesList | typeGroup : 'Brand'" value="{{ type.id }}">{{ type.name }}</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                      <mat-form-field style="width: 90%;" appearance="outline">
+                        <mat-label>Short Description</mat-label>
+                        <textarea #short_description rows="7" matInput formControlName="short_description" placeholder="Enter short product description"></textarea>
+                      </mat-form-field>
+                      <mat-form-field style="width: 90%;" appearance="outline">
+                        <mat-label>Description</mat-label>
+                        <textarea #description rows="15" matInput formControlName="description" placeholder="Enter product description..."></textarea>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-md-6">
+                      <mat-checkbox #is_in_development formControlName="is_in_development">Is In Development</mat-checkbox><br>
+                      <mat-checkbox #is_eol formControlName="is_eol">Is EOL</mat-checkbox><br>
+                      <mat-checkbox #is_active formControlName="is_active">Is Active</mat-checkbox><hr>
+                      <mat-checkbox #verified formControlName="verified">Verified</mat-checkbox><hr>
+                      <button mat-raised-button  [disabled]="!productForm.dirty" *ngIf="editRole" type="submit" color="primary" (click)="updateProduct()">Save Changes</button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </form>
+              </form>
+            
           </mat-tab>
-          <mat-tab label="Product Attributes">
+          <mat-tab label="Categories">
+            <div class="mt-5 custom-tab" style="overflow: hidden !important;">
+              <form>
+                <div class="row form-border">
+                  <div class="col-md-6" style="background-color: rgb(241, 241, 241);">
+
+                    <section class="categories-section">
+                      <ul>
+                        <li class="categories-list" *ngFor="let category of categoriesList | parent: '0'" >
+                          <span>
+                            <mat-checkbox (click)="checkedItem(category.id)" [checked]="testing(category.name)">{{ category.name }}</mat-checkbox>
+                          </span>
+                          <span>
+                            <ul>
+                              <li class="categories-list" *ngFor="let child_1 of categoriesList | parent: category.id">
+                                <mat-checkbox (click)="checkedItem(child_1.id)" [checked]="testing(child_1.name)">{{ child_1.name }}</mat-checkbox>
+                                <ul>
+                                  <li class="categories-list" *ngFor="let child_2 of categoriesList | parent: child_1.id">
+                                    <mat-checkbox (click)="checkedItem(child_2.id)" [checked]="testing(child_2.name)">{{ child_2.name }}</mat-checkbox>
+                                    <ul>
+                                      <li class="categories-list" *ngFor="let child_3 of categoriesList | parent: child_2.id">
+                                        <mat-checkbox (click)="checkedItem(child_3.id)" [checked]="testing(child_3.name)">{{ child_3.name }}</mat-checkbox>
+                                        <ul>
+                                          <li class="categories-list" *ngFor="let child_4 of categoriesList | parent: child_3.id">
+                                            <mat-checkbox (click)="checkedItem(child_4.id)" [checked]="testing(child_4.name)">{{ child_4.name }}</mat-checkbox>
+                                            <ul>
+                                              <li class="categories-list" *ngFor="let child_5 of categoriesList | parent: child_4.id">
+                                                <mat-checkbox (click)="checkedItem(child_5.id)" [checked]="testing(child_5.name)">{{ child_5.name }}</mat-checkbox>
+                                                <ul>
+                                                  <li class="categories-list" *ngFor="let child_6 of categoriesList | parent: child_5.id">
+                                                    <mat-checkbox (click)="checkedItem(child_6.id)" [checked]="testing(child_6.name)">{{ child_6.name }}</mat-checkbox>
+                                                  </li>
+                                                </ul>
+                                              </li>
+                                            </ul>
+                                          </li>
+                                        </ul>
+                                      </li>
+                                    </ul>
+                                  </li>
+                                </ul>
+                              </li>
+                            </ul>
+                          </span>
+                        </li>
+                      </ul>   
+                    </section>
+  
+                  </div>
+                  <div class="col-md-6">
+                    <button mat-raised-button type="submit" color="primary" (click)="saveCategories()">Save Categories</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </mat-tab>
+          <mat-tab label="Attributes">
             <div class="mt-5 custom-tab form-border" style="overflow: hidden !important;">
               <form [formGroup]="productFormAttributes">
                 <ng-container formArrayName="attributes">
@@ -61,7 +120,7 @@
                               <mat-grid-tile>
                                   <mat-form-field appearance="outline" style="width: 100%;">
                                       <!-- <mat-label>Attribute Name</mat-label> -->
-                                      <input matInput id="attrName" type="text" formControlName="attrName" placeholder="Enter Value" required readonly>
+                                      <input matInput id="attrName" type="text" formControlName="attrName" placeholder="Enter Value" required>
                                   </mat-form-field>
                               </mat-grid-tile>
                               <mat-grid-tile>
@@ -77,10 +136,10 @@
                       </div>
                   </ng-container>
                 </ng-container>
-                <!-- <button mat-raised-button type="button" color="accent" (click)="addNewAttribute()" style="margin-left: 1rem;">
+                <button mat-raised-button type="button" color="accent" (click)="addNewAttribute()" style="margin-left: 1rem;">
                   <mat-icon>add_circle_outline</mat-icon>
                   Add Attribute
-                </button> -->
+                </button>
                 <button mat-raised-button type="submit" *ngIf="editRole" [disabled]="!productFormAttributes.dirty" color="primary" (click)="updateAttributes()" style="margin-left: 1rem;">{{saveAttrBtnText}}</button>
               </form>
             </div>
@@ -137,7 +196,7 @@
                       <option *ngFor="let type of typesList | typeGroup : 'File'" value="{{ type.id }}">{{ type.name }}</option>
                     </select><br>
                     <input class="form-control" type="file" (change)="onChange($event)" multiple><br>
-                    <button mat-raised-button color="primary" (click)="onUpload('55')">Upload File</button>
+                    <button mat-raised-button color="primary" (click)="onUpload('55', 'document')">Upload File</button>
                     <hr>
                     <div class="container" *ngIf="loading">
                       <h3>Loading ...</h3>
@@ -166,6 +225,7 @@
               </div>
             </div>
           </mat-tab>
+          <mat-tab label="Briefing Files"></mat-tab>
           <mat-tab label="Media">
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <div class="row">   
@@ -178,7 +238,7 @@
                             <mat-chip color="accent" *ngIf="i == 0" selected>Primary</mat-chip>
                           </mat-chip-list>
                           <span matBadge="{{i+1}}" *ngIf="i > 0" matBadgeOverlap="false" matBadgeColor="accent"></span>
-                          <img class="sort-img" alt="{{ file.path }}" src="{{ storageUrl + filePath(file.path) }}"  width="304" height="236">
+                          <img class="sort-img" alt="{{ file.path }}" src="{{ storageUrl + filePath(file.path) }}">
                         </div>
                         <div class="col-md-8">
                           <mat-form-field appearance="outline" style="width: 90%;">
@@ -194,8 +254,28 @@
                 </div>
                 <div class="col-md-9">
                   <div class="row">
-                    <div class="col-md-2" *ngFor="let file of savedFiles">
-                      <img *ngIf="file.type_id != 55" class="tile-img" alt="{{ file.path }}" src="{{ storageUrl + filePath(file.path) }}"  width="140" height="160">
+                    <div class="col-md-3" *ngFor="let file of savedFiles">
+
+                      <mat-card style="max-width: 280px; margin-bottom: 2rem; background-color: rgb(254, 254, 254);" *ngIf="file.type_id != 55">
+                        <mat-card-header>
+                          <!-- <mat-card-title>{{ file.name }}</mat-card-title> -->
+                          <mat-card-subtitle>{{ returnTypeName(file.type_id) }}</mat-card-subtitle>
+                        </mat-card-header>
+                        <div style="height: 120px; width: 130px; overflow: hidden;">
+                          <img mat-card-image src="{{ storageUrl + filePath(file.path) }}" alt="Photo">
+                        </div>
+                        
+                        <mat-card-content>
+                          <mat-chip-list aria-label="Fish selection">
+                            <mat-chip *ngFor="let type of typesList | typeGroup : 'Image Type'"  (click)="download(type.name, type.id, file)">{{ type.name }}</mat-chip>
+                          </mat-chip-list>
+                        </mat-card-content>
+                        <mat-card-actions class="img-action">
+                          <button mat-mini-fab color="basic" (click)="hideFile(file.id)"><mat-icon>hide_image</mat-icon></button>&nbsp;
+                          <button mat-mini-fab color="basic" (click)="deleteFile(file.id)"><mat-icon>delete</mat-icon></button>
+                        </mat-card-actions>
+                        
+                      </mat-card>
                     </div>
                   </div>
                 </div>
@@ -205,7 +285,7 @@
               <div *ngIf="uploadRole" class="row">
                 <div class="col-md-4 form-border">
                   <input class="form-control" type="file" (change)="onChange($event)" multiple><br>
-                  <button mat-raised-button color="primary" (click)="onUpload('47')">Upload Media</button>
+                  <button mat-raised-button color="primary" (click)="onUpload('47', 'image')">Upload Media</button>
                 </div>
                 <div class="col-md-8">
                   <div class="container" *ngIf="loading">
@@ -233,12 +313,39 @@
 
             </mat-card>
           </mat-tab>
-    
+          <mat-tab label="Image Server">
+            
+            <div class="mt-5 custom-tab" style="overflow: hidden !important;">
+
+              <div class="row">
+                <div class="col-md-3" *ngFor="let number of [0,1,2,3,4,5]; let index = index">
+
+                  <mat-card style="max-width: 280px; margin-bottom: 2rem; background-color: rgb(254, 254, 254);">
+             {{number}}
+                    <div style="height: 120px; width: 130px; overflow: hidden;">
+                      <img mat-card-image src="https://images.smdtechnologies.co.za/api/store/{{productSku}}/{{number}}" alt="Photo">
+                    </div>
+
+                    <mat-card-content>
+                      <mat-chip-list aria-label="Fish selection">
+                        <mat-chip *ngFor="let type of typesList | typeGroup : 'Image Type'" >{{ type.name }}</mat-chip>
+                      </mat-chip-list>
+                    </mat-card-content>
+                    <mat-card-actions class="img-action">
+                    </mat-card-actions>
+                    
+                  </mat-card>
+                </div>
+              </div>
+
+            </div>
+          </mat-tab>
         </mat-tab-group>
       </mat-card>
       
     </div>
-    <div class="col-md-2">
+    <div class="col-md-12">
+
       <!-- <div class="text-muted">
         <mat-card>
           <mat-card-content>

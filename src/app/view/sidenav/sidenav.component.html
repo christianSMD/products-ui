@@ -38,6 +38,11 @@
                     <span>Manage Users</span>
                 </button>
             </mat-menu>
+            <mat-divider></mat-divider>
+            <mat-list-option class="menu-item" routerLink="admin/settings" *ngIf="settingsRole">
+                <mat-icon matListIcon>settings_suggest</mat-icon>
+                <h3>Settings</h3>
+            </mat-list-option>
         </mat-selection-list>
     </div>
     <!-- <form class="search" [formGroup]="searchForm">

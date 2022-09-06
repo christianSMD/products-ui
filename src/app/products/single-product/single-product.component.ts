@@ -1,5 +1,5 @@
 import { HttpEventType, HttpResponse } from '@angular/common/http';
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params, Router } from '@angular/router';
@@ -14,6 +14,24 @@ import { ThemePalette } from '@angular/material/core';
 import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
 import { InfoService } from 'src/app/services/info/info.service';
 
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { ValueConverter } from '@angular/compiler/src/render3/view/template';
+
+@Component({
+  selector: 'download-dialog',
+  templateUrl: 'download.html',
+})
+export class DownloadDialog {
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    public dialogRef: MatDialogRef<DownloadDialog>,
+  ) {}
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+}
+
 @Component({
   selector: 'app-single-product',
   templateUrl: './single-product.component.html',
@@ -26,6 +44,7 @@ export class SingleProductComponent implements OnInit {
   productsLoader = false;
   id: string;
   sku: string
+  productSku: string;
   product: any;
   files: any[] = []
   savedFiles: any[] = [];
@@ -55,9 +74,15 @@ export class SingleProductComponent implements OnInit {
   progressColor: ThemePalette = 'primary';
   progressMode: ProgressSpinnerMode = 'determinate';
   storageUrl: string;
-
   editRole: boolean = false;
   uploadRole: boolean = false;
+  viewAllProductsRole: boolean = false;
+  verified: boolean = false;
+
+  categoriesList: Category[] = [];
+  selectedCategories: any[] = [];
+  categoriesLoader = false;
+  catFromProductTbl: any[] = [];
 
   constructor(public navbar: NavbarService,
     public treeNav: TreeService,
@@ -66,20 +91,31 @@ export class SingleProductComponent implements OnInit {
     private route: ActivatedRoute, 
     private router: Router,
     private formBuilder : FormBuilder,
-    private info: InfoService
+    private info: InfoService,
+    public dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
+
+    window.scroll({ 
+      top: 0, 
+      left: 0, 
+      behavior: 'smooth' 
+    });
+
     this.editRole = this.info.role(56);
     this.uploadRole = this.info.role(57);
+    this.viewAllProductsRole = this.info.role(68);
     this.storageUrl = this.api.getStorageUrl();
     this.navbar.show();
     this.treeNav.hide();
     this.route.params.subscribe((params: Params) => {
       this.sku = params['sku'];
+      this.productSku = this.sku;
     });
     this.getDetails(this.sku);
     this.getAllTypes();
+    this.getAllCategories();
 
     this.productForm = this.formBuilder.group({
       sku : ['0', Validators.required],
@@ -90,7 +126,8 @@ export class SingleProductComponent implements OnInit {
       parent_id : ['0'],
       is_eol : [0, Validators.required],
       is_in_development : [0, Validators.required],
-      is_active: [0, Validators.required]
+      is_active: [0, Validators.required],
+      verified: [0, Validators.required]
     });
 
     this.productFormPackaging = this.formBuilder.group({
@@ -121,8 +158,21 @@ export class SingleProductComponent implements OnInit {
     return this.productFormAttributes.get('attributes') as FormArray
   }
 
+  getAllCategories() {
+    this.categoriesLoader = true;
+    this.api.GET('categories').subscribe({
+      next:(res)=>{
+        console.log("Categories List: ", res);
+        this.categoriesLoader = false;
+        this.categoriesList = res;
+      }, error:(res)=>{
+        this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
+      }
+    });
+  }
+
+
   getDetails(sku: string): void {
-    console.log('Details for ', sku);
     this.productsLoader = true;
     this.api.GET(`products/${sku}`).subscribe({
       next:(res)=>{
@@ -132,22 +182,43 @@ export class SingleProductComponent implements OnInit {
           this.product = res[0];
           this.productName = this.product.name;
           this.id = this.product.id;
-          const attributes = JSON.parse(this.product.attributes);
-          
-          if(attributes?.attributes) {
-            this.productAttributes = attributes.attributes;
-            for (let index = 0; index < attributes.attributes.length; index++) {
-              const attrs = this.formBuilder.group({
-                attrName: [this.productAttributes[index].attrName, Validators.required],
-                attrValue: [this.productAttributes[index].attrValue, Validators.required]
-              })
-              this.attributes.push(attrs);
-            }
-            if (this.attributes.length > 0) {
-              this.detailProgress++;
-            }
-          }
+          this.catFromProductTbl = JSON.parse(this.product.categories);
+          try {
+            const attributes = JSON.parse(this.product.attributes);
+            if(attributes?.attributes) {
+              this.productAttributes = attributes.attributes;
+              for (let index = 0; index < attributes.attributes.length; index++) {
+                const attrs = this.formBuilder.group({
+                  attrName: [this.productAttributes[index].attrName, Validators.required],
+                  attrValue: [this.productAttributes[index].attrValue, Validators.required]
+                })
+                this.attributes.push(attrs);
+              }
+              if (this.attributes.length > 0) {
+                this.detailProgress++;
+              }
+            } else {
 
+              console.log("different attr format");
+              let obj: any[] = [];
+              obj = JSON.parse(this.product.attributes);
+
+              for (let index = 0; index < obj.length; index++) {
+                const keys = Object.keys(obj[index]);
+                const key = keys[0];
+                const val = obj[index][key];
+                const attrs = this.formBuilder.group({
+                  attrName: [key, Validators.required],
+                  attrValue: [val, Validators.required]
+                })
+                this.attributes.push(attrs);
+              }
+            }
+          } catch (error) {
+            console.log("Attributes issue");
+          }
+          
+          
           this.productForm = this.formBuilder.group({
             sku : [{value: this.product.sku, disabled: true}, Validators.required],
             name : [this.product.name, Validators.required],
@@ -156,7 +227,8 @@ export class SingleProductComponent implements OnInit {
             short_description : [this.product.short_description, Validators.required],
             is_in_development: [this.product.is_in_development],
             is_active: [this.product.is_active],
-            is_eol: [this.product.is_eol]
+            is_eol: [this.product.is_eol],
+            verified: [this.product.verified]
           });
           this.getPackaging(this.id);
           this.getFiles();
@@ -176,6 +248,7 @@ export class SingleProductComponent implements OnInit {
     this.api.GET(`product-categories/search/${this.id}`).subscribe({
       next:(res)=>{
         this.productCategories = res;
+        console.log('Product categories for : ' + this.id, res);
         if (res.length > 0) {
           this.detailProgress++;
           for (let x = 0; x < res.length; x++) {
@@ -191,7 +264,7 @@ export class SingleProductComponent implements OnInit {
                 this.attrCount = this.attrCount + 1;
               }
             }
-          }
+          } 
         }
       }, error:(res)=> {
         console.log(res);
@@ -199,10 +272,6 @@ export class SingleProductComponent implements OnInit {
     });
   }
 
-  removeNewAttribute(i: number): void {
-    this.attributes.removeAt(i);
-    this.attrCount = this.attrCount - 1;
-  }
 
   getAllTypes(): void {
     this.api.GET('types').subscribe({
@@ -249,9 +318,9 @@ export class SingleProductComponent implements OnInit {
     }
   }
 
-  onUpload(fileTypeId: string): void {
+  onUpload(fileTypeId: string, type: String): void {
     this.loading = !this.loading;
-    console.log('Files being uploaded: ', this.files.length);
+
     if (this.files.length > 0) {
       for(let x = 0; x < this.files.length; x ++) {
         this.api.upload('uploading-file-api', {
@@ -259,7 +328,8 @@ export class SingleProductComponent implements OnInit {
           name: this.files[x].name,
           product_id: this.product.id,
           product_sku: this.product.sku,
-          type_id: fileTypeId
+          type_id: fileTypeId,
+          type: type
         }).subscribe(
           (event: any) => {
             if (typeof (event) === 'object') {
@@ -417,11 +487,142 @@ export class SingleProductComponent implements OnInit {
     });
   }
 
+  deleteFile(id: number): void {
+    this.api.GET(`files/delete/${this.id}`).subscribe({
+      next:(res)=>{
+        if(res.length > 0) {
+          console.log("delete: ", res);
+        }
+      }, error:(res)=> {
+        console.log(res);
+      }
+    });
+  }
+
+  hideFile(id: number): void {
+    this.api.GET(`files/delete/${this.id}`).subscribe({
+      next:(res)=>{
+        if(res.length > 0) {
+          console.log("delete: ", res);
+          console.log('This is for hiding the file or image from the view on the ui');
+        }
+      }, error:(res)=> {
+        console.log(res);
+      }
+    });
+  }
+
   progressPercentage() {
     const p = (this.detailProgress / 4) * 100;
     if (p > 100) {
       return 100;
     }
     return p;
+  }
+
+  download(f: string, id: number, file: File): void {
+    let path = file.path;
+    this.api.POST('download-file-api', {
+      product_id: this.product.id,
+      product_sku: this.product.sku,
+      original_type_id: file.type_id,
+      original_path: path.replace("public/", "storage/"),
+      new_type_id: id
+    }).subscribe({
+      next:(res)=> {
+        this.openDialog(res[0].path, this.storageUrl);
+      }, error:(res)=> {
+        console.log(res);
+        this.openSnackBar(res.message, 'Okay');
+      }
+      
+    });
+  }
+
+  forceDownload(url: string, fileName: string){
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", this.storageUrl + url, true);
+    xhr.responseType = "blob";
+    xhr.onload = function(){
+        var urlCreator = window.URL || window.webkitURL;
+        var imageUrl = urlCreator.createObjectURL(this.response);
+        var tag = document.createElement('a');
+        tag.href = imageUrl;
+        tag.download = fileName;
+        document.body.appendChild(tag);
+        tag.click();
+        document.body.removeChild(tag);
+    }
+    xhr.send();
+}
+
+  openDialog(link: string, storage: string): void {
+    const dialogRef = this.dialog.open(DownloadDialog, {
+      width: '250px',
+      data: {
+        downloadLink: link.replace("public/", ""),
+        storageUrl: storage,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
+
+  addNewAttribute(): void {
+    const attrs = this.formBuilder.group({
+      attrName: [],
+      attrValue: []
+    })
+    this.attributes.push(attrs);
+    this.attrCount = this.attrCount + 1;
+  }
+
+  removeNewAttribute(i: number): void {
+    this.attributes.removeAt(i);
+    this.attrCount = this.attrCount - 1;
+  }
+
+  testing (c: string) {
+    // Check categories on the UI that are available on the Products Categories List this.productCategories
+    
+    const obj = this.catFromProductTbl.find(x => x.name == c);
+    for (let index = 0; index < this.catFromProductTbl.length; index++) {
+      if(c == this.catFromProductTbl[index]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  checkedItem (v: any) {
+    const i = this.selectedCategories.indexOf(v);
+    if(i < 0) {
+      this.selectedCategories.push(v);
+    } else {
+      this.selectedCategories.splice(i, 1);
+    }
+    console.log(this.selectedCategories);
+  }
+
+  saveCategories() {
+    const vals = this.selectedCategories;
+    if (vals.length > 0) {
+      for(let i=0; i < vals.length; i++) {
+        this.api.POST('product-categories', {
+          product_id: this.id,
+          category_id: vals[i]
+        }).subscribe({
+          next:(res)=>{
+            this.getProductCategories();
+            this.openSnackBar('Category Added 😃', 'Okay');
+          }, error:(res)=>{
+            this.openSnackBar('😢 ' + res.message, 'Okay');
+          }
+        })
+      }
+    }
+    this.openSnackBar('Please choose categories', 'Okay');
   }
 }

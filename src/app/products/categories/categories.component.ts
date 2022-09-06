@@ -59,11 +59,11 @@ export class CategoriesComponent implements OnInit {
     this.permission = this.info.role(60);
     this.addCategory = this.formBuilder.group({
       name : ['', Validators.required],
-      parent : [{value: '', disabled: true}, Validators],
+      parent : [''],
     });
     this.updateCategory = this.formBuilder.group({
-      name : ['', Validators.required],
-      parent : [{value: '', disabled: true}],
+      name : [''],
+      parent : [''],
     });
     this.categoryForm = this.formBuilder.group({
       attributes: this.formBuilder.array([])
@@ -76,6 +76,7 @@ export class CategoriesComponent implements OnInit {
   getAllCategories(): void {
     this.api.GET('categories').subscribe({
       next:(res)=>{
+        console.log('cats', res);
         this.categoriesList = res;
       }, error:(res)=>{
         alert(res);
@@ -196,12 +197,12 @@ export class CategoriesComponent implements OnInit {
       this.selectedCatParentName = obj?.name!;
       this.updateCategory = this.formBuilder.group({
         name : [this.selectedCatName, Validators.required],
-        parent : [{value: this.selectedCatParentName, disabled: true}],
+        parent : [{value: this.selectedCatParentName, disabled: false}],
       });
     } else  {
       this.updateCategory = this.formBuilder.group({
         name : [this.selectedCatName, Validators.required],
-        parent : [{value: '', disabled: true}],
+        parent : [{value: '', disabled: false}],
       });
     }
   }
@@ -228,7 +229,7 @@ export class CategoriesComponent implements OnInit {
    */
   selectParentCategory (e: any): void {
     const id = e.value
-    this.selectCategory(id);
+    //this.selectCategory(id);
     this.hasParent = true;
   }
 
@@ -242,10 +243,10 @@ export class CategoriesComponent implements OnInit {
   /**
    * @todo Hides parent attribute fields
    */
-  hasValue () {
-    if (this.tempLength == 0) {
-      this.tempLength = this.attributes.value.length;
-    }
+  hasValue (): void {
+    // if (this.tempLength == 0) {
+    //   this.tempLength = this.attributes.value.length;
+    // }
   }
 
 }

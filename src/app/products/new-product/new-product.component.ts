@@ -300,6 +300,31 @@ export class NewProductComponent implements OnInit {
       next:(res)=>{
         for (let x = 0; x < res.length; x++) {
           let attributes = JSON.parse(res[x].attributes);
+          this.getParents(res[x].parent);
+          for (let y = 0; y < attributes.length; y++) {
+            const i = this.attributes.value.findIndex((object: any) => object.attrName === attributes[y].attrName);
+            if (i === -1) {
+              const attrs = this.formBuilder.group({
+                attrName: [attributes[y].attrName, Validators.required],
+                attrValue: ['0', Validators.required]
+              })
+              this.attributes.push(attrs);
+              this.attrCount = this.attrCount + 1;
+            }
+          }
+        }
+      }, error:(res)=> {
+        console.log(res);
+      }
+    });
+  }
+
+  getParents(catId: number): void {
+    this.api.GET(`categories/get-parents/${catId}`).subscribe({
+      next:(res)=>{
+        console.log('From parents', res);
+        for (let x = 0; x < res.length; x++) {
+          let attributes = JSON.parse(res[x].attributes);
           for (let y = 0; y < attributes.length; y++) {
             const i = this.attributes.value.findIndex((object: any) => object.attrName === attributes[y].attrName);
             if (i === -1) {

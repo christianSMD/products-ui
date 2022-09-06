@@ -39,8 +39,9 @@
   position: fixed;
   left: 90%;
   bottom: 9%;
-  opacity: 0.7;
+  opacity: 0.9;
   transition: ease-in;
+  z-index: 10;
 }
 
 .home:hover {

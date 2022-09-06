@@ -39,6 +39,8 @@ import { ProfileComponent } from './profile/profile.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BlockUIModule  } from 'ng-block-ui';
+import { SettingsComponent } from './settings/settings.component';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @NgModule({
   declarations: [
@@ -50,6 +52,7 @@ import { BlockUIModule  } from 'ng-block-ui';
     ParentPipe,
     UsersComponent,
     ProfileComponent,
+    SettingsComponent,
   ],
   imports: [
     BrowserModule,
@@ -83,6 +86,7 @@ import { BlockUIModule  } from 'ng-block-ui';
     MatSnackBarModule,
     MatSelectModule,
     MatTooltipModule,
+    MatTabsModule,
     BlockUIModule.forRoot(),
   ],
   providers: [
