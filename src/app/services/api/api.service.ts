@@ -38,6 +38,7 @@ export class ApiService {
     formData.append('product_sku', data.product_sku);
     formData.append('type_id', data.type_id);
     formData.append('type', data.type);
+    formData.append('permissions', data.permissions);
     const req = new HttpRequest('POST', this.baseUrl + endpoint, formData, { 
       reportProgress: true, 
       responseType: 'json' 

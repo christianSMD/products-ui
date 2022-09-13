@@ -182,13 +182,13 @@ table {
  
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: rgb(255, 255, 255); 
+  background: #EFEFEF; 
   border-radius: 10px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #ffffff; 
+  background: #dddddd; 
 }
 
 .categories-section {
@@ -200,5 +200,3 @@ table {
   margin-top: 4px;
   border-radius: 1px;
 }
-
-

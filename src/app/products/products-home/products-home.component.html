@@ -42,8 +42,8 @@
         </ng-container>
         
         <ng-container matColumnDef="sku">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> 🗝 SKU </th>
-          <td mat-cell *matCellDef="let row"> 🗝 {{row.sku}} </td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> SKU </th>
+          <td mat-cell *matCellDef="let row"> {{row.sku}} </td>
         </ng-container>
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
@@ -90,7 +90,7 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header>  </th>
           <td mat-cell *matCellDef="let row">
             <button mat-raised-button color="primary" matTooltip="View product details" routerLink="{{row.sku}}" aria-label="Product details">
-              👁 View Details
+              View Details
             </button>
           </td>
         </ng-container>

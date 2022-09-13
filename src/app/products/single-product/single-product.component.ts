@@ -14,7 +14,7 @@ import { ThemePalette } from '@angular/material/core';
 import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
 import { InfoService } from 'src/app/services/info/info.service';
 
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ValueConverter } from '@angular/compiler/src/render3/view/template';
 
 @Component({
@@ -48,6 +48,7 @@ export class SingleProductComponent implements OnInit {
   product: any;
   files: any[] = []
   savedFiles: any[] = [];
+  filePermissions: any[] = [];
   parent: string;
   productForm !: FormGroup;
   productFormAttributes !: FormGroup;
@@ -83,6 +84,15 @@ export class SingleProductComponent implements OnInit {
   selectedCategories: any[] = [];
   categoriesLoader = false;
   catFromProductTbl: any[] = [];
+  attrKey: string;
+
+  requiredField = false;
+
+  shoutoutsForm: FormGroup;
+  regionsForm: FormGroup;
+
+  pdsAttributes: any[] = [];
+  loadingPdsAttributes: boolean = true;
 
   constructor(public navbar: NavbarService,
     public treeNav: TreeService,
@@ -127,7 +137,9 @@ export class SingleProductComponent implements OnInit {
       is_eol : [0, Validators.required],
       is_in_development : [0, Validators.required],
       is_active: [0, Validators.required],
-      verified: [0, Validators.required]
+      verified: [0, Validators.required],
+      family_grouping : ['']
+
     });
 
     this.productFormPackaging = this.formBuilder.group({
@@ -143,7 +155,13 @@ export class SingleProductComponent implements OnInit {
       attributes: this.formBuilder.array([])
     });
 
-    this.getProductCategories();
+    this.shoutoutsForm = this.formBuilder.group({
+      shoutouts: this.formBuilder.array([])
+    });
+
+    this.regionsForm = this.formBuilder.group({
+      regions: this.formBuilder.array([])
+    });
 
     if(this.sku == 'products' || this.sku == 'product') {
       this.router.navigate(['/']);
@@ -156,6 +174,14 @@ export class SingleProductComponent implements OnInit {
 
   get attributes() {
     return this.productFormAttributes.get('attributes') as FormArray
+  }
+
+  get shoutouts() {
+    return this.shoutoutsForm.get('shoutouts') as FormArray
+  }
+
+  get regions() {
+    return this.regionsForm.get('regions') as FormArray
   }
 
   getAllCategories() {
@@ -182,43 +208,7 @@ export class SingleProductComponent implements OnInit {
           this.product = res[0];
           this.productName = this.product.name;
           this.id = this.product.id;
-          this.catFromProductTbl = JSON.parse(this.product.categories);
-          try {
-            const attributes = JSON.parse(this.product.attributes);
-            if(attributes?.attributes) {
-              this.productAttributes = attributes.attributes;
-              for (let index = 0; index < attributes.attributes.length; index++) {
-                const attrs = this.formBuilder.group({
-                  attrName: [this.productAttributes[index].attrName, Validators.required],
-                  attrValue: [this.productAttributes[index].attrValue, Validators.required]
-                })
-                this.attributes.push(attrs);
-              }
-              if (this.attributes.length > 0) {
-                this.detailProgress++;
-              }
-            } else {
 
-              console.log("different attr format");
-              let obj: any[] = [];
-              obj = JSON.parse(this.product.attributes);
-
-              for (let index = 0; index < obj.length; index++) {
-                const keys = Object.keys(obj[index]);
-                const key = keys[0];
-                const val = obj[index][key];
-                const attrs = this.formBuilder.group({
-                  attrName: [key, Validators.required],
-                  attrValue: [val, Validators.required]
-                })
-                this.attributes.push(attrs);
-              }
-            }
-          } catch (error) {
-            console.log("Attributes issue");
-          }
-          
-          
           this.productForm = this.formBuilder.group({
             sku : [{value: this.product.sku, disabled: true}, Validators.required],
             name : [this.product.name, Validators.required],
@@ -228,10 +218,44 @@ export class SingleProductComponent implements OnInit {
             is_in_development: [this.product.is_in_development],
             is_active: [this.product.is_active],
             is_eol: [this.product.is_eol],
-            verified: [this.product.verified]
+            verified: [this.product.verified],
+            family_grouping: [this.product.family_grouping],
           });
+
+          if (this.product.shoutout != "" && this.product.shoutout != null) {
+            const shoutouts = JSON.parse(this.product.shoutout);
+            console.log(shoutouts.length);
+
+            for (let y = 0; y < shoutouts.length; y++) {
+              const shouts = this.formBuilder.group({
+                shoutoutField: [shoutouts[y], Validators.required],
+              })
+              this.shoutouts.push(shouts);
+            }
+
+          }
+          
+          // Attributes from productsTable
+          let obj: any[] = [];
+          obj = JSON.parse(this.product.attributes);
+          if (obj !== null) {
+            for (let index = 0; index < obj.length; index++) {
+              const keys = Object.keys(obj[index]);
+              const key = keys[0];
+              const val = obj[index][key];
+              const attrs = this.formBuilder.group({
+                attrName: [key, Validators.required],
+                attrValue: [val, Validators.required]
+              })
+              this.attributes.push(attrs);
+            }
+          }
+          
+          this.getProductCategories();
           this.getPackaging(this.id);
           this.getFiles();
+          this.getPdsAttributes(sku);
+          this.getProductRegions(this.id);
         }
       }, error:(res)=>{
         this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
@@ -248,22 +272,37 @@ export class SingleProductComponent implements OnInit {
     this.api.GET(`product-categories/search/${this.id}`).subscribe({
       next:(res)=>{
         this.productCategories = res;
-        console.log('Product categories for : ' + this.id, res);
+        console.log("Product Categories: ", res);
         if (res.length > 0) {
           this.detailProgress++;
+          // Loop Categories linked to product
           for (let x = 0; x < res.length; x++) {
             let attributes = JSON.parse(res[x].attributes);
-            for (let y = 0; y < attributes.length; y++) {
-              const i = this.attributes.value.findIndex((object: any) => object.attrName === attributes[y].attrName);
-              if (i === -1) {
-                const attrs = this.formBuilder.group({
-                  attrName: [attributes[y].attrName, Validators.required],
-                  attrValue: ['0', Validators.required]
-                })
-                this.attributes.push(attrs);
-                this.attrCount = this.attrCount + 1;
+            if(res[x].parent != 0) {
+              let parent = this.categoriesList.find(i => i.id == res[x].parent);
+              // for (let index = 0; index < parent?.attributes.length; index++) {
+              //   attributes.push(parent?.attributes[index]);
+              // }
+              console.log(attributes);
+            } else {
+              console.log('here..');
+            }
+            
+            // Loop attributes on each category
+            if (attributes !== null) {
+              for (let y = 0; y < attributes.length; y++) {
+                const i = this.attributes.value.findIndex((object: any) => object.attrName === attributes[y]);
+                if (i === -1) {
+                  const attrs = this.formBuilder.group({
+                    attrName: [attributes[y], Validators.required],
+                    attrValue: ['0', Validators.required]
+                  })
+                  this.attributes.push(attrs);
+                  this.attrCount = this.attrCount + 1;
+                }
               }
             }
+            
           } 
         }
       }, error:(res)=> {
@@ -271,7 +310,6 @@ export class SingleProductComponent implements OnInit {
       }
     });
   }
-
 
   getAllTypes(): void {
     this.api.GET('types').subscribe({
@@ -321,6 +359,8 @@ export class SingleProductComponent implements OnInit {
   onUpload(fileTypeId: string, type: String): void {
     this.loading = !this.loading;
 
+    console.log("This is a function that uplaods files")
+
     if (this.files.length > 0) {
       for(let x = 0; x < this.files.length; x ++) {
         this.api.upload('uploading-file-api', {
@@ -329,7 +369,8 @@ export class SingleProductComponent implements OnInit {
           product_id: this.product.id,
           product_sku: this.product.sku,
           type_id: fileTypeId,
-          type: type
+          type: type,
+          permissions: this.filePermissions,
         }).subscribe(
           (event: any) => {
             if (typeof (event) === 'object') {
@@ -359,7 +400,7 @@ export class SingleProductComponent implements OnInit {
 
   openSnackBar(message: string, action: string): void {
     this._snackBar.open(message, action, {
-      duration: 3
+      duration: 4000
     });
   }
   
@@ -395,6 +436,22 @@ export class SingleProductComponent implements OnInit {
           this.savedFiles = orderedImages;
         }
         this.savedFiles = this.savedFiles;
+      }, error:(res)=> {
+        console.log(res);
+      }
+    });
+  }
+
+  /**
+   * @todo Get Image order list
+   * @todo Display Prodict regions.
+   */
+   getProductRegions(id: string): void {
+    this.api.GET(`product-regions/${id}`).subscribe({
+      next:(res)=>{
+        if (res.length > 0) {
+          console.log(res);
+        }
       }, error:(res)=> {
         console.log(res);
       }
@@ -442,6 +499,42 @@ export class SingleProductComponent implements OnInit {
     });
   }
 
+  updateShoutout(): void {
+    const shoutouts = this.shoutoutsForm.value.shoutouts;
+    const l = shoutouts.length;
+    let shoutoutArray: string[] = [];
+    console.log(shoutouts);
+    console.log(l);
+    for (let index = 0; index < l; index++) {
+      shoutoutArray.push(this.shoutoutsForm.value.shoutouts[index].shoutoutField)
+    }
+    this.api.POST(`products/update-shoutout/${this.id}`, shoutoutArray).subscribe({
+      next:(res)=>{
+        console.log(res);
+        this.info.activity('Updated product shoutout', this.product.id);
+        this.openSnackBar('Product Updated 😃', 'Okay');
+      }, error:(res)=>{
+        this.openSnackBar('😢 ' + res.message, 'Okay');
+      }
+    });
+  }
+
+  updateRegion() {
+    for (let index = 0; index < this.regionsForm.value.regions.length; index++) {
+      this.api.POST(`product-regions`, { 
+        product_id: this.id,
+        region_id: this.regionsForm.value.regions[index].regionField 
+      }).subscribe({
+        next:(res)=>{
+          console.log(res);
+          this.openSnackBar('Region Updated 😃', 'Okay');
+        }, error:(res)=>{
+          console.log(res);
+        }
+      });
+    }
+  }
+
   filePath(p: string) {
     return p.substring(7);
   }
@@ -475,16 +568,25 @@ export class SingleProductComponent implements OnInit {
     this.disableSaveAttrBtn = true;
     this.saveAttrBtnText = "Saving...";
     let formObj = this.productFormAttributes.getRawValue();
-    this.api.POST(`products/update-attributes/${this.id}`, formObj).subscribe({
-      next:(res)=> {
-        console.log(res);
-        this.saveAttrBtnText = "Save Changes";
-        this.openSnackBar('Attributes Saved', 'Okay');
-        this.info.activity('Updated product attributes', this.product.id);
-      }, error:(res)=> {
-        this.openSnackBar(res.message, 'Okay');
-      }
-    });
+    let finalObj: any[] = [];
+    let finalArray: any[] = [];
+    for (let index = 0; index < formObj.attributes.length; index++) {
+      this.attrKey = finalObj[formObj.attributes[index].attrName];
+      finalObj[formObj.attributes[index].attrName] = formObj.attributes[index].attrValue;
+      this.api.POST(`products/update-attributes/${this.id}`, [{
+        key : formObj.attributes[index].attrValue
+      }]).subscribe({
+        next:(res)=> {
+          console.log(res);
+          this.saveAttrBtnText = "Save Changes";
+          this.openSnackBar('Attributes Saved', 'Okay');
+          this.info.activity('Updated product attributes', this.product.id);
+        }, error:(res)=> {
+          this.saveAttrBtnText = "Failed, try again.";
+          this.openSnackBar(res.message, 'Okay');
+        }
+      });
+    }
   }
 
   deleteFile(id: number): void {
@@ -535,11 +637,10 @@ export class SingleProductComponent implements OnInit {
         console.log(res);
         this.openSnackBar(res.message, 'Okay');
       }
-      
     });
   }
 
-  forceDownload(url: string, fileName: string){
+  forceDownload(url: string, fileName: string) {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", this.storageUrl + url, true);
     xhr.responseType = "blob";
@@ -554,7 +655,7 @@ export class SingleProductComponent implements OnInit {
         document.body.removeChild(tag);
     }
     xhr.send();
-}
+  }
 
   openDialog(link: string, storage: string): void {
     const dialogRef = this.dialog.open(DownloadDialog, {
@@ -564,7 +665,6 @@ export class SingleProductComponent implements OnInit {
         storageUrl: storage,
       },
     });
-
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
     });
@@ -584,12 +684,36 @@ export class SingleProductComponent implements OnInit {
     this.attrCount = this.attrCount - 1;
   }
 
-  testing (c: string) {
+  addShoutout(): void {
+    const shouts = this.formBuilder.group({
+      shoutoutField: [],
+    })
+    console.log('Is shoutouts an array? ', Array.isArray(this.shoutouts))
+    this.shoutouts.push(shouts);
+  }
+
+  removeShoutout(i: number): void {
+    this.shoutouts.removeAt(i);
+    this.shoutoutsForm.markAsDirty();
+  }
+
+  addRegion(): void {
+    const regs = this.formBuilder.group({
+      regionField: [],
+    })
+    this.regions.push(regs);
+  }
+
+  removeRegion(i: number): void {
+    this.regions.removeAt(i);
+    this.regionsForm.markAsDirty();
+  }
+
+  checkCategories (c: string) {
     // Check categories on the UI that are available on the Products Categories List this.productCategories
-    
     const obj = this.catFromProductTbl.find(x => x.name == c);
-    for (let index = 0; index < this.catFromProductTbl.length; index++) {
-      if(c == this.catFromProductTbl[index]) {
+    for (let index = 0; index < this.productCategories.length; index++) {
+      if(c == this.productCategories[index].name) {
         return true;
       }
     }
@@ -624,5 +748,23 @@ export class SingleProductComponent implements OnInit {
       }
     }
     this.openSnackBar('Please choose categories', 'Okay');
+  }
+
+  setPermission(permissions: string[]) {
+    console.log(permissions);
+    return true;
+  }
+
+  getPdsAttributes(sku: string): void {
+    this.api.GET(`pds-attributes/${sku}`).subscribe({
+      next:(res)=>{
+        console.log("PDS Attributes", res);
+        this.pdsAttributes = res;
+        this.loadingPdsAttributes = false;
+      }, error:(res)=> {
+        console.log(res);
+        this.loadingPdsAttributes = false;
+      }
+    });
   }
 }

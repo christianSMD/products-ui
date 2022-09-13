@@ -82,7 +82,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatGridListModule,
     MatBadgeModule,
     MatCheckboxModule,
-    MatTooltipModule
+    MatTooltipModule,
   ]
 })
 export class ProductsModule { }

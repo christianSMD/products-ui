@@ -139,13 +139,15 @@ export class CategoriesComponent implements OnInit {
       this.disableAddAttrBtn = true;
       this.goToCategoriesBtn = true;
       this.saveAttrBtnText = "Saving...";
-      //let formObj = this.categoryForm.getRawValue();
-      let formObj = this.categoryForm.value.attributes;
+      let formArr: any[] = [];
+      for (let index = 0; index < this.categoryForm.value.attributes.length; index++) {
+        formArr.push(this.categoryForm.value.attributes[index].attrName);
+      }
       let catId = (action == 'new') ? this.newCategoryId : this.selectedCatId;
-      this.api.POST(`categories/update/${catId}`, formObj).subscribe({
+      this.api.POST(`categories/update/${catId}`, formArr).subscribe({
         next:(res)=> {
           this.saveAttrBtnText = "Attributes Saved";
-          this.openSnackBar(this.attrCount + ' attributes added', 'Okay');
+          this.openSnackBar(this.attrCount + ' attribute(s) added', 'Okay');
           this.info.activity(`Updated attributes for category: ${catId}`, 0);
           this.getAllCategories();
         }, error:(res)=> {
@@ -171,13 +173,14 @@ export class CategoriesComponent implements OnInit {
       let fields = obj?.attributes;
       fields = JSON.parse(fields);
       this.attributesFields = fields;
+      console.log("Fields: ", this.attributesFields);
       this.selectedCatId = obj?.id as number; //or use Non-null Assertion Operator like so: obj?.id!
       this.selectedCatName = obj?.name!;
       this.selectedCatParentId = obj?.parent!;
       this.getParent(parseInt(this.selectedCatParentId));
       for (let x = 0; x < this.attributesFields.length; x++) {
         const attrs = this.formBuilder.group({
-          attrName: [this.attributesFields[x].attrName]
+          attrName: [this.attributesFields[x]]
         })
         this.attributes.push(attrs);
       }
