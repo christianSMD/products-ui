@@ -22,13 +22,36 @@
   text-transform: uppercase;
   font-size: 15px;
   padding-top: 1rem;
-  background-color: #00000056;
+  background-color: #b60f2e;
+  border: rgba(126, 38, 38, 0.116) solid 1px;
+  margin-bottom: 3px;
+}
+
+.menu-item:hover {
+  color: #FFF;
+  background-color: #bd1b38;
+  border: rgb(189, 76, 76) solid 1px;
+  letter-spacing: 3px;
+}
+
+.menu-item:focus {
+  background-color: #be2c47;
+  border: rgb(187, 70, 70) solid 1px;
 }
 
 .brand {
   color: #FFF;
   text-transform: uppercase;
   font-size: 14px;
+  background-color: #b60f2e;
+}
+
+.brand-button:hover {
+  background-color: #da1136da;
+}
+
+.brand-button:focus {
+  background-color: #da1136da;
 }
 
 mat-label {
@@ -44,18 +67,18 @@ mat-label {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 5px rgb(104, 104, 104); 
+  box-shadow: inset 0 0 5px rgb(252, 252, 252); 
   border-radius: 3px;
 }
  
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #f443362b; 
+  background: #cccccc; 
   border-radius: 3px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #F44336; 
+  background: #d8d8d8; 
 }
 

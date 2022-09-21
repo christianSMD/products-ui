@@ -49,6 +49,7 @@ export class TopNavComponent implements OnInit {
       next:(res)=> {
         this.openSnackBar('Logged out', 'Okay');
         this.router.navigate(['/login']);
+        
       }, error:(res)=> {
         console.log(res);
       }

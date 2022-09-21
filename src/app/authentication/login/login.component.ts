@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
     this.sideNav.hide();
     this.treeNav.hide();
     this.userForm = this.formBuilder.group({
-      email : ['john@example.com', Validators.required],
+      email : ['', Validators.required],
       password : ['', Validators.required],
     })
   }

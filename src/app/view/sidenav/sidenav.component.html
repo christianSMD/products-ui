@@ -55,7 +55,7 @@
     <div class="brands">
         <mat-selection-list #brands [multiple]="false">
             <mat-list-option class="brand" *ngFor="let brand of listBrands" [value]="brand">
-                <button mat-stroked-button color="basic" (click)="selectBrand(brand)">
+                <button mat-stroked-button class="brand-button" (click)="selectBrand(brand)">
                     {{brand}}
                 </button>
             </mat-list-option>
@@ -63,6 +63,6 @@
     </div>
     <div style="padding-top: 2rem; text-align: center;">
         <hr>
-        <p>{{brands.selectedOptions.selected[0]?.value}}</p>
+        <!-- <p>{{brands.selectedOptions.selected[0]?.value}}</p> -->
     </div>
 </div>
