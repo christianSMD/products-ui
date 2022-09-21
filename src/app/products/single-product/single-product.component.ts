@@ -90,6 +90,7 @@ export class SingleProductComponent implements OnInit {
 
   shoutoutsForm: FormGroup;
   regionsForm: FormGroup;
+  productRegionList: any[] = [];
 
   pdsAttributes: any[] = [];
   loadingPdsAttributes: boolean = true;
@@ -139,7 +140,6 @@ export class SingleProductComponent implements OnInit {
       is_active: [0, Validators.required],
       verified: [0, Validators.required],
       family_grouping : ['']
-
     });
 
     this.productFormPackaging = this.formBuilder.group({
@@ -197,7 +197,6 @@ export class SingleProductComponent implements OnInit {
     });
   }
 
-
   getDetails(sku: string): void {
     this.productsLoader = true;
     this.api.GET(`products/${sku}`).subscribe({
@@ -222,19 +221,13 @@ export class SingleProductComponent implements OnInit {
             family_grouping: [this.product.family_grouping],
           });
 
-          if (this.product.shoutout != "" && this.product.shoutout != null) {
-            const shoutouts = JSON.parse(this.product.shoutout);
-            console.log(shoutouts.length);
-
-            for (let y = 0; y < shoutouts.length; y++) {
-              const shouts = this.formBuilder.group({
-                shoutoutField: [shoutouts[y], Validators.required],
-              })
-              this.shoutouts.push(shouts);
-            }
-
+          const shoutouts = JSON.parse(this.product.shoutout);
+          for (let y = 0; y < shoutouts.length; y++) {
+            const shouts = this.formBuilder.group({
+              shoutoutField: [shoutouts[y], Validators.required],
+            })
+            this.shoutouts.push(shouts);
           }
-          
           // Attributes from productsTable
           let obj: any[] = [];
           obj = JSON.parse(this.product.attributes);
@@ -250,7 +243,6 @@ export class SingleProductComponent implements OnInit {
               this.attributes.push(attrs);
             }
           }
-          
           this.getProductCategories();
           this.getPackaging(this.id);
           this.getFiles();
@@ -398,6 +390,45 @@ export class SingleProductComponent implements OnInit {
     }
   }
 
+  uploadDocument(fileTypeId: string, type: String): void {
+    this.loading = !this.loading;
+    if (this.files.length > 0) {
+      for(let x = 0; x < this.files.length; x ++) {
+        this.api.upload('upload-document', {
+          file: this.files[x],
+          name: this.files[x].name,
+          product_id: this.product.id,
+          product_sku: this.product.sku,
+          type_id: fileTypeId,
+          type: type,
+          permissions: this.filePermissions,
+        }).subscribe(
+          (event: any) => {
+            if (typeof (event) === 'object') {
+              this.loading = false; 
+            }
+            if (event.type === HttpEventType.UploadProgress) {
+              this.uploadProgress = Math.round(100 * event.loaded / event.total);
+              this.uploadProgressBar = `width:${this.uploadProgress}%;height:10px`;
+            } else if (event instanceof HttpResponse) {
+              const msg = this.files[x].name + ' ploaded the file successfully.';
+              this.info.activity('Added new product', this.product.id);
+              this.messages.push(msg);
+            } 
+            this.getFiles();
+          }, (err: any) => {
+            this.uploadProgress = 0;
+            const msg = '' + this.files[x].name + ' could not upload the file: ';
+            this.messages.push(msg);
+          }
+        );
+      } 
+    } else {
+      this.openSnackBar('Please select files', 'Okay')
+      this.loading = false;
+    }
+  }
+
   openSnackBar(message: string, action: string): void {
     this._snackBar.open(message, action, {
       duration: 4000
@@ -410,6 +441,7 @@ export class SingleProductComponent implements OnInit {
         if(res.length > 0) {
           this.detailProgress++;
           this.savedFiles = res;
+          console.log('Saved files: ', res);
           this.getProductImageOrder();
         }
       }, error:(res)=> {
@@ -447,11 +479,20 @@ export class SingleProductComponent implements OnInit {
    * @todo Display Prodict regions.
    */
    getProductRegions(id: string): void {
+    console.log('getting regions');
     this.api.GET(`product-regions/${id}`).subscribe({
       next:(res)=>{
-        if (res.length > 0) {
-          console.log(res);
+        console.log(res);
+        this.productRegionList = res;
+        if (res !== null) {
+          for (let index = 0; index < res.length; index++) {
+            const regs = this.formBuilder.group({
+              regionField: [ res[index].region_id, Validators.required],
+            })
+            this.regions.push(regs);
+          }
         }
+
       }, error:(res)=> {
         console.log(res);
       }
@@ -527,6 +568,7 @@ export class SingleProductComponent implements OnInit {
       }).subscribe({
         next:(res)=>{
           console.log(res);
+          this.getProductRegions(this.id,);
           this.openSnackBar('Region Updated 😃', 'Okay');
         }, error:(res)=>{
           console.log(res);
@@ -542,6 +584,11 @@ export class SingleProductComponent implements OnInit {
   returnTypeName(id: any) {
     id=id-1;
     return this.typesList[id].name;
+  }
+
+  returnTypeGroup(id: any) {
+    id=id-1;
+    return this.typesList[id].grouping;
   }
 
   drop(event: CdkDragDrop<string[]>): void {

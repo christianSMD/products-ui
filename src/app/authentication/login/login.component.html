@@ -4,13 +4,11 @@
         <div class="card-body p-0">
             <!-- Nested Row within Card Body -->
             <div class="row">
-                <div class="col-lg-8 col-md-6 bg">
-         
-                      
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-12 card o-hidden border-0 shadow-lg">
-                    <div class="p-5">
+                <div class="col-lg-4 col-md-4 bg"></div>
+                <div class="col-lg-4 col-md-4 col-sm-12 card o-hidden border-0 shadow-lg">
+                    <div class="p-5 auth-card">
                         <div class="text-center">
+                            <mat-icon class="auth-user smd-text">person_pin</mat-icon>
                             <h1 class="h4 text-gray-900 mb-4">Log In</h1>
                         </div>
                         <form class="user" [formGroup]="userForm">
@@ -33,7 +31,7 @@
                                     </mat-form-field>
                                 </div>
                             </div>
-                            <button mat-raised-button style="width: 100%;" type="submit" color="warn" (click)="login()">Log In</button>
+                            <button mat-raised-button style="width: 100%;" type="submit" class="smd-background" (click)="login()">Log In</button>
                         </form>
                         <hr>
                         <div class="text-center">
@@ -44,6 +42,7 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-lg-4 col-md-4 bg"></div>
             </div>
         </div>
     </div>

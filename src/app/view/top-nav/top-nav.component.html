@@ -1,6 +1,17 @@
-<mat-toolbar color="warn" *ngIf="nav.visible">
+<mat-toolbar style="background-color:#faf9f9;" *ngIf="nav.visible">
 
-    <span>{{ title }}</span>
+    <span>
+        <!-- <img src="/smd.jpg"> -->
+    </span>
+    
+    <button mat-icon-button  style="color:#faf9f9;">
+        <mat-icon>menu</mat-icon>
+    </button>
+
+    <button mat-icon-button aria-label="icon-button with share icon">
+        <mat-icon>search</mat-icon>
+    </button>
+
     <span class="nav-spacer"></span>
 
     <!-- <button mat-icon-button aria-label="icon-button with share icon">
@@ -36,6 +47,5 @@
         </button>
     </mat-menu>
     
-
 </mat-toolbar>
   

@@ -5,6 +5,7 @@ import { NavbarService } from 'src/app/services/navbar/navbar.service';
 import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api/api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SidenavService } from 'src/app/services/sidenav/sidenav.service';
 
 @Component({
   selector: 'app-top-nav',
@@ -19,19 +20,25 @@ export class TopNavComponent implements OnInit {
   title: string;
   userEmail: string;
   userName: string;
+  sideBtnIcn = 'arrow_right_alt';
 
   constructor(
     public nav: NavbarService, 
     private info: InfoService,
     private router: Router,
     private api: ApiService,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private sideNav: SidenavService
   ) { }
 
   ngOnInit(): void {
     this.title = this.info.getTitle();
     this.userEmail = <string>this.info.getUserEmail();
     this.userName = <string>this.info.getUserName();
+  }
+
+  sideberBtn() {
+    this.sideBtnIcn = this.sideNav.toggleBtn(this.sideBtnIcn);
   }
 
   logout() {
