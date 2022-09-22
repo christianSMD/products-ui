@@ -198,6 +198,7 @@ export class SingleProductComponent implements OnInit {
   }
 
   getDetails(sku: string): void {
+    
     this.productsLoader = true;
     this.api.GET(`products/${sku}`).subscribe({
       next:(res)=>{
@@ -207,6 +208,12 @@ export class SingleProductComponent implements OnInit {
           this.product = res[0];
           this.productName = this.product.name;
           this.id = this.product.id;
+
+          this.getFiles();
+          this.getProductCategories();
+          this.getPackaging(this.id);
+          this.getPdsAttributes(sku);
+          this.getProductRegions(this.id);
 
           this.productForm = this.formBuilder.group({
             sku : [{value: this.product.sku, disabled: true}, Validators.required],
@@ -243,11 +250,7 @@ export class SingleProductComponent implements OnInit {
               this.attributes.push(attrs);
             }
           }
-          this.getProductCategories();
-          this.getPackaging(this.id);
-          this.getFiles();
-          this.getPdsAttributes(sku);
-          this.getProductRegions(this.id);
+          
         }
       }, error:(res)=>{
         this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
@@ -261,6 +264,7 @@ export class SingleProductComponent implements OnInit {
    * @todo Loop each category for attributes.
    */
    getProductCategories(): void {
+    console.log('Product Categories');
     this.api.GET(`product-categories/search/${this.id}`).subscribe({
       next:(res)=>{
         this.productCategories = res;
@@ -436,6 +440,7 @@ export class SingleProductComponent implements OnInit {
   }
   
   getFiles(): void {
+    console.log('getting files for: ' + this.id);
     this.api.GET(`product-files/${this.id}`).subscribe({
       next:(res)=>{
         if(res.length > 0) {

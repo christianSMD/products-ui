@@ -130,13 +130,11 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     if (this.viewAllProductsRole) {
       url = 'products';
     }
-    console.log('Role: ' + this.viewAllProductsRole);
-    console.log('Url: ' + url);
     this.blockUI.start('Loading products..');
     this.productsLoader = true;
     this.api.GET(url).subscribe({
       next:(res)=>{
-        console.log(res);
+        console.log('Products: ', res);
         this.productsLoader = false;
         this.productsList = res;
         this.dataSource = new MatTableDataSource(this.productsList);
@@ -196,5 +194,6 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   filePath(p: string) {
     return p.substring(7);
   }
+
 
 }
