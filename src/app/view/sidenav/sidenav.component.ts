@@ -12,6 +12,8 @@ import { SidenavService } from 'src/app/services/sidenav/sidenav.service';
 })
 export class SidenavComponent {
 
+  userEmail: string = "";
+  userName: string = "";
   showFiller = false;
   listBrands: string[] = [];
   searchForm !: FormGroup;
@@ -38,6 +40,8 @@ export class SidenavComponent {
     this.searchForm = this.formBuilder.group({
       query : ['']
     })
+    this.userEmail = <string>this.info.getUserEmail();
+    this.userName = <string>this.info.getUserName();
     this.authRole = this.info.role(58);
     this.rolesRole = this.info.role(70);
     this.settingsRole = this.info.role(71);
@@ -75,6 +79,19 @@ export class SidenavComponent {
 
   selectBrand(brand: String): void {
     this.router.navigate(['/brand', brand.toLowerCase()]);
+  }
+
+  logout() {
+    this.info.isUserLoggedIn.next(false);
+    localStorage.clear();
+    this.api.POST(`logout`, this.userEmail).subscribe({
+      next:(res)=> {
+        this.router.navigate(['/login']);
+        
+      }, error:(res)=> {
+        console.log(res);
+      }
+    });
   }
 
 }

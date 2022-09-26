@@ -37,10 +37,6 @@ export class TopNavComponent implements OnInit {
     this.userName = <string>this.info.getUserName();
   }
 
-  sideberBtn() {
-    this.sideBtnIcn = this.sideNav.toggleBtn(this.sideBtnIcn);
-  }
-
   logout() {
     this.openSnackBar('Logging out...', '');
     this.info.isUserLoggedIn.next(false);

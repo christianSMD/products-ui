@@ -41,6 +41,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { BlockUIModule  } from 'ng-block-ui';
 import { SettingsComponent } from './settings/settings.component';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MinisidenavComponent } from './view/minisidenav/minisidenav.component';
 
 @NgModule({
   declarations: [
@@ -53,6 +54,7 @@ import { MatTabsModule } from '@angular/material/tabs';
     UsersComponent,
     ProfileComponent,
     SettingsComponent,
+    MinisidenavComponent,
   ],
   imports: [
     BrowserModule,

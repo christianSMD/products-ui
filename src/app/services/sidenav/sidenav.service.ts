@@ -25,17 +25,5 @@ export class SidenavService {
     this.visible = true; 
   }
 
-  toggle() { 
-    this.sidenav.toggle();
-  }
-
-  toggleBtn(b: String) {
-    if(b == 'arrow_right_alt') {
-      return 'close';
-    } else {
-      return 'arrow_right_alt';
-    }
-  }
-
   doSomethingElseUseful() { }
 }

@@ -1,40 +1,26 @@
 <block-ui>
     <div id="wrapper">
         <div id="content">
-            <!-- Page -->
+            <app-top-nav></app-top-nav>
+            <div (click)="test()">
+                <button mat-icon-button style="top: -51px; left: 118px;">
+                    <mat-icon>menu</mat-icon>
+                    <!-- (click)="drawer.toggle()"  -->
+                </button>
+            </div>
             <mat-drawer-container class="main-container" autosize>
-                <!-- Wrapper -->
-                <mat-drawer #drawer class="sidenav smd-background" mode="side">
+                <mat-drawer #drawer class="sidenav smd-background" [style.width]="(minimized) ? '109px' : '260px'" mode="side" opened="true">
                     <div class="overlay">
-                        <!-- Side-bar content -->
-                        <app-sidenav></app-sidenav>
+                        <app-minisidenav *ngIf="minimized"></app-minisidenav>
+                        <app-sidenav *ngIf="!minimized"></app-sidenav>
                     </div>
-                </mat-drawer> 
-                <!-- Top navbar -->
-                <app-top-nav></app-top-nav>
-                <!-- /Top navbar -->
-                <!-- content -->
+                </mat-drawer>
                 <div class="content-area">
-                    <div class="sidebar-toggler">
-                        <span (click)="sideberBtn()">
-                            <button mat-icon-button (click)="drawer.toggle()" style="top: -68px; left: 75px;">
-                                <!-- <mat-icon>{{ sideBtnIcn }}</mat-icon> -->
-                                <mat-icon>menu</mat-icon>
-                            </button>
-                        </span>
-                    </div>
-                    <!--  Router content -->
                     <div class="router-content">
                         <router-outlet></router-outlet> 
-                        <!-- <button class="home animate pop"  mat-fab aria-label="home" color="warn" routerLink="/" >
-                            <mat-icon>home</mat-icon>
-                        </button> -->
                     </div>
                 </div>
-                <!-- /content -->
-                <!-- /Wrapper-->
             </mat-drawer-container>
-            <!-- /Page -->
         </div>
     </div>
 </block-ui>

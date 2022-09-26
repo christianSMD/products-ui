@@ -16,18 +16,16 @@
               <form [formGroup]="productForm">
                 <div class="mt-5" style="overflow: hidden !important;">
                   <div class="row">
-                    <div class="col-md-3 scrollable-div">
+                    <div class="col-md-4">
                       <mat-card>
                         <strong>General Details</strong><br><br>
                         <mat-form-field appearance="outline" style="width: 90%;">
                           <mat-label>SKU</mat-label>
                           <input #sku matInput formControlName="sku" placeholder="Enter Product SKU">
-                          <mat-icon matSuffix>qr_code_2</mat-icon>
                         </mat-form-field>
                         <mat-form-field appearance="outline" style="width: 90%;">
                           <mat-label>Product Name</mat-label>
                           <input #name matInput formControlName="name" placeholder="Enter Product Name">
-                          <mat-icon matSuffix>create</mat-icon>
                         </mat-form-field>
                         <mat-form-field appearance="outline" style="width: 90%;">
                           <mat-label>Product Brand</mat-label>
@@ -38,19 +36,37 @@
                         <mat-form-field appearance="outline" style="width: 90%;">
                           <mat-label>Family Grouping</mat-label>
                           <input #family_grouping matInput formControlName="family_grouping" placeholder="Enter Product Family Grouping">
-                          <mat-icon matSuffix>create</mat-icon>
                         </mat-form-field>
+                        <strong>Description</strong><br><br>
+                        <mat-form-field style="width: 90%;" appearance="outline">
+                          <mat-label>Short Description</mat-label>
+                          <textarea #short_description rows="7" matInput formControlName="short_description" placeholder="Enter short product description"></textarea>
+                        </mat-form-field>
+                        <mat-form-field style="width: 90%;" appearance="outline">
+                          <mat-label>Description</mat-label>
+                          <textarea #description rows="15" matInput formControlName="description" placeholder="Enter product description..."></textarea>
+                        </mat-form-field>
+                        <br>
+                        <div style="padding-left: 1rem;">
+                          <mat-checkbox #is_in_development formControlName="is_in_development">Is In Development</mat-checkbox><br>
+                          <mat-checkbox #is_eol formControlName="is_eol">Is EOL</mat-checkbox><br>
+                          <mat-checkbox #is_active formControlName="is_active">Is Active</mat-checkbox><hr>
+                          <mat-checkbox #verified formControlName="verified">Verified</mat-checkbox><hr>
+                          <button mat-raised-button [disabled]="!productForm.dirty" *ngIf="editRole" type="submit" color="primary" (click)="updateProduct()">Save Changes</button>
+                        </div>
                       </mat-card>
                       <br>
                       <mat-card>
                         <strong>Regions </strong>🌐<br><br>
+              
                         <form [formGroup]="regionsForm">
                           <ng-container formArrayName="regions">
                             <ng-container *ngFor="let x of regions.controls; let index = index">
                                 <div [formGroupName]="index">
                                   <mat-form-field appearance="outline" style="width: 90%;">
                                     <mat-label>Product Region</mat-label>
-                                    <mat-select matInput formControlName="regionField">
+                                    
+                                    <mat-select #regionField matInput formControlName="regionField">
                                       <mat-option *ngFor="let type of typesList | typeGroup : 'Region'" value="{{ type.id }}">{{ type.name }}</mat-option>
                                     </mat-select>
                                   </mat-form-field>            
@@ -63,71 +79,42 @@
                           <button mat-raised-button type="submit" *ngIf="editRole" [disabled]="!regionsForm.dirty" color="primary" (click)="updateRegion()" style="margin-left: 1rem;">Save Region</button>
                         </form>
                       </mat-card>
-                    </div>
-                    <div class="col-md-4">
+
+                      <br>
                       <mat-card>
-                        <strong>Description</strong><br><br>
-                        <mat-form-field style="width: 90%;" appearance="outline">
-                          <mat-label>Short Description</mat-label>
-                          <textarea #short_description rows="7" matInput formControlName="short_description" placeholder="Enter short product description"></textarea>
-                        </mat-form-field>
-                        <mat-form-field style="width: 90%;" appearance="outline">
-                          <mat-label>Description</mat-label>
-                          <textarea #description rows="15" matInput formControlName="description" placeholder="Enter product description..."></textarea>
-                        </mat-form-field>
+                        <strong>Shout Outs</strong><br><br>
+                        <form [formGroup]="shoutoutsForm">
+                          <ng-container formArrayName="shoutouts">
+                            <ng-container *ngFor="let x of shoutouts.controls; let index = index">
+                                <div [formGroupName]="index">
+                                  <mat-form-field appearance="outline" style="width: 90%;">
+                                    <mat-label>Shoutout</mat-label>
+                                    <input matInput id="shoutoutField" type="text" formControlName="shoutoutField" placeholder="Enter Shoutout" required>
+                                    <mat-icon matSuffix (click)="removeShoutout(index)">delete</mat-icon>
+                                  </mat-form-field>              
+                                </div>
+                            </ng-container>
+                          </ng-container>
+                          <button mat-raised-button type="button" (click)="addShoutout()" style="margin-left: 1rem;">
+                            Add Shout Out
+                          </button>
+                          <button mat-raised-button type="submit" *ngIf="editRole" [disabled]="!shoutoutsForm.dirty" color="primary" (click)="updateShoutout()" style="margin-left: 1rem;">Save Changes</button>
+                        </form>
                       </mat-card>
                     </div>
-                    <div class="col-md-5">
-                      <div class="row">
-                        <div class="col-sm-12">
-                          <mat-card>
-                            <strong>PDS Attributes</strong><br><br>
-                            <div *ngIf="!loadingPdsAttributes">
-                              <ul>
-                                <li *ngFor="let i of pdsAttributes"><span>{{ i.attribute_key }} </span>: {{ i.attribute_value }}</li>
-                              </ul>
-                            </div>
-                            <div *ngIf="loadingPdsAttributes">
-                              <i>please wait...</i>
-                            </div>
-                          </mat-card>
+               
+                    <div class="col-md-8">
+                      <mat-card>
+                        <strong>PDS Attributes</strong><br><br>
+                        <div *ngIf="!loadingPdsAttributes">
+                          <ul>
+                            <li *ngFor="let i of pdsAttributes"><span>{{ i.attribute_key }} </span>: {{ i.attribute_value }}</li>
+                          </ul>
                         </div>
-                        <div class="col-sm-8">
-                          <br>
-                          <mat-card>
-                            <strong>Shout Outs</strong><br><br>
-                            <form [formGroup]="shoutoutsForm">
-                              <ng-container formArrayName="shoutouts">
-                                <ng-container *ngFor="let x of shoutouts.controls; let index = index">
-                                    <div [formGroupName]="index">
-                                      <mat-form-field appearance="outline" style="width: 90%;">
-                                        <mat-label>Shoutout</mat-label>
-                                        <input matInput id="shoutoutField" type="text" formControlName="shoutoutField" placeholder="Enter Shoutout" required>
-                                        <mat-icon matSuffix (click)="removeShoutout(index)">delete</mat-icon>
-                                      </mat-form-field>              
-                                    </div>
-                                </ng-container>
-                              </ng-container>
-                              <button mat-raised-button type="button" (click)="addShoutout()" style="margin-left: 1rem;">
-                                Add Shout Out
-                              </button>
-                              <button mat-raised-button type="submit" *ngIf="editRole" [disabled]="!shoutoutsForm.dirty" color="primary" (click)="updateShoutout()" style="margin-left: 1rem;">Save Changes</button>
-                            </form>
-                          </mat-card>
+                        <div *ngIf="loadingPdsAttributes">
+                          <i>please wait...</i>
                         </div>
-                        <div class="col-sm-4">
-                          <br>
-                          <mat-card>
-                            <strong>More Options</strong><br><br>
-                            <mat-checkbox #is_in_development formControlName="is_in_development">Is In Development</mat-checkbox><br>
-                            <mat-checkbox #is_eol formControlName="is_eol">Is EOL</mat-checkbox><br>
-                            <mat-checkbox #is_active formControlName="is_active">Is Active</mat-checkbox><hr>
-                            <mat-checkbox #verified formControlName="verified">Verified</mat-checkbox><hr>
-                            <button mat-raised-button [disabled]="!productForm.dirty" *ngIf="editRole" type="submit" color="primary" (click)="updateProduct()">Save Changes</button>
-                          </mat-card>
-                        </div>
-                      </div>
-
+                      </mat-card>
                     </div>
                   </div>
                 </div>
@@ -277,69 +264,68 @@
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <div class="row">
                 <div class="col-md-4">
-                  <div *ngIf="uploadRole">
-                    <label>Document Type:</label>
-                    <select class="form-control" (change)="setFocusType($event)">
-                      <option *ngFor="let type of typesList | typeGroup : 'File'" value="{{ type.id }}">{{ type.name }}</option>
-                    </select><br>
-                    <label>Document Expiry Date:</label>
-                    <input class="form-control" type="date"><br>
-                    <input class="form-control" type="file" (change)="onChange($event)" multiple><br>
-                    <mat-selection-list #permissions style="background-color: rgb(247, 247, 247);">
-                      <mat-list-option style="height: 25px;" *ngFor="let type of typesList | typeGroup : 'File Permission'">
-                        {{type.name }}
-                      </mat-list-option>
-                    </mat-selection-list>
-                    <!-- <p>
-                      Options selected: {{permissions.selectedOptions.selected.length}}
-                    </p>
-                     -->
-                    <br>
-                    <button mat-raised-button color="primary" (click)="onUpload('55', 'document')">Upload File</button>
-                    <hr>
-                    <div class="container" *ngIf="loading">
-                      <h3>Loading ...</h3>
+                  <mat-card style="background-color: rgb(255, 255, 255);">
+                    <div *ngIf="uploadRole">
+                      <label>Document Type:</label>
+                      <select class="form-control" (change)="setFocusType($event)">
+                        <option *ngFor="let type of typesList | typeGroup : 'File'" value="{{ type.id }}">{{ type.name }}</option>
+                      </select><br>
+                      <label>Document Expiry Date:</label>
+                      <input class="form-control" type="date"><br>
+                      <input class="form-control" type="file" (change)="onChange($event)" multiple><br>
+                      <mat-selection-list #permissions style="background-color: rgb(247, 247, 247);">
+                        <mat-list-option style="height: 25px;" *ngFor="let type of typesList | typeGroup : 'File Permission'">
+                          {{type.name }}
+                        </mat-list-option>
+                      </mat-selection-list>
+                      <br>
+                      <button mat-raised-button color="primary" (click)="uploadDocument('55', 'document')">Upload File</button>
+                      <hr>
+                      <div class="container" *ngIf="loading">
+                        <h3>Loading ...</h3>
+                      </div>
+                      <div class="progress" style="height:10px;width:100%;">
+                        <div class="progress-bar bg-success" [style]="uploadProgressBar"></div>
+                      </div>
+                      <div *ngIf="messages.length" class="message">
+                        <ul *ngFor="let msg of messages; let i = index">
+                          <li>{{ msg }}</li>
+                        </ul>
+                      </div>
                     </div>
-                    <div class="progress" style="height:10px;width:100%;">
-                      <div class="progress-bar bg-success" [style]="uploadProgressBar"></div>
+                    <div *ngIf="!uploadRole" class="upload-role">
+                        <p>You do not have permissions to upload files</p>
+                        <mat-icon>upload_file</mat-icon>
                     </div>
-                    <div *ngIf="messages.length" class="message">
-                      <ul *ngFor="let msg of messages; let i = index">
-                        <li>{{ msg }}</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div *ngIf="!uploadRole" class="upload-role">
-                      <p>You do not have permissions to upload files</p>
-                      <mat-icon>upload_file</mat-icon>
-                  </div>
+                  </mat-card>
                 </div>
                 <div class="col-md-8">
-                  <br>
-                  <table class="table">
-                    <thead>
-                      <tr>
-                        <th>Document</th>
-                        <th>Uploaded</th>
-                        <th>Expiry Date</th>
-                        <th>Permission</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>ICASA</td>
-                        <td>08-09-2022</td>
-                        <td>08-09-2023</td>
-                        <td>Clients</td>
-                      </tr>
-                
-                    </tbody>
-                  </table>
-                  <ul>
-                    <li *ngFor="let file of savedFiles" style="list-style: none;">
-                      <div *ngIf="file.type_id == 53 || file.type_id == 54 || file.type_id == 55">📑 {{ file.name }}</div>
-                    </li>
-                  </ul>
+                  <mat-card style="background-color: rgb(255, 255, 255);">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Document</th>
+                          <th>Uploaded</th>
+                          <th>Expiry Date</th>
+                          <th>Permission</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>ICASA</td>
+                          <td>08-09-2022</td>
+                          <td>08-09-2023</td>
+                          <td>Clients</td>
+                        </tr>
+                  
+                      </tbody>
+                    </table>
+                    <ul>
+                      <li *ngFor="let file of savedFiles" style="list-style: none;">
+                        <div *ngIf="file.type_id == 53 || file.type_id == 54 || file.type_id == 55">📑 {{ file.name }}</div>
+                      </li>
+                    </ul>
+                  </mat-card>
                 </div>
               </div>
             </div>
@@ -351,7 +337,7 @@
                 <div class="col-md-3">
                   <div cdkDropList class="file-list" (cdkDropListDropped)="drop($event)" *ngIf="savedFiles.length > 0">
                     <div class="file-box" *ngFor="let file of savedFiles; let i = index">
-                      <div class="row" cdkDrag>
+                      <div class="row" cdkDrag *ngIf="returnTypeGroup(file.type_id) == 'Image'">
                         <div class="col-md-4">
                           <mat-chip-list>
                             <mat-chip color="accent" *ngIf="i == 0" selected>Primary</mat-chip>
@@ -461,7 +447,6 @@
           </mat-tab> -->
         </mat-tab-group>
       </mat-card>
-      
     </div>
     <div class="col-md-12">
 

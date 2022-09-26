@@ -13,8 +13,10 @@ export class AppComponent {
 
   title = 'products-system';
   sideBtnIcn = 'menu';
+  minimized: boolean = true;
 
   ngOnInit(): void {
+
     console.log('Current user status: ', this.info.isUserLoggedIn);
     if(!this.info.getUserEmail()){
       this.info.isUserLoggedIn.next(false);
@@ -23,7 +25,9 @@ export class AppComponent {
     }
   }
 
-  sideberBtn() {
-    this.sideBtnIcn = this.sideNav.toggleBtn(this.sideBtnIcn);
+  test() {
+    
+    this.minimized = !this.minimized;
+    console.log(this.minimized); 
   }
 }

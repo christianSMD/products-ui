@@ -27,7 +27,8 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   categoriesList: Category[] = [];
   typesList: Type[] = [];
   packagingList: any[] = [];
-  displayedColumns: string[] = ['id', 'thumbnail', 'sku', 'name', 'brand', 'description', 'is_active', 'is_in_development', 'is_eol', 'updated_at', 'created_at', 'view'];
+  displayedColumns: string[] = ['id', 'thumbnail', 'sku', 'name', 'brand', 'description', 'view'];
+  //displayedColumns: string[] = ['id', 'thumbnail', 'sku', 'name', 'brand', 'description', 'is_active', 'is_in_development', 'is_eol', 'updated_at', 'created_at', 'view'];
   dataSource: MatTableDataSource<Product>;
   productsLoader = false;
   loggedIn = false;
@@ -35,6 +36,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   addCategoryRole = false;
   viewAllProductsRole = false;
   storageUrl: string;
+  displayDates: boolean = false;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -195,5 +197,16 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     return p.substring(7);
   }
 
+  showDates(e: any) {
+    if (this.displayDates) {
+      this.displayedColumns = ['id', 'thumbnail', 'sku', 'name', 'brand', 'description', 'is_active', 'is_in_development', 'is_eol', 'updated_at', 'created_at', 'view'];
+    } else {
+      this.resetTableView();
+    }
+  }
+
+  resetTableView () {
+    this.displayedColumns = ['id', 'thumbnail', 'sku', 'name', 'brand', 'description', 'view'];
+  }
 
 }

@@ -14,12 +14,13 @@ table {
 }
 
 .mat-column-thumbnail {
-    padding-right: 4px;
+    width: 26px;
+    padding-right: 12px;
     padding-left: 12px;
 }
 
 .mat-column-sku {
-    width: 8rem;
+    width: 10rem;
     padding-left: 3px;
 }
 
@@ -29,7 +30,7 @@ table {
 }
 
 .mat-column-name {
-    width: 10rem;
+    width: 30rem;
 }
 
 .mat-column-type {
@@ -41,9 +42,38 @@ table {
 }
 
 .mat-column-description {
-    width: 30rem;
+    width: 40rem;
+}
+
+.mat-column-is_in_development {
+    width: 7rem;
+}
+
+.mat-column-is_active {
+    width: 7rem;
+}
+
+.mat-column-is_eol {
+    width: 7rem;
+}
+
+.mat-column-created_at {
+    width: 9rem;
+}
+
+.mat-column-updated_at {
+    width: 9rem;
 }
 
 .inactive {
     color: rgb(206, 206, 206);
 }
+
+.table-setting {
+    margin-right: 2rem;
+}
+
+.mat-column-view {
+    padding-left: 1rem;
+}
+
