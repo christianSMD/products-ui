@@ -4,13 +4,12 @@
 }
 
 .side-menu {
-  background-color: #C20F2F;
+  background-color: #ffffff;
   // background-image: url("../../../../5.jpg");
   min-height: 200px;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-
   margin-top: -20px;
   margin-left: -18px;
   margin-right: -25px;
@@ -18,40 +17,40 @@
 }
 
 .menu-item {
-  color: #FFF;
+  color: #000;
   text-transform: uppercase;
   font-size: 15px;
   padding-top: 0rem;
-  background-color: #b60f2e;
-  border: rgba(126, 38, 38, 0.116) solid 1px;
-  margin-bottom: 3px;
+  background-color: #fafafa;
+  border: #f7f7f7 solid 1px;
+  margin-bottom: 5px;
 }
 
 .menu-item:hover {
-color: #FFF;
-background-color: #bd1b38;
-border: rgb(189, 76, 76) solid 1px;
+color: rgb(61, 45, 45);
+background-color: #FAF9F9;
+border: rgb(255, 234, 234) solid 1px;
 letter-spacing: 3px;
 }
 
 .menu-item:focus {
-background-color: #be2c47;
-border: rgb(187, 70, 70) solid 1px;
+background-color: #ffffff;
+border: rgb(240, 203, 203) solid 1px;
 }
 
 .brand {
-  color: #FFF;
+  color: rgb(77, 77, 77);
   text-transform: uppercase;
   font-size: 14px;
-  background-color: #b60f2e;
+  background-color: #ffffff;
 }
 
 .brand-button:hover {
-background-color: #da1136da;
+background-color: #fad8df;
 }
 
 .brand-button:focus {
-background-color: #da1136da;
+background-color: #ffe0e6;
 }
 
 mat-label {

@@ -9,7 +9,7 @@
                 </button>
             </div>
             <mat-drawer-container class="main-container" autosize>
-                <mat-drawer #drawer class="sidenav smd-background" [style.width]="(minimized) ? '109px' : '260px'" mode="side" opened="true">
+                <mat-drawer #drawer class="sidenav" [style.width]="(minimized) ? '109px' : '260px'" mode="side" opened="true" id="sidenav">
                     <div class="overlay">
                         <app-minisidenav *ngIf="minimized"></app-minisidenav>
                         <app-sidenav *ngIf="!minimized"></app-sidenav>

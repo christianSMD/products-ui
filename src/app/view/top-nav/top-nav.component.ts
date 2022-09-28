@@ -21,6 +21,7 @@ export class TopNavComponent implements OnInit {
   userEmail: string;
   userName: string;
   sideBtnIcn = 'arrow_right_alt';
+  showIcons = false;
 
   constructor(
     public nav: NavbarService, 

@@ -5,11 +5,11 @@
 }
 
 .content-area {
-  padding: 1rem;
+  padding: 2rem;
 }
 
 .router-content {
-  margin-top: -1rem;
+  margin-top: 0rem;
   padding: 2rem;
   border: rgb(207, 207, 207) 1px solid;
   background-color: #ffffff;
@@ -37,7 +37,7 @@
 }
 
 .overlay {
-  background: rgba(15, 15, 15, 0.048);
+  // background: rgb(245, 245, 245);
   overflow: hidden;
   height: 100%;
   padding: 20px;

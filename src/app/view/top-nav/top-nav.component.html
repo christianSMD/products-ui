@@ -1,5 +1,4 @@
 <mat-toolbar class="top-nav" *ngIf="nav.visible">
-
     <span routerLink="/">
         <img src="../../../assets/img/smd.jpg" height="40">
     </span>
@@ -10,43 +9,9 @@
 
     <span class="nav-spacer"></span>
 
-    <!-- <button mat-icon-button aria-label="icon-button with share icon">
-        <mat-icon>search</mat-icon>
-    </button>
-
-    <button mat-icon-button [matMenuTriggerFor]="notifications" aria-label="icon-button with share icon">
-        <mat-icon matBadge="15" matBadgeColor="primary">notifications</mat-icon>
-    </button>
-    <mat-menu #notifications="matMenu">
-        <button mat-menu-item>
-            <mat-icon>person</mat-icon>
-            <span>Edit Profile</span>
-        </button>
-        <button mat-menu-item>
-            <mat-icon>close</mat-icon>
-            <span>Logout</span>
-        </button>
-    </mat-menu> -->
-    <!-- <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="profule" (click)="returnEmail()">
-        <mat-icon>exit</mat-icon>
-    </button> -->
-
-    <!-- <span *ngIf="userEmail">{{ userName }} </span> -->
-
     <button mat-icon-button (click)="logout()" style="margin-right: 3rem;">
         <mat-icon>logout</mat-icon> Logout
     </button>
-    
-    <!-- <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="logout()">
-            <mat-icon>person</mat-icon>
-            <span>My Account</span>
-        </button>
-        <button mat-menu-item (click)="logout()">
-            <mat-icon>lock_person</mat-icon>
-            <span>Logout</span>
-        </button>
-    </mat-menu> -->
-    
+
 </mat-toolbar>
   

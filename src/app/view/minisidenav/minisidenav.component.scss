@@ -1,36 +1,35 @@
 .side-menu {
-    background-color: #C20F2F;
-    min-height: 200px;
-    margin-top: -20px;
-    margin-left: -18px;
-    margin-right: -25px;
-    padding: 1rem;
+  background-color: #ffffff;
+  min-height: 200px;
+  margin-top: -20px;
+  margin-left: -18px;
+  margin-right: -25px;
+  padding: 1rem;
 }
 
 .menu-item {
-    color: #FFF;
-    text-transform: uppercase;
-    font-size: 15px;
-    padding-top: 1rem;
-    background-color: #b60f2e;
-    border: rgba(126, 38, 38, 0.116) solid 1px;
-    margin-bottom: 3px;
+  color: #C20F2F;
+  text-transform: uppercase;
+  font-size: 15px;
+  padding-top: 1rem;
+  background-color: #fafafa;
+  margin-bottom: 4px;
+  transition: all 0.5s;
 }
 
 .menu-item:hover {
-  color: #FFF;
-  background-color: #bd1b38;
-  border: rgb(189, 76, 76) solid 1px;
-  letter-spacing: 3px;
+color: #d3526a;
+background-color: #fff2f2;
 }
 
 .menu-item:focus {
-  background-color: #be2c47;
-  border: rgb(187, 70, 70) solid 1px;
+background-color: #ffffff;
+border: #ffe1e7 solid 1px;
+color: #cf6276;
 }
 
 mat-label {
-    color: rgb(107, 107, 107);
+  color: rgb(107, 107, 107);
 }
 
 

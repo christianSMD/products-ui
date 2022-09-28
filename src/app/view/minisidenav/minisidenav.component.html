@@ -1,24 +1,13 @@
 <div *ngIf="!loggedIn">
     <div class="side-menu">
-        <mat-selection-list #sideMenus [multiple]="false">
-            <mat-list-option class="menu-item" [matMenuTriggerFor]="usersMenu">
-                <mat-icon matListIcon>account_circle</mat-icon>
-                <h3>Account</h3>
-            </mat-list-option>
-            <mat-menu #usersMenu="matMenu">
-                <button mat-menu-item routerLink="/register">
-                    <mat-icon>person_add</mat-icon>
-                    <span>Create New Account</span>
-                </button>
-            </mat-menu>
-        </mat-selection-list>
+        
     </div>
 </div>
 
 <div *ngIf="loggedIn">
     <div class="side-menu">
         <div style="text-align: center;">
-            <img src="./../../../assets/img/user.png" routerLink="users/manage" height="35">
+            <!-- <img src="./../../../assets/img/user.png" routerLink="users/manage" height="35"> -->
         </div>
         <mat-selection-list #sideMenus [multiple]="false">
             <mat-list-option class="menu-item" routerLink="/">

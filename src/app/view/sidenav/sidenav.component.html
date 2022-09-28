@@ -1,25 +1,13 @@
 <div *ngIf="!loggedIn">
     <div class="side-menu">
-        <mat-selection-list #sideMenus [multiple]="false">
-            <mat-list-option class="menu-item" [matMenuTriggerFor]="usersMenu">
-                <mat-icon matListIcon>account_circle</mat-icon>
-                <h3>Account</h3>
-            </mat-list-option>
-            <mat-menu #usersMenu="matMenu">
-                <button mat-menu-item routerLink="/register">
-                    <mat-icon>person_add</mat-icon>
-                    <span>Create New Account</span>
-                </button>
-            </mat-menu>
-        </mat-selection-list>
+        
     </div>
 </div>
 
 <div *ngIf="loggedIn">
     <div class="side-menu">
         <div style="text-align: center;">
-            <img src="./../../../assets/img/user.png" height="90">
-            <h2>{{ userName }}</h2>
+            <h2 style="color: #000;">{{ userName }}</h2>
             <div style="margin-top: -12px; margin-bottom: 1rem;">
                 <a class="profile-link" href="#" routerLink="users/manage">Manage Account</a><br>
                 <a class="profile-link" href="#" (click)="logout()">Logout</a>
@@ -52,6 +40,7 @@
                 <h3>Settings</h3>
             </mat-list-option>
         </mat-selection-list>
+        
     </div>
     <!-- <form class="search" [formGroup]="searchForm">
         <mat-form-field appearance="legacy" color="accent" style="width: 100%; margin-top: 2rem; text-align: center;">
@@ -62,6 +51,7 @@
     </form> -->
     <div class="brands">
         <mat-selection-list #brands [multiple]="false">
+            <p *ngIf="brandsLoader" class="brand">Loading brands...</p>
             <mat-list-option class="brand" *ngFor="let brand of listBrands" [value]="brand">
                 <button mat-stroked-button class="brand-button" (click)="selectBrand(brand)">
                     {{brand}}

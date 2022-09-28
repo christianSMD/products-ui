@@ -17,7 +17,7 @@ export class SidenavComponent {
   showFiller = false;
   listBrands: string[] = [];
   searchForm !: FormGroup;
-  brandsLoader = false;
+  brandsLoader = true;
   loggedIn: boolean;
   authRole: boolean = false;
   rolesRole: boolean = false;
