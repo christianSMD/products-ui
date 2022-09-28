@@ -39,6 +39,7 @@ export class ApiService {
     formData.append('type_id', data.type_id);
     formData.append('type', data.type);
     formData.append('permissions', data.permissions);
+    formData.append('expiry_date', data.expiry_date);
     const req = new HttpRequest('POST', this.baseUrl + endpoint, formData, { 
       reportProgress: true, 
       responseType: 'json' 
@@ -48,5 +49,17 @@ export class ApiService {
 
   public getFiles(endpoint: string): Observable<any> {
     return this.http.get(this.baseUrl + endpoint);
+  }
+
+  public download(endpoint: string, uri: string, product_id: string, product_sku: string, old_type_id: number, path: string, new_type_id: number) {
+   
+    return this.http.post(this.baseUrl + endpoint, {
+      original_path: uri,
+      product_id: product_id,
+      product_sku: product_sku,
+      original_type_id: old_type_id,
+      new_type_id: new_type_id
+    }, { responseType:'arraybuffer' })
+    
   }
 }

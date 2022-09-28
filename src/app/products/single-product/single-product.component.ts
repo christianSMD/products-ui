@@ -13,9 +13,9 @@ import { Category } from 'src/app/interfaces/category';
 import { ThemePalette } from '@angular/material/core';
 import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
 import { InfoService } from 'src/app/services/info/info.service';
-
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ValueConverter } from '@angular/compiler/src/render3/view/template';
+import * as FileSaver from 'file-saver';
+import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
 
 @Component({
   selector: 'download-dialog',
@@ -47,7 +47,8 @@ export class SingleProductComponent implements OnInit {
   productSku: string;
   product: any;
   files: any[] = []
-  savedFiles: any[] = [];
+  mediaFiles: any[] = [];
+  documentFiles: any[] = [];
   filePermissions: any[] = [];
   parent: string;
   productForm !: FormGroup;
@@ -79,21 +80,19 @@ export class SingleProductComponent implements OnInit {
   uploadRole: boolean = false;
   viewAllProductsRole: boolean = false;
   verified: boolean = false;
-
   categoriesList: Category[] = [];
   selectedCategories: any[] = [];
   categoriesLoader = false;
   catFromProductTbl: any[] = [];
   attrKey: string;
-
   requiredField = false;
-
   shoutoutsForm: FormGroup;
   regionsForm: FormGroup;
   productRegionList: any[] = [];
-
   pdsAttributes: any[] = [];
   loadingPdsAttributes: boolean = true;
+  expiry_date: string;
+  today = new Date();
 
   constructor(public navbar: NavbarService,
     public treeNav: TreeService,
@@ -103,7 +102,9 @@ export class SingleProductComponent implements OnInit {
     private router: Router,
     private formBuilder : FormBuilder,
     private info: InfoService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    
+    private http: HttpClient
   ) { }
 
   ngOnInit(): void {
@@ -209,7 +210,8 @@ export class SingleProductComponent implements OnInit {
           this.productName = this.product.name;
           this.id = this.product.id;
 
-          this.getFiles();
+          this.media();
+          this.documents();
           this.getProductCategories();
           this.getPackaging(this.id);
           this.getPdsAttributes(sku);
@@ -359,7 +361,7 @@ export class SingleProductComponent implements OnInit {
 
     if (this.files.length > 0) {
       for(let x = 0; x < this.files.length; x ++) {
-        this.api.upload('uploading-file-api', {
+        this.api.upload('/upload-media', {
           file: this.files[x],
           name: this.files[x].name,
           product_id: this.product.id,
@@ -380,7 +382,7 @@ export class SingleProductComponent implements OnInit {
               this.info.activity('Added new product', this.product.id);
               this.messages.push(msg);
             } 
-            this.getFiles();
+            this.media();
           }, (err: any) => {
             this.uploadProgress = 0;
             const msg = '' + this.files[x].name + ' could not upload the file: ';
@@ -395,6 +397,7 @@ export class SingleProductComponent implements OnInit {
   }
 
   uploadDocument(fileTypeId: string, type: String): void {
+    console.log('exp: ' , this.expiry_date);
     this.loading = !this.loading;
     if (this.files.length > 0) {
       for(let x = 0; x < this.files.length; x ++) {
@@ -406,6 +409,7 @@ export class SingleProductComponent implements OnInit {
           type_id: fileTypeId,
           type: type,
           permissions: this.filePermissions,
+          expiry_date: this.expiry_date
         }).subscribe(
           (event: any) => {
             if (typeof (event) === 'object') {
@@ -419,7 +423,7 @@ export class SingleProductComponent implements OnInit {
               this.info.activity('Added new product', this.product.id);
               this.messages.push(msg);
             } 
-            this.getFiles();
+            this.documents();
           }, (err: any) => {
             this.uploadProgress = 0;
             const msg = '' + this.files[x].name + ' could not upload the file: ';
@@ -439,15 +443,27 @@ export class SingleProductComponent implements OnInit {
     });
   }
   
-  getFiles(): void {
-    console.log('getting files for: ' + this.id);
-    this.api.GET(`product-files/${this.id}`).subscribe({
+  media(): void {
+    this.api.GET(`product-media-files/${this.id}`).subscribe({
       next:(res)=>{
         if(res.length > 0) {
           this.detailProgress++;
-          this.savedFiles = res;
+          this.mediaFiles = res;
           console.log('Saved files: ', res);
           this.getProductImageOrder();
+        }
+      }, error:(res)=> {
+        console.log(res);
+      }
+    });
+  }
+
+  documents(): void {
+    this.api.GET(`product-document-files/${this.id}`).subscribe({
+      next:(res)=>{
+        if(res.length > 0) {
+          this.detailProgress++;
+          this.documentFiles = res;
         }
       }, error:(res)=> {
         console.log(res);
@@ -467,12 +483,12 @@ export class SingleProductComponent implements OnInit {
           let orderedImages: any[] = [];
           for (let x = 0; x < imgOrder.length; x++) {
             const id = imgOrder[x];
-            const obj = this.savedFiles.find(x => x.id == id);
+            const obj = this.mediaFiles.find(x => x.id == id);
             orderedImages.push(obj);    
           }
-          this.savedFiles = orderedImages;
+          this.mediaFiles = orderedImages;
         }
-        this.savedFiles = this.savedFiles;
+        this.mediaFiles = this.mediaFiles;
       }, error:(res)=> {
         console.log(res);
       }
@@ -508,7 +524,8 @@ export class SingleProductComponent implements OnInit {
     this.api.POST(`product-files/update-fileType/${fileId}`, { type_id: fileTypeId }).subscribe({
       next:(res)=>{
         this.info.activity('Updated file type', this.product.id);
-        this.getFiles();
+        this.media();
+        this.documents();
       }, error:(res)=>{
         console.log(res);
       }
@@ -597,10 +614,10 @@ export class SingleProductComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<string[]>): void {
-    moveItemInArray(this.savedFiles, event.previousIndex, event.currentIndex);
+    moveItemInArray(this.mediaFiles, event.previousIndex, event.currentIndex);
     let arr = [];
-    for (let index = 0; index < this.savedFiles.length; index++) {
-      arr.push(this.savedFiles[index].id);
+    for (let index = 0; index < this.mediaFiles.length; index++) {
+      arr.push(this.mediaFiles[index].id);
     }
     const data = JSON.stringify(arr);
     this.api.POST(`image-order/`, { product_id: this.id, order_list: data }).subscribe({
@@ -672,54 +689,6 @@ export class SingleProductComponent implements OnInit {
       return 100;
     }
     return p;
-  }
-
-  download(f: string, id: number, file: File): void {
-    let path = file.path;
-    this.api.POST('download-file-api', {
-      product_id: this.product.id,
-      product_sku: this.product.sku,
-      original_type_id: file.type_id,
-      original_path: path.replace("public/", "storage/"),
-      new_type_id: id
-    }).subscribe({
-      next:(res)=> {
-        this.openDialog(res[0].path, this.storageUrl);
-      }, error:(res)=> {
-        console.log(res);
-        this.openSnackBar(res.message, 'Okay');
-      }
-    });
-  }
-
-  forceDownload(url: string, fileName: string) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", this.storageUrl + url, true);
-    xhr.responseType = "blob";
-    xhr.onload = function(){
-        var urlCreator = window.URL || window.webkitURL;
-        var imageUrl = urlCreator.createObjectURL(this.response);
-        var tag = document.createElement('a');
-        tag.href = imageUrl;
-        tag.download = fileName;
-        document.body.appendChild(tag);
-        tag.click();
-        document.body.removeChild(tag);
-    }
-    xhr.send();
-  }
-
-  openDialog(link: string, storage: string): void {
-    const dialogRef = this.dialog.open(DownloadDialog, {
-      width: '250px',
-      data: {
-        downloadLink: link.replace("public/", ""),
-        storageUrl: storage,
-      },
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
   }
 
   addNewAttribute(): void {
@@ -817,6 +786,16 @@ export class SingleProductComponent implements OnInit {
         console.log(res);
         this.loadingPdsAttributes = false;
       }
+    });
+  }
+
+  downloadURI(uri: any, id: number, name: string, file: File) { 
+    let path = file.path; 
+    this.api.download('download-file-api', uri, this.product.id, this.product.sku, file.type_id, path.replace("public/", "storage/"), id).subscribe((res: BlobPart) => {
+      const blob = new Blob([res], { type: 'application/octet-stream' });
+      FileSaver.saveAs(blob, name);
+    }, (err: any) => {
+      console.log(err);
     });
   }
 }

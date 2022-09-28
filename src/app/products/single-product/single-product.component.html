@@ -271,7 +271,7 @@
                         <option *ngFor="let type of typesList | typeGroup : 'File'" value="{{ type.id }}">{{ type.name }}</option>
                       </select><br>
                       <label>Document Expiry Date:</label>
-                      <input class="form-control" type="date"><br>
+                      <input class="form-control" [(ngModel)]="expiry_date" type="date"><br>
                       <input class="form-control" type="file" (change)="onChange($event)" multiple><br>
                       <mat-selection-list #permissions style="background-color: rgb(247, 247, 247);">
                         <mat-list-option style="height: 25px;" *ngFor="let type of typesList | typeGroup : 'File Permission'">
@@ -303,28 +303,26 @@
                   <mat-card style="background-color: rgb(255, 255, 255);">
                     <table class="table">
                       <thead>
-                        <tr>
+                        <tr style="list-style: none;">
                           <th>Document</th>
                           <th>Uploaded</th>
                           <th>Expiry Date</th>
-                          <th>Permission</th>
+                          <!-- <th>Permission</th> -->
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>ICASA</td>
-                          <td>08-09-2022</td>
-                          <td>08-09-2023</td>
-                          <td>Clients</td>
+                        <tr *ngFor="let file of documentFiles" >
+                          <td>{{ file.name }}</td>
+                          <td>{{ file.created_at | date }}</td>
+                          <td>
+                            <span *ngIf="today > file.expiry_date">⚠</span>
+                            {{ file.expiry_date | date }}
+                          </td>
+                          <!-- <td></td> -->
                         </tr>
                   
                       </tbody>
                     </table>
-                    <ul>
-                      <li *ngFor="let file of savedFiles" style="list-style: none;">
-                        <div *ngIf="file.type_id == 53 || file.type_id == 54 || file.type_id == 55">📑 {{ file.name }}</div>
-                      </li>
-                    </ul>
                   </mat-card>
                 </div>
               </div>
@@ -335,9 +333,9 @@
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <div class="row">   
                 <div class="col-md-3">
-                  <div cdkDropList class="file-list" (cdkDropListDropped)="drop($event)" *ngIf="savedFiles.length > 0">
-                    <div class="file-box" *ngFor="let file of savedFiles; let i = index">
-                      <div class="row" cdkDrag *ngIf="returnTypeGroup(file.type_id) == 'Image'">
+                  <div cdkDropList class="file-list" (cdkDropListDropped)="drop($event)" *ngIf="mediaFiles.length > 0">
+                    <div class="file-box" *ngFor="let file of mediaFiles; let i = index">
+                      <div class="row" cdkDrag>
                         <div class="col-md-4">
                           <mat-chip-list>
                             <mat-chip color="accent" *ngIf="i == 0" selected>Primary</mat-chip>
@@ -359,9 +357,9 @@
                 </div>
                 <div class="col-md-9">
                   <div class="row">
-                    <div class="col-md-3" *ngFor="let file of savedFiles">
+                    <div class="col-md-3" *ngFor="let file of mediaFiles">
 
-                      <mat-card style="max-width: 280px; margin-bottom: 2rem; background-color: rgb(254, 254, 254);" *ngIf="file.type_id != 55">
+                      <mat-card style="max-width: 280px; margin-bottom: 2rem; background-color: rgb(254, 254, 254);">
                         <mat-card-header>
                           <!-- <mat-card-title>{{ file.name }}</mat-card-title> -->
                           <mat-card-subtitle>{{ returnTypeName(file.type_id) }}</mat-card-subtitle>
@@ -372,15 +370,15 @@
                         
                         <mat-card-content>
                           <mat-chip-list aria-label="Fish selection">
-                            <mat-chip *ngFor="let type of typesList | typeGroup : 'Image Type'"  (click)="download(type.name, type.id, file)">{{ type.name }}</mat-chip>
+                            <mat-chip *ngFor="let type of typesList | typeGroup : 'Image Type'"  (click)="downloadURI('storage/' + filePath(file.path), type.id, file.name, file)">{{ type.name }}</mat-chip>
                           </mat-chip-list>
                         </mat-card-content>
                         <mat-card-actions class="img-action">
                           <button mat-mini-fab color="basic" (click)="hideFile(file.id)"><mat-icon>hide_image</mat-icon></button>&nbsp;
                           <button mat-mini-fab color="basic" (click)="deleteFile(file.id)"><mat-icon>delete</mat-icon></button>
                         </mat-card-actions>
-                        
                       </mat-card>
+
                     </div>
                   </div>
                 </div>
