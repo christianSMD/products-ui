@@ -14,10 +14,6 @@
   <button mat-raised-button class="m-1" disabled>
     <mat-icon>file_upload</mat-icon> Import Products
   </button>
-  <span style="float: right;">
-    <mat-checkbox [(ngModel)]="displayDates" (change)="showDates($event)" class="table-setting">More info</mat-checkbox>
-  </span>
-  
 
   <div class="row">
     <div class="col-md-12 mt-3">
@@ -38,7 +34,8 @@
           <ng-container matColumnDef="thumbnail">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>  </th>
             <td mat-cell *matCellDef="let row">
-              <img src="{{ storageUrl }}files/{{row.sku}}/47/{{row.clean_sku}}-thumb.jpg" onerror="this.src='http://127.0.0.1:8000/storage/files/default.png'" width="45" alt="Photo">
+              
+              <img src="{{ storageUrl }}files/{{row.sku}}/47/{{row.clean_sku}}-thumb.jpg" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" width="45" alt="Photo">
             </td>
           </ng-container>
           
