@@ -89,11 +89,18 @@
                                 <mat-grid-tile>
                                     <mat-form-field appearance="outline" style="width: 100%;">
                                         <mat-label>Parent Category</mat-label>
-                                        <input name="parent" matInput formControlName="parent" class="capitalize" placeholder="Enter Category Name">
+                                        <!-- <input name="parent" matInput formControlName="parent" class="capitalize" placeholder="Enter Category Name"> -->
+                                        <mat-label>Parent Category</mat-label>
+                                        <mat-select name="categories" formControlName="parent" (selectionChange)="selectParentCategory($event)">
+                                            <mat-option [value]="category.id" *ngFor="let category of categoriesList">
+                                                {{ category.name }}
+                                            </mat-option>
+                                        </mat-select>
+
                                     </mat-form-field>
                                 </mat-grid-tile>
                                 <mat-grid-tile>
-                                    <button class="mb-3" mat-raised-button type="submit" color="primary" (click)="addNewCategory()">Save Changes</button>
+                                    <button class="mb-3" mat-raised-button type="submit" color="primary" (click)="updateParent()">Save Changes</button>
                                 </mat-grid-tile>
                             </mat-grid-list>
                         </form>

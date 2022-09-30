@@ -68,7 +68,7 @@ export class CategoriesComponent implements OnInit {
     this.categoryForm = this.formBuilder.group({
       attributes: this.formBuilder.array([])
     });
-  }
+  } 
 
   /**
    * Returns all categories from the backend
@@ -110,6 +110,7 @@ export class CategoriesComponent implements OnInit {
       console.log("Form input invalid.");
     }
   }
+  
 
   get attributes() {
     return this.categoryForm.get('attributes') as FormArray
@@ -158,6 +159,18 @@ export class CategoriesComponent implements OnInit {
       this.openSnackBar('Please enter value', 'Okay');
     }
     
+  }
+
+  updateParent() {
+    console.log('updating: ' + this.selectedCatId);
+    this.api.POST(`categories/update-parent/${this.selectedCatId}`, this.updateCategory.value).subscribe({
+      next:(res)=> {
+        console.log(res);
+        this.getAllCategories();
+      }, error:(res)=> {
+        this.openSnackBar(res.message, 'Okay');
+      }
+    });
   }
 
   /**
