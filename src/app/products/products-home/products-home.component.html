@@ -8,8 +8,11 @@
   <button *ngIf="addProductRole" mat-raised-button class="m-1" routerLink="add/new" >
     <mat-icon>add</mat-icon> Add New Product
   </button>
+  <button mat-raised-button class="m-1"  routerLink="products/export-csv">
+    <mat-icon>download_file</mat-icon> Export CSV
+  </button>
   <button mat-raised-button class="m-1"  routerLink="products/export">
-    <mat-icon>download</mat-icon> Export Products
+    <mat-icon>wordpress</mat-icon> Export For WordPress
   </button>
   <button mat-raised-button class="m-1" disabled>
     <mat-icon>file_upload</mat-icon> Import Products

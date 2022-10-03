@@ -37,6 +37,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatBadgeModule } from '@angular/material/badge';
 import { ExportComponent } from './export/export.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ExportCSVComponent } from './export/export-csv/export-csv.component';
 
 
 @NgModule({
@@ -48,7 +49,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     ProductsHomeComponent,
     TypesPipe,
     CategoriesPipe,
-    ExportComponent
+    ExportComponent,
+    ExportCSVComponent
   ],
   imports: [
     CommonModule,

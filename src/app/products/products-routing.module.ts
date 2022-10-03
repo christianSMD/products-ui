@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ExportComponent } from './export/export.component';
 import { CategoriesComponent } from './categories/categories.component';
+import { ExportCSVComponent } from './export/export-csv/export-csv.component';
+import { ExportComponent } from './export/export.component';
 import { ListProductsComponent } from './list-products/list-products.component';
 import { NewProductComponent } from './new-product/new-product.component';
 import { ProductsHomeComponent } from './products-home/products-home.component';
@@ -13,7 +14,8 @@ const routes: Routes = [
   { path: 'brand/:brand', component: ListProductsComponent },
   { path: 'add/new', component: NewProductComponent },
   { path: 'categories/manage', component: CategoriesComponent },
-  { path: 'products/export', component: ExportComponent }
+  { path: 'products/export', component: ExportComponent },
+  { path: 'products/export-csv', component: ExportCSVComponent }
 ];
 
 @NgModule({

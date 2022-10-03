@@ -9,7 +9,7 @@
         <div style="text-align: center;">
             <h2 style="color: #000;">{{ userName }}</h2>
             <div style="margin-top: -12px; margin-bottom: 1rem;">
-                <a class="profile-link" href="#" routerLink="users/manage">Manage Account</a><br>
+                <a class="profile-link" href="javascript:void(0)"  (click)="openProfile()">Manage Account</a><br> 
                 <a class="profile-link" href="#" (click)="logout()">Logout</a>
             </div>
         </div>

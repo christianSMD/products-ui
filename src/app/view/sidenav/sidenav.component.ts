@@ -81,6 +81,11 @@ export class SidenavComponent {
     this.router.navigate(['/brand', brand.toLowerCase()]);
   }
 
+  openProfile(): void {
+    const link = '/profile/' + this.info.getUserId();
+    this.router.navigate([link]);
+  }
+
   logout() {
     this.info.isUserLoggedIn.next(false);
     localStorage.clear();

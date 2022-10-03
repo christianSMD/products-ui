@@ -65,6 +65,7 @@ export class SingleProductComponent implements OnInit {
   uploadProgressBar = 'width:0%;height:20px';
   loading: boolean = false;
   packaging: any;
+  packagingCount: number = 0;
   attrCount: number = 0;
   productCategories: Category[] = [];
   attributesFields: any[] = [];
@@ -115,6 +116,7 @@ export class SingleProductComponent implements OnInit {
       behavior: 'smooth' 
     });
 
+    this.detailProgress = 0;
     this.editRole = this.info.role(56);
     this.uploadRole = this.info.role(57);
     this.viewAllProductsRole = this.info.role(68);
@@ -322,11 +324,13 @@ export class SingleProductComponent implements OnInit {
   }
 
   getPackaging(id: string): void {
+    this.packagingCount = 0;
     this.api.GET(`packaging/search/${id}`).subscribe({
       next:(res)=>{
         if (res.length > 0) {
           this.detailProgress++;
           this.packaging = res;
+          this.packagingCount = this.packaging.length;
           this.productFormPackaging = this.formBuilder.group({   
             length : [res[0].height],
             width : [res[0].width],
@@ -684,10 +688,13 @@ export class SingleProductComponent implements OnInit {
   }
 
   progressPercentage() {
-    const p = (this.detailProgress / 4) * 100;
-    if (p > 100) {
-      return 100;
-    }
+    const categories = (this.categoriesList.length > 0) ? 1 : 0;
+    const attributes = (this.attributes.length > 0) ? 1 : 0;
+    const packaging = (this.packagingCount > 0) ? 1 : 0;
+    const documents = (this.documentFiles.length > 0) ? 1 : 0;
+    const media = (this.mediaFiles.length > 0) ? 1 : 0;
+    const total = categories + attributes + packaging + documents + media;
+    const p = (total / 5) * 100;
     return p;
   }
 

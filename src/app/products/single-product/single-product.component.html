@@ -9,7 +9,7 @@
   </p>
 
   <div class="row" >
-    <div class="col-md-12">
+    <div class="col-md-10">
       <mat-card style="background: #EFEFEF;">
         <mat-tab-group>
           <mat-tab label="Product Details">
@@ -446,44 +446,53 @@
         </mat-tab-group>
       </mat-card>
     </div>
-    <div class="col-md-12">
+    <div class="col-md-2">
 
-      <!-- <div class="text-muted">
+      <div class="text-muted">
         <mat-card>
           <mat-card-content>
+
+            <mat-grid-list cols="3" rowHeight="100px">
+              <mat-grid-tile colspan="3">
+                <mat-progress-spinner
+                  [color]="progressColor"
+                  [mode]="progressMode"
+                  [value]="progressPercentage()">
+                </mat-progress-spinner>
+              </mat-grid-tile>
+            </mat-grid-list>
+            <br>
+          <h3 style="text-align: center;">{{ progressPercentage() }}% Complete</h3>
+          <hr>
             <mat-list role="list">
               <mat-list-item role="listitem">
-                <mat-icon>check_circle</mat-icon> Product Details
+                <mat-icon>check_circle</mat-icon> General Details
               </mat-list-item>
               <mat-list-item role="listitem">
-                <mat-icon>check_circle</mat-icon> Attributes
+                <mat-icon *ngIf="categoriesList.length < 1">radio_button_unchecked</mat-icon>
+                <mat-icon *ngIf="categoriesList.length > 0">check_circle</mat-icon> Categories
               </mat-list-item>
               <mat-list-item role="listitem">
-                <mat-icon>radio_button_unchecked</mat-icon> Packaging
+                <mat-icon *ngIf="attributes.length < 1">radio_button_unchecked</mat-icon>
+                <mat-icon *ngIf="attributes.length > 0">check_circle</mat-icon> Attributes
               </mat-list-item>
               <mat-list-item role="listitem">
-                <mat-icon>check_circle</mat-icon> Documents
+                <mat-icon *ngIf="packagingCount < 1">radio_button_unchecked</mat-icon>
+                <mat-icon *ngIf="packagingCount > 0">check_circle</mat-icon> Packaging
               </mat-list-item>
               <mat-list-item role="listitem">
-                <mat-icon>check_circle</mat-icon> Media
+                <mat-icon *ngIf="documentFiles.length < 1">radio_button_unchecked</mat-icon>
+                <mat-icon *ngIf="documentFiles.length > 0">check_circle</mat-icon> Documents ({{documentFiles.length}})
+              </mat-list-item>
+              <mat-list-item role="listitem">
+                <mat-icon *ngIf="mediaFiles.length < 1">radio_button_unchecked</mat-icon>
+                <mat-icon *ngIf="mediaFiles.length > 0">check_circle</mat-icon> Images ({{mediaFiles.length}})
               </mat-list-item>
             </mat-list>
-          </mat-card-content>
-          <hr>
-          <mat-grid-list cols="3" rowHeight="100px">
-            <mat-grid-tile colspan="3">
-              <mat-progress-spinner
-                [color]="progressColor"
-                [mode]="progressMode"
-                [value]="progressPercentage()">
-              </mat-progress-spinner>
-            </mat-grid-tile>
-          </mat-grid-list>
-          <br>
-        <h3 style="text-align: center;">{{ progressPercentage() }}% Complete</h3>
+          </mat-card-content>          
 
         </mat-card>
-      </div> -->
+      </div>
     </div>
   </div>
 
