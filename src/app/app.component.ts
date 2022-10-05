@@ -16,17 +16,17 @@ export class AppComponent {
   minimized: boolean = true;
 
   ngOnInit(): void {
-
     console.log('Current user status: ', this.info.isUserLoggedIn);
     if(!this.info.getUserEmail()){
       this.info.isUserLoggedIn.next(false);
+      let sidenav = document.getElementById("sidenav");
+
     } else {
       this.info.isUserLoggedIn.next(true);
     }
   }
 
   test() {
-    
     this.minimized = !this.minimized;
     console.log(this.minimized); 
   }

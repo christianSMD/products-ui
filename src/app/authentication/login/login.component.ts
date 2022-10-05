@@ -54,6 +54,7 @@ export class LoginComponent implements OnInit {
             localStorage.setItem('refreshed', 'no');
             localStorage.setItem('blockui', 'yes');
             this.info.role(0); // Trigger local storage for permissions
+            this.openSnackBar('✔ Logging in...', '');
             this.router.navigate(['/']);
           } else {
             this.openSnackBar('⛔ Your account has not been approved yet, or has been deactivated. Please contact your administrator.' , 'Okay');
@@ -62,6 +63,7 @@ export class LoginComponent implements OnInit {
         },
         error:(res)=>{
           console.log(res);
+          this.openSnackBar('⚠' + res.error.message, 'Try Again');
         }
       });
     } else {

@@ -16,6 +16,9 @@ import { InfoService } from 'src/app/services/info/info.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import * as FileSaver from 'file-saver';
 import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
+import jsPDF from "jspdf";
+import autoTable from 'jspdf-autotable';
+
 
 @Component({
   selector: 'download-dialog',
@@ -94,6 +97,9 @@ export class SingleProductComponent implements OnInit {
   loadingPdsAttributes: boolean = true;
   expiry_date: string;
   today = new Date();
+  onImageServer = true;
+
+  @ViewChild('pdfContent') content:ElementRef;  
 
   constructor(public navbar: NavbarService,
     public treeNav: TreeService,
@@ -795,6 +801,42 @@ export class SingleProductComponent implements OnInit {
       }
     });
   }
+
+  public SavePDF():void{  
+    console.log(this.productForm.value);
+    let status: any[] = [];
+    if(this.productForm.value.is_in_development == 1) {
+      status.push('Active ')
+    }
+    if(this.productForm.value.is_eol == 1) {
+      status.push(' End of Life ')
+    }
+    if(this.productForm.value.is_in_development == 1) {
+      status.push(' In Development ')
+    }
+    const doc = new jsPDF()
+    // It can parse html:
+    // autoTable(doc, { html: '#my-table' })
+    // Or use javascript directly:
+    autoTable(doc, {
+      // head: [['Name', 'Email', 'Country']],
+      body: [
+        ['Product Code', this.sku],
+        ['Product Name', this.productName],
+        ['Short Description', this.productForm.value.short_description],
+        ['Description', this.productForm.value.description],
+        ['Status', status],
+        // ...
+      ],
+    })
+
+    doc.save(this.sku + ".pdf");
+  } 
+
+  imageserver(productSku: string, number: number) {
+    return `https://images.smdtechnologies.co.za/api/store/${productSku}/${number}`;
+  }
+
 
   downloadURI(uri: any, id: number, name: string, file: File) { 
     let path = file.path; 

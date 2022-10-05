@@ -209,4 +209,8 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     this.displayedColumns = ['id', 'thumbnail', 'sku', 'name', 'brand', 'description', 'view'];
   }
 
+  selectBrand(brand: String): void {
+    this.router.navigate(['/brand', brand.toLowerCase()]);
+  }
+
 }

@@ -26,9 +26,9 @@ export class RegisterComponent implements OnInit {
     this.nav.hide();
     this.sideNav.hide();
     this.userForm = this.formBuilder.group({
-      name : ['John', Validators.required],
-      surname : ['Doe', Validators.required],
-      email : ['john@example.com', Validators.required],
+      name : ['', Validators.required],
+      surname : ['', Validators.required],
+      email : ['', Validators.required],
       password : ['', Validators.required],
       confirmPassword : ['', Validators.required]
     })

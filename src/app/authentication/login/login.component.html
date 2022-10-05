@@ -1,48 +1,41 @@
 <div class="container">
-
-    <div class="my-5">
-        <div class="card-body p-0">
-            <!-- Nested Row within Card Body -->
-            <div class="row">
-                <div class="col-lg-4 col-md-4 bg"></div>
-                <div class="col-lg-4 col-md-4 col-sm-12 card o-hidden border-0 shadow-lg">
-                    <div class="p-5 auth-card">
-                        <div class="text-center">
-                            <mat-icon class="auth-user smd-text">person_pin</mat-icon>
-                            <h1 class="h4 text-gray-900 mb-4">Log In</h1>
+    <div class="row justify-content-center">
+        <div class="col-10 col-sm-8 col-md-6 col-lg-3">
+            <div style="text-align: center">
+                <img src="../../../assets/img/smd.jpg" height="44">
+            </div>
+            <div class="auth-card o-hidden border-0 shadow-lg my-3">
+                <div class="text-center">
+                    <mat-icon class="auth-user smd-text">person_pin</mat-icon>
+                    <h1 class="h4 text-gray-900 mb-4">Log In</h1>
+                </div>
+                <form class="user" [formGroup]="userForm">
+                    <div class="form-group row">
+                        <div class="col-sm-12 col-md-12">
+                            <mat-form-field appearance="outline" style="width: 100%;">
+                                <mat-label>Email</mat-label>
+                                <input matInput type="email" formControlName="email" placeholder="Email">
+                            </mat-form-field>
                         </div>
-                        <form class="user" [formGroup]="userForm">
-                            <div class="form-group row">
-                                <div class="col-sm-12 col-md-12">
-                                    <mat-form-field appearance="outline" style="width: 100%;">
-                                        <mat-label>Email</mat-label>
-                                        <input matInput type="email" formControlName="email" placeholder="Email">
-                                        <mat-icon matSuffix>alternate_email</mat-icon>
-                                        <!-- <mat-hint>Hint</mat-hint> -->
-                                    </mat-form-field>
-                                </div>
-                                <div class="col-sm-12 mb-3 mb-sm-0">
-                                    <mat-form-field appearance="outline" style="width: 100%;">
-                                        <mat-label>Password</mat-label>
-                                        <input matInput [type]="hide ? 'password' : 'text'" formControlName="password">
-                                        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
-                                          <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-                                        </button>
-                                    </mat-form-field>
-                                </div>
-                            </div>
-                            <button mat-raised-button style="width: 100%;" type="submit" class="smd-background" (click)="login()">Log In</button>
-                        </form>
-                        <hr>
-                        <div class="text-center">
-                            <a class="small" (click)="forgotPassword()">Forgot Password</a>
-                        </div>
-                        <div class="text-center">
-                            <a class="small" routerLink="/register">Don't have an account? Create Account!</a>
+                        <div class="col-sm-12 mb-3 mb-sm-0">
+                            <mat-form-field appearance="outline" style="width: 100%;">
+                                <mat-label>Password</mat-label>
+                                <input matInput [type]="hide ? 'password' : 'text'" formControlName="password">
+                                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                                  <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                                </button>
+                            </mat-form-field>
                         </div>
                     </div>
+                    <button mat-raised-button style="width: 100%;" type="submit" class="smd-background" (click)="login()">Log In</button>
+                </form>
+                <br>
+                <div class="text-center">
+                    <a class="small" (click)="forgotPassword()">Forgot Password</a>
                 </div>
-                <div class="col-lg-4 col-md-4 bg"></div>
+                <div class="text-center">
+                    <a class="small" routerLink="/register">Don't have an account? Create Account!</a>
+                </div>
             </div>
         </div>
     </div>

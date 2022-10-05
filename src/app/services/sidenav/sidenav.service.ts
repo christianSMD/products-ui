@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
+import { elementAt } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,9 @@ export class SidenavService {
 
 
   hide() { 
-    this.visible = false; 
+    this.visible = false;
+    let sidenav = document.getElementById("sidenav");
+    sidenav!.style.display = "none";
   }
 
   show() { 

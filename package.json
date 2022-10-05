@@ -24,6 +24,7 @@
     "cdk-table-exporter": "^10.2.4",
     "file-saver": "^2.0.5",
     "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.5.25",
     "mat-table-exporter": "^10.2.4",
     "material-components-web": "^13.0.0",
     "ng-block-ui": "^3.0.2",

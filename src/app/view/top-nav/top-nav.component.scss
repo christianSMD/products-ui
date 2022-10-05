@@ -7,4 +7,26 @@
 .nav-spacer {
     flex: 1 1 auto;
 }
+
+.user-button {
+    left: 86px;
+}
   
+.logout-button {
+    margin-right: 3rem;
+}
+
+@media only screen and (max-width: 600px) {
+
+    .logout-button {
+      display: none;
+    }
+    .sidenav {
+      display: none;
+    }
+  }
+  
+  /* Small devices (portrait tablets and large phones, 600px and up) */
+  @media only screen and (min-width: 600px) {
+
+  }

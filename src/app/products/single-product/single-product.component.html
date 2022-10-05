@@ -8,7 +8,7 @@
     <a routerLink="/">Products </a> / Product Details / {{ productName }}
   </p>
 
-  <div class="row" >
+  <div class="row" id="pdfContent">
     <div class="col-md-10">
       <mat-card style="background: #EFEFEF;">
         <mat-tab-group>
@@ -328,121 +328,191 @@
               </div>
             </div>
           </mat-tab>
-          <mat-tab label="Briefing Files"></mat-tab>
+          <mat-tab label="Briefing Files">
+            <div class="mt-5 custom-tab" style="overflow: hidden !important;">
+              <div class="row">
+                <div class="col-md-4">
+                  <mat-card style="background-color: rgb(255, 255, 255);">
+                    <div *ngIf="uploadRole">
+                      <label>Document Type:</label>
+                      <select class="form-control" (change)="setFocusType($event)">
+                        <option *ngFor="let type of typesList | typeGroup : 'Briefing File'" value="{{ type.id }}">{{ type.name }}</option>
+                      </select><br>
+                      <input class="form-control" type="file" (change)="onChange($event)" multiple><br>
+                      <mat-selection-list #permissions style="background-color: rgb(247, 247, 247);">
+                        <mat-list-option style="height: 25px;" *ngFor="let type of typesList | typeGroup : 'File Permission'">
+                          {{type.name }}
+                        </mat-list-option>
+                      </mat-selection-list>
+                      <br>
+                      <button mat-raised-button color="primary" (click)="uploadDocument('62', 'document')">Upload Briefing File</button>
+                      <hr>
+                      <div class="container" *ngIf="loading">
+                        <h3>Loading ...</h3>
+                      </div>
+                      <div class="progress" style="height:10px;width:100%;">
+                        <div class="progress-bar bg-success" [style]="uploadProgressBar"></div>
+                      </div>
+                      <div *ngIf="messages.length" class="message">
+                        <ul *ngFor="let msg of messages; let i = index">
+                          <li>{{ msg }}</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div *ngIf="!uploadRole" class="upload-role">
+                        <p>You do not have permissions to upload briefing files</p>
+                        <mat-icon>upload_file</mat-icon>
+                    </div>
+                  </mat-card>
+                </div>
+                <div class="col-md-8">
+                  <mat-card style="background-color: rgb(255, 255, 255);">
+                    <table class="table">
+                      <thead>
+                        <tr style="list-style: none;">
+                          <th>Document</th>
+                          <th>Uploaded</th>
+                          <!-- <th>Expiry Date</th> -->
+                          <!-- <th>Permission</th> -->
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let file of documentFiles" >
+                          <td>{{ file.name }}</td>
+                          <td>{{ file.created_at | date }}</td>
+                          <!-- <td>
+                            <span *ngIf="today > file.expiry_date">⚠</span>
+                            {{ file.expiry_date | date }}
+                          </td> -->
+                          <!-- <td></td> -->
+                        </tr>
+                  
+                      </tbody>
+                    </table>
+                  </mat-card>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
           <mat-tab label="Media">
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
-              <div class="row">   
-                <div class="col-md-3">
-                  <div cdkDropList class="file-list" (cdkDropListDropped)="drop($event)" *ngIf="mediaFiles.length > 0">
-                    <div class="file-box" *ngFor="let file of mediaFiles; let i = index">
-                      <div class="row" cdkDrag>
-                        <div class="col-md-4">
-                          <mat-chip-list>
-                            <mat-chip color="accent" *ngIf="i == 0" selected>Primary</mat-chip>
-                          </mat-chip-list>
-                          <span matBadge="{{i+1}}" *ngIf="i > 0" matBadgeOverlap="false" matBadgeColor="accent"></span>
-                          <img class="sort-img" alt="{{ file.path }}" src="{{ storageUrl + filePath(file.path) }}">
+              <mat-tab-group>
+                <mat-tab label="Images">
+                  <div class="row">   
+                    <div class="col-md-3">
+                      <div cdkDropList class="file-list" (cdkDropListDropped)="drop($event)" *ngIf="mediaFiles.length > 0">
+                        <div class="file-box" *ngFor="let file of mediaFiles; let i = index">
+                          <div class="row" cdkDrag>
+                            <div class="col-md-4">
+                              <mat-chip-list>
+                                <mat-chip color="accent" *ngIf="i == 0" selected>Primary</mat-chip>
+                              </mat-chip-list>
+                              <span matBadge="{{i+1}}" *ngIf="i > 0" matBadgeOverlap="false" matBadgeColor="accent"></span>
+                              <img class="sort-img" alt="{{ file.path }}" src="{{ storageUrl + filePath(file.path) }}">
+                            </div>
+                            <div class="col-md-8">
+                              <mat-form-field appearance="outline" style="width: 90%;">
+                                <mat-label>{{ returnTypeName(file.type_id) }}</mat-label>
+                                <mat-select>
+                                  <mat-option (onSelectionChange)="updateFileType(file.id, type.id)" *ngFor="let type of typesList | typeGroup : 'Image'" value="{{ type.id }}">{{ type.name }}</mat-option>
+                                </mat-select>
+                              </mat-form-field>
+                            </div>
+                          </div>
                         </div>
-                        <div class="col-md-8">
-                          <mat-form-field appearance="outline" style="width: 90%;">
-                            <mat-label>{{ returnTypeName(file.type_id) }}</mat-label>
-                            <mat-select>
-                              <mat-option (onSelectionChange)="updateFileType(file.id, type.id)" *ngFor="let type of typesList | typeGroup : 'Image'" value="{{ type.id }}">{{ type.name }}</mat-option>
-                            </mat-select>
-                          </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="col-md-9">
+                      <div class="row">
+                        <div class="col-md-3" *ngFor="let file of mediaFiles">
+    
+                          <mat-card style="max-width: 280px; margin-bottom: 2rem; background-color: rgb(254, 254, 254);">
+                            <mat-card-header>
+                              <!-- <mat-card-title>{{ file.name }}</mat-card-title> -->
+                              <mat-card-subtitle>{{ returnTypeName(file.type_id) }}</mat-card-subtitle>
+                            </mat-card-header>
+                            <div style="height: 120px; width: 130px; overflow: hidden;">
+                              <img mat-card-image src="{{ storageUrl + filePath(file.path) }}" alt="Photo">
+                            </div>
+                            
+                            <mat-card-content>
+                              <mat-chip-list aria-label="Fish selection">
+                                <mat-chip *ngFor="let type of typesList | typeGroup : 'Image Type'"  (click)="downloadURI('storage/' + filePath(file.path), type.id, file.name, file)">{{ type.name }}</mat-chip>
+                              </mat-chip-list>
+                            </mat-card-content>
+                            <mat-card-actions class="img-action">
+                              <button mat-mini-fab color="basic" (click)="hideFile(file.id)"><mat-icon>hide_image</mat-icon></button>&nbsp;
+                              <button mat-mini-fab color="basic" (click)="deleteFile(file.id)"><mat-icon>delete</mat-icon></button>
+                            </mat-card-actions>
+                          </mat-card>
+    
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="col-md-9">
-                  <div class="row">
-                    <div class="col-md-3" *ngFor="let file of mediaFiles">
-
-                      <mat-card style="max-width: 280px; margin-bottom: 2rem; background-color: rgb(254, 254, 254);">
-                        <mat-card-header>
-                          <!-- <mat-card-title>{{ file.name }}</mat-card-title> -->
-                          <mat-card-subtitle>{{ returnTypeName(file.type_id) }}</mat-card-subtitle>
-                        </mat-card-header>
-                        <div style="height: 120px; width: 130px; overflow: hidden;">
-                          <img mat-card-image src="{{ storageUrl + filePath(file.path) }}" alt="Photo">
+                  <mat-card>
+                    <div *ngIf="uploadRole" class="row">
+                      <div class="col-md-4 form-border">
+                        <input class="form-control" type="file" (change)="onChange($event)" multiple><br>
+                        <button mat-raised-button color="primary" (click)="onUpload('47', 'image')">Upload Media</button>
+                      </div>
+                      <div class="col-md-8">
+                        <div class="container" *ngIf="loading">
+                          <h3>Loading ...</h3>
                         </div>
-                        
-                        <mat-card-content>
-                          <mat-chip-list aria-label="Fish selection">
-                            <mat-chip *ngFor="let type of typesList | typeGroup : 'Image Type'"  (click)="downloadURI('storage/' + filePath(file.path), type.id, file.name, file)">{{ type.name }}</mat-chip>
-                          </mat-chip-list>
-                        </mat-card-content>
-                        <mat-card-actions class="img-action">
-                          <button mat-mini-fab color="basic" (click)="hideFile(file.id)"><mat-icon>hide_image</mat-icon></button>&nbsp;
-                          <button mat-mini-fab color="basic" (click)="deleteFile(file.id)"><mat-icon>delete</mat-icon></button>
-                        </mat-card-actions>
-                      </mat-card>
-
+                        <div class="progress" style="height:10px;width:100%;">
+                          <div class="progress-bar bg-success" [style]="uploadProgressBar"></div>
+                        </div>
+                        <div *ngIf="messages.length" class="message">
+                          <ul *ngFor="let msg of messages; let i = index">
+                            <li>{{ msg }}</li>
+                          </ul>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <mat-card>
-              <div *ngIf="uploadRole" class="row">
-                <div class="col-md-4 form-border">
-                  <input class="form-control" type="file" (change)="onChange($event)" multiple><br>
-                  <button mat-raised-button color="primary" (click)="onUpload('47', 'image')">Upload Media</button>
-                </div>
-                <div class="col-md-8">
-                  <div class="container" *ngIf="loading">
-                    <h3>Loading ...</h3>
-                  </div>
-                  <div class="progress" style="height:10px;width:100%;">
-                    <div class="progress-bar bg-success" [style]="uploadProgressBar"></div>
-                  </div>
-                  <div *ngIf="messages.length" class="message">
-                    <ul *ngFor="let msg of messages; let i = index">
-                      <li>{{ msg }}</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              <div *ngIf="!uploadRole" class="row">
-                <div class="col-md-12">
-                  <div class="upload-role">
-                    <p>You do not have permissions to upload media</p>
-                    <mat-icon>hide_image</mat-icon>
-                  </div>
-                </div>
-              </div>
-
-            </mat-card>
-          </mat-tab>
-          <!-- <mat-tab label="Image Server">
-            
-            <div class="mt-5 custom-tab" style="overflow: hidden !important;">
-
-              <div class="row">
-                <div class="col-md-3" *ngFor="let number of [0,1,2,3,4,5]; let index = index">
-
-                  <mat-card style="max-width: 280px; margin-bottom: 2rem; background-color: rgb(254, 254, 254);">
-             {{number}}
-                    <div style="height: 120px; width: 130px; overflow: hidden;">
-                      <img mat-card-image src="https://images.smdtechnologies.co.za/api/store/{{productSku}}/{{number}}" alt="Photo">
+      
+                    <div *ngIf="!uploadRole" class="row">
+                      <div class="col-md-12">
+                        <div class="upload-role">
+                          <p>You do not have permissions to upload media</p>
+                          <mat-icon>hide_image</mat-icon>
+                        </div>
+                      </div>
                     </div>
-
-                    <mat-card-content>
-                      <mat-chip-list aria-label="Fish selection">
-                        <mat-chip *ngFor="let type of typesList | typeGroup : 'Image Type'" >{{ type.name }}</mat-chip>
-                      </mat-chip-list>
-                    </mat-card-content>
-                    <mat-card-actions class="img-action">
-                    </mat-card-actions>
-                    
+      
                   </mat-card>
-                </div>
-              </div>
-
+                </mat-tab>
+                <mat-tab label="Videos">
+                  <div class="mt-5 custom-tab" style="overflow: hidden !important;">
+                  </div>
+                  </mat-tab>
+                <mat-tab label="Image Server">
+                  <div class="mt-5 custom-tab" style="overflow: hidden !important;">
+                    <div class="row">
+                      <div class="col-md-3" *ngFor="let number of [0,1,2,3,4,5,6,7,8,9,10]; let index = index">
+                        <mat-card style="max-width: 280px; margin-bottom: 2rem; background-color: rgb(254, 254, 254);">
+                          {{number}}
+                          <div style="height: 120px; width: 130px; overflow: hidden;">
+                            <img mat-card-image src="{{ imageserver(productSku, number) }}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" alt="Photo">
+                          </div>
+                          <mat-card-content>
+                            <mat-chip-list aria-label="Fish selection">
+                              <mat-chip *ngFor="let type of typesList | typeGroup : 'Image Type'" >{{ type.name }}</mat-chip>
+                            </mat-chip-list>
+                          </mat-card-content>
+                          <mat-card-actions class="img-action">
+                          </mat-card-actions>       
+                        </mat-card>
+                      </div>
+                    </div>
+                  </div>
+                </mat-tab>
+              </mat-tab-group>
+              
             </div>
-          </mat-tab> -->
+            
+          </mat-tab>
+
         </mat-tab-group>
       </mat-card>
     </div>
@@ -490,7 +560,10 @@
               </mat-list-item>
             </mat-list>
           </mat-card-content>          
-
+          <div style="text-align: center;">
+            <button mat-raised-button color="primary" (click)="SavePDF()">Export PDF</button>
+          </div>
+          
         </mat-card>
       </div>
     </div>
