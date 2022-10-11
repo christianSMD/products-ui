@@ -69,6 +69,7 @@ export class SingleProductComponent implements OnInit {
   loading: boolean = false;
   packaging: any;
   packagingCount: number = 0;
+  packagingLoading: boolean = false;
   attrCount: number = 0;
   productCategories: Category[] = [];
   attributesFields: any[] = [];
@@ -77,7 +78,6 @@ export class SingleProductComponent implements OnInit {
   productAttributes: any[] = [];
   ft = '';
   detailProgress: number = 0;
-  progressColor: ThemePalette = 'primary';
   progressMode: ProgressSpinnerMode = 'determinate';
   storageUrl: string;
   editRole: boolean = false;
@@ -274,22 +274,28 @@ export class SingleProductComponent implements OnInit {
    * @todo Loop each category for attributes.
    */
    getProductCategories(): void {
-    console.log('Product Categories');
     this.api.GET(`product-categories/search/${this.id}`).subscribe({
       next:(res)=>{
         this.productCategories = res;
-        console.log("Product Categories: ", res);
         if (res.length > 0) {
           this.detailProgress++;
           // Loop Categories linked to product
           for (let x = 0; x < res.length; x++) {
             let attributes = JSON.parse(res[x].attributes);
             if(res[x].parent != 0) {
+
+              //Attributes from parent categpory
               let parent = this.categoriesList.find(i => i.id == res[x].parent);
-              // for (let index = 0; index < parent?.attributes.length; index++) {
-              //   attributes.push(parent?.attributes[index]);
-              // }
-              console.log(attributes);
+              let parentAttributes: string[] = []; 
+              parentAttributes = JSON.parse(parent?.attributes);
+              for (let index = 0; index < parentAttributes.length; index++) {
+                const parentAttrs = this.formBuilder.group({
+                  attrName: [parentAttributes[index], Validators.required],
+                  attrValue: ['0', Validators.required]
+                })
+                this.attributes.push(parentAttrs);
+                this.attrCount = this.attrCount + 1;
+              }
             } else {
               console.log('here..');
             }
@@ -331,6 +337,7 @@ export class SingleProductComponent implements OnInit {
 
   getPackaging(id: string): void {
     this.packagingCount = 0;
+    this.packagingLoading = true;
     this.api.GET(`packaging/search/${id}`).subscribe({
       next:(res)=>{
         if (res.length > 0) {
@@ -346,7 +353,7 @@ export class SingleProductComponent implements OnInit {
             product_id: [this.id]
           });
         }
-        
+        this.packagingLoading = false;
       }, error:(res)=>{
         this.typesLoader = false;
         this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
@@ -371,7 +378,7 @@ export class SingleProductComponent implements OnInit {
 
     if (this.files.length > 0) {
       for(let x = 0; x < this.files.length; x ++) {
-        this.api.upload('/upload-media', {
+        this.api.upload('upload-media', {
           file: this.files[x],
           name: this.files[x].name,
           product_id: this.product.id,
@@ -549,6 +556,7 @@ export class SingleProductComponent implements OnInit {
   updateProduct(): void {
     this.api.POST(`products/update/${this.id}`, this.productForm.value).subscribe({
       next:(res)=>{
+        this.progressPercentage();
         this.info.activity('Updated product', this.product.id);
         this.openSnackBar('Product Updated 😃', 'Okay');
       }, error:(res)=>{
@@ -669,7 +677,7 @@ export class SingleProductComponent implements OnInit {
   }
 
   deleteFile(id: number): void {
-    this.api.GET(`files/delete/${this.id}`).subscribe({
+    this.api.GET(`delete-file/${id}`).subscribe({
       next:(res)=>{
         if(res.length > 0) {
           console.log("delete: ", res);
@@ -681,7 +689,7 @@ export class SingleProductComponent implements OnInit {
   }
 
   hideFile(id: number): void {
-    this.api.GET(`files/delete/${this.id}`).subscribe({
+    this.api.GET(`hide-file/${id}`).subscribe({
       next:(res)=>{
         if(res.length > 0) {
           console.log("delete: ", res);
@@ -693,15 +701,18 @@ export class SingleProductComponent implements OnInit {
     });
   }
 
-  progressPercentage() {
+  progressPercentage() { 
+    const verified = (this.product.verified) ? 1 : 0;
+    const status = (this.product.is_in_development > 0 || this.product.is_eol > 0 || this.product.is_active > 0) ? 1 : 0;
     const categories = (this.categoriesList.length > 0) ? 1 : 0;
     const attributes = (this.attributes.length > 0) ? 1 : 0;
     const packaging = (this.packagingCount > 0) ? 1 : 0;
     const documents = (this.documentFiles.length > 0) ? 1 : 0;
     const media = (this.mediaFiles.length > 0) ? 1 : 0;
-    const total = categories + attributes + packaging + documents + media;
-    const p = (total / 5) * 100;
-    return p;
+    const brand = (this.productForm.value.brand_type_id) ? 1 : 0;
+    const total = categories + attributes + packaging + documents + media + brand + status + verified;
+    const p = (total / 8) * 100;
+    return Math.round(p);
   }
 
   addNewAttribute(): void {
@@ -815,17 +826,18 @@ export class SingleProductComponent implements OnInit {
       status.push(' In Development ')
     }
     const doc = new jsPDF()
+    doc.text(this.productName, 10, 10);
     // It can parse html:
     // autoTable(doc, { html: '#my-table' })
     // Or use javascript directly:
     autoTable(doc, {
       // head: [['Name', 'Email', 'Country']],
       body: [
-        ['Product Code', this.sku],
-        ['Product Name', this.productName],
-        ['Short Description', this.productForm.value.short_description],
-        ['Description', this.productForm.value.description],
-        ['Status', status],
+        ['Product Code',':', this.sku],
+        ['Short Description',':', this.productForm.value.short_description],
+        ['Description',':', this.productForm.value.description],
+        ['Status',':', status],
+        ['Categories',':', status],
         // ...
       ],
     })
@@ -847,4 +859,5 @@ export class SingleProductComponent implements OnInit {
       console.log(err);
     });
   }
+  
 }

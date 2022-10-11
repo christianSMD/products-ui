@@ -440,7 +440,7 @@
                                 <mat-chip *ngFor="let type of typesList | typeGroup : 'Image Type'"  (click)="downloadURI('storage/' + filePath(file.path), type.id, file.name, file)">{{ type.name }}</mat-chip>
                               </mat-chip-list>
                             </mat-card-content>
-                            <mat-card-actions class="img-action">
+                            <mat-card-actions class="img-action" *ngIf="uploadRole">
                               <button mat-mini-fab color="basic" (click)="hideFile(file.id)"><mat-icon>hide_image</mat-icon></button>&nbsp;
                               <button mat-mini-fab color="basic" (click)="deleteFile(file.id)"><mat-icon>delete</mat-icon></button>
                             </mat-card-actions>
@@ -525,7 +525,7 @@
             <mat-grid-list cols="3" rowHeight="100px">
               <mat-grid-tile colspan="3">
                 <mat-progress-spinner
-                  [color]="progressColor"
+                  [color]="progressPercentage() > 50 ? 'primary' : 'warn'" 
                   [mode]="progressMode"
                   [value]="progressPercentage()">
                 </mat-progress-spinner>
@@ -548,7 +548,7 @@
               </mat-list-item>
               <mat-list-item role="listitem">
                 <mat-icon *ngIf="packagingCount < 1">radio_button_unchecked</mat-icon>
-                <mat-icon *ngIf="packagingCount > 0">check_circle</mat-icon> Packaging
+                <mat-icon *ngIf="packagingCount > 0">check_circle</mat-icon> Packaging <span *ngIf="packagingLoading">&nbsp;loading...</span>
               </mat-list-item>
               <mat-list-item role="listitem">
                 <mat-icon *ngIf="documentFiles.length < 1">radio_button_unchecked</mat-icon>
@@ -572,5 +572,10 @@
 </div>
 
 <div *ngIf="!product">
-  <p *ngIf="!productsLoader">Product code "<strong>{{ sku }}</strong>" does not exist.</p>
+  <div *ngIf="!productsLoader">
+    <h2>🤷‍♂️ Product code "<strong>{{ sku }}</strong>" does not exist.</h2>
+    <p>Please make sure the SKU is correct. If you beleave this is the correct product code, please click report this issue.</p>
+    <button mat-raised-button color="primary" onclick="alert('Issue reported.')">Report Issue</button>
+  </div>
+  
 </div>

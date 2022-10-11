@@ -8,23 +8,23 @@
                 Manage Categories
             </ng-template>
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <mat-card style="margin-top: 1rem; margin-bottom: 9rem">
                         <h2>Categories</h2>
                         <mat-divider></mat-divider>
                         <div style="margin-top: 2rem; font-size: small;">
                             <ul class="catList">
-                                <li *ngFor="let category of categoriesList | parent: '0'" >{{ category.name }} <a class="editCat" (click)="selectCategory(category.id)">edit</a>
+                                <li *ngFor="let category of categoriesList | parent: '0'" >{{ category.name }} <a (click)="selectCategory(category.id)"><mat-icon class="edit">edit</mat-icon></a>
                                     <ul>
-                                        <li *ngFor="let child_1 of categoriesList | parent: category.id">{{ child_1.name }} <a class="editCat"  (click)="selectCategory(child_1.id)">edit</a>
+                                        <li *ngFor="let child_1 of categoriesList | parent: category.id">{{ child_1.name }} <a (click)="selectCategory(child_1.id)"><mat-icon class="edit">edit</mat-icon></a>
                                             <ul>
-                                                <li *ngFor="let child_2 of categoriesList | parent: child_1.id">{{ child_2.name }} <a class="editCat"  (click)="selectCategory(child_2.id)">edit</a>
+                                                <li *ngFor="let child_2 of categoriesList | parent: child_1.id">{{ child_2.name }} <a (click)="selectCategory(child_2.id)"><mat-icon class="edit">edit</mat-icon></a>
                                                     <ul>
-                                                        <li *ngFor="let child_3 of categoriesList | parent: child_2.id">{{ child_3.name }} <a class="editCat"  (click)="selectCategory(child_3.id)">edit</a>
+                                                        <li *ngFor="let child_3 of categoriesList | parent: child_2.id">{{ child_3.name }} <a (click)="selectCategory(child_3.id)"><mat-icon class="edit">edit</mat-icon></a>
                                                             <ul>
-                                                                <li *ngFor="let child_4 of categoriesList | parent: child_3.id">{{ child_4.name }} <a class="editCat"  (click)="selectCategory(child_4.id)">edit</a>
+                                                                <li *ngFor="let child_4 of categoriesList | parent: child_3.id">{{ child_4.name }} <a (click)="selectCategory(child_4.id)"><mat-icon class="edit">edit</mat-icon></a>
                                                                     <ul>
-                                                                        <li *ngFor="let child_5 of categoriesList | parent: child_4.id">{{ child_5.name }} <a class="editCat"  (click)="selectCategory(child_5.id)">edit</a>
+                                                                        <li *ngFor="let child_5 of categoriesList | parent: child_4.id">{{ child_5.name }} <a (click)="selectCategory(child_5.id)"><mat-icon class="edit">edit</mat-icon></a>
                                                                     </ul>
                                                                 </li>
                                                             </ul>
@@ -39,7 +39,7 @@
                         </div>
                     </mat-card>
                 </div>
-                <div class="col-md-4" *ngIf="selectedCatName !== ''">
+                <div class="col-md-4 show" *ngIf="selectedCatName !== ''">
                     <mat-card style="margin-top: 1rem; margin-bottom: 9rem">
                         <h2>{{ selectedCatName }} Attributes</h2>
                         <mat-divider></mat-divider>
@@ -48,61 +48,43 @@
                                 <ng-container formArrayName="attributes">
                                     <ng-container *ngFor="let x of attributes.controls; let index = index">
                                         <div [formGroupName]="index">
-                                            <mat-grid-list cols="4" rowHeight="80px">
-                                                <mat-grid-tile colspan="3" style="justify-content: flex-start !important;">
-                                                    <mat-form-field appearance="outline">
-                                                        <mat-label>Attribute Name</mat-label>
-                                                        <input class="capitalize" matInput id="attrName" type="text" formControlName="attrName" placeholder="E.g. colour" required>
-                                                    </mat-form-field>
-                                                </mat-grid-tile>
-                                                <mat-grid-tile colspan="1">
-                                                    <button class="mb-3" mat-mini-fab type="button" (click)="removeNewAttribute(index)" color="warn">
-                                                        <mat-icon>delete</mat-icon>
-                                                    </button>
-                                                </mat-grid-tile>
-                                            </mat-grid-list>                
+                                            <mat-form-field appearance="outline">
+                                                <mat-label>Attribute Name</mat-label>
+                                                <input class="capitalize" matInput id="attrName" type="text" formControlName="attrName" placeholder="E.g. colour" required>
+                                            </mat-form-field>
+                                            <button mat-mini-fab type="button" (click)="removeNewAttribute(index)" color="warn" style="margin-left: 1rem;">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>              
                                         </div>
                                     </ng-container>
                                 </ng-container>
-                                <button mat-raised-button type="button" color="basic" (click)="addNewAttribute()" style="margin-left: 1rem;">
-                                    <mat-icon>add_circle_outline</mat-icon>
-                                    Add Attribute
-                                </button><hr>
-                                <button mat-raised-button type="submit" color="primary" (click)="updateAttributes('update')" style="margin-left: 1rem;">Save Changes</button>
+                                <button mat-raised-button type="button" color="basic" (click)="addNewAttribute()">
+                                    <mat-icon>add_circle_outline</mat-icon> Add Field
+                                </button>
+                                <button mat-raised-button type="submit" color="primary" (click)="updateAttributes('update')" style="margin-left: 1rem;">Save Attributes</button>
                             </form>
                         </div>
                     </mat-card>
                 </div>
 
-                <div class="col-md-5" [hidden]="selectedCatName == ''">
+                <div class="col-md-4 show" [hidden]="selectedCatName == ''">
                     <mat-card style="margin-top: 1rem; margin-bottom: 9rem;">
                         <h2>{{ selectedCatName }} Details</h2>
                         <mat-divider></mat-divider>
                         <form [formGroup]="updateCategory" style="margin-top: 2rem;">
-                            <mat-grid-list cols="3" rowHeight="80px">
-                                <mat-grid-tile>
-                                    <mat-form-field appearance="outline" style="width: 100%;">
-                                        <mat-label>Category Name</mat-label>
-                                        <input name="name" matInput formControlName="name" class="capitalize" placeholder="Edit Category Name">
-                                    </mat-form-field>
-                                </mat-grid-tile>
-                                <mat-grid-tile>
-                                    <mat-form-field appearance="outline" style="width: 100%;">
-                                        <mat-label>Parent Category</mat-label>
-                                        <!-- <input name="parent" matInput formControlName="parent" class="capitalize" placeholder="Enter Category Name"> -->
-                                        <mat-label>Parent Category</mat-label>
-                                        <mat-select name="categories" formControlName="parent" (selectionChange)="selectParentCategory($event)">
-                                            <mat-option [value]="category.id" *ngFor="let category of categoriesList">
-                                                {{ category.name }}
-                                            </mat-option>
-                                        </mat-select>
-
-                                    </mat-form-field>
-                                </mat-grid-tile>
-                                <mat-grid-tile>
-                                    <button class="mb-3" mat-raised-button type="submit" color="primary" (click)="updateParent()">Save Changes</button>
-                                </mat-grid-tile>
-                            </mat-grid-list>
+                            <mat-form-field appearance="outline" style="width: 100%;">
+                                <mat-label>Category Name</mat-label>
+                                <input name="name" matInput formControlName="name" class="capitalize" placeholder="Edit Category Name">
+                            </mat-form-field>
+                            <mat-form-field appearance="outline" style="width: 100%;">
+                                <mat-label>Parent Category</mat-label>
+                                <mat-select name="categories" formControlName="parent" (selectionChange)="selectParentCategory($event)">
+                                    <mat-option [value]="category.id" *ngFor="let category of categoriesList">
+                                        {{ category.name }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <button class="mb-3" mat-raised-button type="submit" color="primary" (click)="updateParent()">Save Details</button>
                         </form>
                     </mat-card>
                 </div>

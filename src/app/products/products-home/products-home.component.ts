@@ -37,6 +37,10 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   viewAllProductsRole = false;
   storageUrl: string;
   displayDates: boolean = false;
+  activeProducts: boolean = false;
+  eolProducts: boolean = false;
+  developmentProducts: boolean = false;
+  allProducts: boolean = true;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -58,7 +62,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
       this.loggedIn = value;
     });
   }
-
+ 
   ngOnInit(): void {
 
     window.scroll({ 
@@ -79,6 +83,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
         this.treeNav.hide();
         this.getAllProducts();
         this.getAllTypes();
+        this.getAllCategories();
         this.addProductRole = this.info.role(61);
         this.addCategoryRole = this.info.role(60);
         this.storageUrl = this.api.getStorageUrl();
@@ -91,6 +96,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
           this.treeNav.hide();
           this.getAllProducts();
           this.getAllTypes();
+          this.getAllCategories();
           this.addProductRole = this.info.role(61);
           this.addCategoryRole = this.info.role(60);
           
@@ -211,6 +217,67 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
 
   selectBrand(brand: String): void {
     this.router.navigate(['/brand', brand.toLowerCase()]);
+  }
+
+  filterStatuses(e: any): void { 
+    let results: Product[] = [];
+    this.allProducts = (this.activeProducts ||  this.developmentProducts || this.eolProducts) ? false : true;
+    if (this.allProducts) {
+      results = this.productsList;
+    } else {
+      if (this.activeProducts && this.eolProducts && this.developmentProducts) {
+        this.allProducts = true;
+        results = this.productsList;
+      } else {
+        if (this.activeProducts && this.developmentProducts) {
+          results = this.productsList.filter(x => x.is_in_development == 1 && x.is_active == 1);
+        } else {
+          if (this.activeProducts && this.eolProducts) {
+            results = this.productsList.filter(x => x.is_active == 1 && x.is_eol == 1);
+          } else {
+            if (this.developmentProducts && this.eolProducts) {
+              results = this.productsList.filter(x => x.is_in_development == 1 && x.is_eol == 1);
+            } else {
+              if (this.activeProducts) {
+                results = this.productsList.filter(x => x.is_active == 1);
+              } else if (this.developmentProducts) {
+                results = this.productsList.filter(x => x.is_in_development == 1);
+              } else {
+                //EOL
+                results = this.productsList.filter(x => x.is_eol == 1);
+              }
+            }
+          }
+        }
+      }
+    }
+    this.table(results);
+  }
+
+  filterByCategory(e: any): void {
+    console.log(e);
+    this.api.GET(`products-by-category/${e.value}`).subscribe({
+      next:(res)=>{
+        console.log(res);
+        this.table(res);
+      }, error:(res)=>{ }
+    });
+  }
+
+  getAllCategories(): void {
+    this.api.GET('categories').subscribe({
+      next:(res)=>{
+        this.categoriesList = res;
+      }, error:(res)=>{
+        alert(res);
+      }
+    });
+  }
+
+  table(results: Product[]) {
+    this.dataSource = new MatTableDataSource(results);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
 }

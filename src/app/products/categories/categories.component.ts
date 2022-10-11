@@ -56,6 +56,7 @@ export class CategoriesComponent implements OnInit {
     this.attrCount = 0;
     this.navbar.show();
     this.getAllCategories();
+    this.selectCategory(205);
     this.permission = this.info.role(60);
     this.addCategory = this.formBuilder.group({
       name : ['', Validators.required],
@@ -180,7 +181,7 @@ export class CategoriesComponent implements OnInit {
    */
   selectCategory(i: any): void {
     this.clearSelectedCat();
-    console.log(this.attributes);
+    console.log(i);
     try {
       let obj = this.categoriesList.find(x => x.id === i);
       let fields = obj?.attributes;

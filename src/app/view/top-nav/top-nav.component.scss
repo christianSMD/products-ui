@@ -1,32 +1,34 @@
 .top-nav {
-    background-color:#faf9f9;
-    border-top: #C20F2F solid 2px;
-    border-bottom: #f7f3f3 solid 1px;
+  background-color:#faf9f9;
+  border-top: #C20F2F solid 2px;
+  border-bottom: #f7f3f3 solid 1px;
 }
 
 .nav-spacer {
-    flex: 1 1 auto;
+  flex: 1 1 auto;
 }
 
 .user-button {
-    left: 86px;
+  left: 86px;
 }
-  
-.logout-button {
-    margin-right: 3rem;
+
+.search {
+  margin-right: 3rem;
+  font-size: small;
+  margin-top: 11px;
 }
 
 @media only screen and (max-width: 600px) {
 
-    .logout-button {
-      display: none;
-    }
-    .sidenav {
-      display: none;
-    }
+  .search {
+    display: none;
   }
-  
-  /* Small devices (portrait tablets and large phones, 600px and up) */
-  @media only screen and (min-width: 600px) {
+  .sidenav {
+    display: none;
+  }
+}
 
-  }
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+
+}

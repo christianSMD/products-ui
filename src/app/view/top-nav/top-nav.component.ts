@@ -22,6 +22,7 @@ export class TopNavComponent implements OnInit {
   userName: string;
   sideBtnIcn = 'arrow_right_alt';
   showIcons = false;
+  q: string = "";
 
   constructor(
     public nav: NavbarService, 
@@ -67,5 +68,10 @@ export class TopNavComponent implements OnInit {
     this.router.navigate([link]);
   }
 
+  search(): void {
+    console.log(this.q);
+    this.router.navigateByUrl('/', {skipLocationChange: true}).then(()=>
+    this.router.navigate([this.q]));
+  }
 
 }

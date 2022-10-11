@@ -13,4 +13,7 @@ export interface Product {
     isActive: string;
     family_grouping: string;
     shoutout: string;
+    is_active: number;
+    is_in_development: number;
+    is_eol: number;
 }
