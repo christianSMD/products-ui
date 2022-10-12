@@ -14,6 +14,7 @@ import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { CdkTableExporterModule } from 'cdk-table-exporter';
 import { ActivatedRoute, Params } from '@angular/router';
 import { InfoService } from 'src/app/services/info/info.service';
+import { BlockUI, NgBlockUI } from 'ng-block-ui';
 
 @Component({
   selector: 'app-list-products',
@@ -25,15 +26,27 @@ export class ListProductsComponent extends CdkTableExporterModule implements OnI
   productsList: Product[] = [];
   categoriesList: Category[] = [];
   typesList: Type[] = [];
-  displayedColumns: string[] = ['id', 'sku', 'name', 'brand', 'description', 'view'];
+  packagingList: any[] = [];
+  displayedColumns: string[] = ['id', 'thumbnail', 'sku', 'name', 'brand', 'description', 'view'];
   dataSource: MatTableDataSource<Product>;
   productsLoader = false;
+  loggedIn = false;
+  addProductRole = false;
+  addCategoryRole = false;
+  viewAllProductsRole = false;
+  storageUrl: string;
+  displayDates: boolean = false;
+  activeProducts: boolean = false;
+  eolProducts: boolean = false;
+  developmentProducts: boolean = false;
+  allProducts: boolean = true;
   urlParam: string;
   brand: string;
   typeId: string;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @BlockUI() blockUI: NgBlockUI;
 
   constructor(
     public navbar: NavbarService, 
@@ -55,7 +68,7 @@ export class ListProductsComponent extends CdkTableExporterModule implements OnI
     this.sideNav.show();
     this.treeNav.hide();
     this.getAllTypes();
-    this.getAllProducts();
+    this.getAllCategories();
   }
 
   ngAfterViewInit(): void {
@@ -63,7 +76,6 @@ export class ListProductsComponent extends CdkTableExporterModule implements OnI
       this.urlParam = params['brand'];
       this.brand = this.urlParam.toUpperCase();
       this.getAllTypes();
-      this.getAllProducts();
     });
   }
 
@@ -75,14 +87,13 @@ export class ListProductsComponent extends CdkTableExporterModule implements OnI
     }
   }
 
-  getAllProducts() {
+  getAllProducts(id: string) {
     this.productsLoader = true;
-    this.api.GET('products').subscribe({
+    this.api.GET(`products-by-brand/${id}`).subscribe({
       next:(res)=>{
         console.log('Products', res);
         this.productsLoader = false;
-        this.productsList = res.filter(item => item.brand_type_id == this.typeId);
-        console.log('Brand', this.productsList)
+        this.productsList = res;
         this.dataSource = new MatTableDataSource(this.productsList);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
@@ -111,6 +122,7 @@ export class ListProductsComponent extends CdkTableExporterModule implements OnI
           if ((res[i].name).toLocaleLowerCase() == this.brand.toLocaleLowerCase()) {
             console.log('Found type id', res[i].id);
             this.typeId = res[i].id;
+            this.getAllProducts(this.typeId);
           }
         }
       }, error:(res)=>{
@@ -120,12 +132,101 @@ export class ListProductsComponent extends CdkTableExporterModule implements OnI
   }
 
   getBrandName(id: string) {
-     let i = 0;
-     i = parseInt(id) - 1;
-     if(this.typesList[i] == undefined) {
+    let i = 0;
+    i = parseInt(id) - 1;
+    if(this.typesList[i] == undefined) {
       return '';
     }
-     return this.typesList[i].name;
+    return this.typesList[i].name;
+  }
+
+  permission(role: number) {
+    console.log('Role check');
+    if(this.info.role(role)) {
+      return true;
+    }
+    return false;
+  }
+
+  iconClick(s: string): void {
+    this.openSnackBar(s, '😉');
+  }
+
+  filePath(p: string) {
+    return p.substring(7);
+  }
+
+  showDates(e: any) {
+    if (this.displayDates) {
+      this.displayedColumns = ['id', 'thumbnail', 'sku', 'name', 'brand', 'description', 'is_active', 'is_in_development', 'is_eol', 'updated_at', 'created_at', 'view'];
+    } else {
+      this.resetTableView();
+    }
+  }
+
+  resetTableView () {
+    this.displayedColumns = ['id', 'thumbnail', 'sku', 'name', 'brand', 'description', 'view'];
+  }
+
+  filterStatuses(e: any): void { 
+    let results: Product[] = [];
+    this.allProducts = (this.activeProducts ||  this.developmentProducts || this.eolProducts) ? false : true;
+    if (this.allProducts) {
+      results = this.productsList;
+    } else {
+      if (this.activeProducts && this.eolProducts && this.developmentProducts) {
+        this.allProducts = true;
+        results = this.productsList;
+      } else {
+        if (this.activeProducts && this.developmentProducts) {
+          results = this.productsList.filter(x => x.is_in_development == 1 && x.is_active == 1);
+        } else {
+          if (this.activeProducts && this.eolProducts) {
+            results = this.productsList.filter(x => x.is_active == 1 && x.is_eol == 1);
+          } else {
+            if (this.developmentProducts && this.eolProducts) {
+              results = this.productsList.filter(x => x.is_in_development == 1 && x.is_eol == 1);
+            } else {
+              if (this.activeProducts) {
+                results = this.productsList.filter(x => x.is_active == 1);
+              } else if (this.developmentProducts) {
+                results = this.productsList.filter(x => x.is_in_development == 1);
+              } else {
+                //EOL
+                results = this.productsList.filter(x => x.is_eol == 1);
+              }
+            }
+          }
+        }
+      }
+    }
+    this.table(results);
+  }
+
+  filterByCategory(e: any): void {
+    console.log(e);
+    this.api.GET(`products-by-category/${e.value}`).subscribe({
+      next:(res)=>{
+        console.log(res);
+        this.table(res);
+      }, error:(res)=>{ }
+    });
+  }
+
+  getAllCategories(): void {
+    this.api.GET('categories').subscribe({
+      next:(res)=>{
+        this.categoriesList = res;
+      }, error:(res)=>{
+        alert(res);
+      }
+    });
+  }
+
+  table(results: Product[]) {
+    this.dataSource = new MatTableDataSource(results);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
 }

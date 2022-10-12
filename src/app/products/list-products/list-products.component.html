@@ -1,67 +1,144 @@
-<p>
-  <a routerLink="../../">Products</a> / Brand / {{ brand }}
-</p>
-<button mat-raised-button class="m-1" routerLink="../../add/new">
-  <mat-icon>add</mat-icon> Add New Product
-</button>
-<button mat-raised-button class="m-1" (click)="exporter.exportTable('csv',{fileName:'products_system'})">
-  <mat-icon>download</mat-icon> Export Products
-</button>
-
-<div class="row">
-  <div class="col-md-8 mt-3">
-    <mat-form-field appearance="legacy" color="primary" style="width: 30%;">
-      <mat-label>Search</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="Search for sku, mame, brand, description etc" #input>
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
-    <div class="mat-elevation-z8">
-      <mat-progress-bar color="accent" *ngIf="productsLoader == true" mode="indeterminate"></mat-progress-bar>
-      <table matTableExporter mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)" #exporter="matTableExporter">
-        <!-- ID Column -->
-        <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-          <td mat-cell *matCellDef="let row"> {{row.id}} </td>
-        </ng-container>
-        <!-- SKU Column -->
-        <ng-container matColumnDef="sku">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> SKU </th>
-          <td mat-cell *matCellDef="let row"> {{row.sku}} </td>
-        </ng-container>
-        <!-- Name Column -->
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
-          <td mat-cell *matCellDef="let row"> {{row.name}} </td>
-        </ng-container>
-        <!-- Brand Column -->
-        <ng-container matColumnDef="brand">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Brand </th>
-          <td mat-cell *matCellDef="let row"> {{ brand }} </td>
-        </ng-container>
-        <!-- Description Column -->
-        <ng-container matColumnDef="description">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
-          <td mat-cell *matCellDef="let row"> {{row.short_description}} </td>
-        </ng-container>
-        <!-- Parent Column -->
-        <!-- View Column -->
-        <ng-container matColumnDef="view">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>  </th>
-          <td mat-cell *matCellDef="let row">
-            <button mat-stroked-button routerLink="../../{{row.sku}}" style="background-color: rgb(245, 245, 245); font-size: smaller;color: rgb(155, 155, 155);">
-              Details
-            </button>
-          </td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        <!-- Row shown when there is no matching data. -->
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
-        </tr>
-      </table>
-      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of products"></mat-paginator>
+<div>
+  <p>
+    <a routerLink="../../">Products</a> / Brand / {{ brand }}
+  </p>
+  <div class="row">
+    <div class="col-xs-12 col-ms-12 col-md-4 col-lg-3">
+      <button *ngIf="addProductRole" mat-raised-button class="m-1" style="width: 100%;" routerLink="add/new" >
+        <mat-icon>add</mat-icon> Add New Product
+      </button>
+    </div>
+    <div class="col-xs-12 col-ms-12 col-md-4 col-lg-3">
+      <button mat-raised-button class="m-1" style="width: 100%;"  routerLink="products/export-csv">
+        <mat-icon>download_file</mat-icon> Export CSV
+      </button>
+    </div>
+    <div class="col-xs-12 col-ms-12 col-md-4 col-lg-3">
+      <button mat-raised-button class="m-1" style="width: 100%;"  routerLink="products/export">
+        <mat-icon>wordpress</mat-icon> Export For WordPress
+      </button>
     </div>
   </div>
-  <div class="col-md-4"></div>
+
+  <div class="row">
+    <div class="col-md-12 mt-3">
+      <mat-form-field appearance="legacy" color="primary" class="table-search">
+        <mat-label>Filter</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Enter sku, mame, brand, description etc" #input>
+        <mat-icon matSuffix>filter_list</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="legacy" class="table-category">
+        <mat-label>Categories</mat-label>
+        <mat-select (selectionChange)="filterByCategory($event)">
+            <mat-option [value]="category.id" *ngFor="let category of categoriesList">
+                {{ category.name }}
+            </mat-option>
+        </mat-select>
+      </mat-form-field> 
+
+      <div class="mat-elevation-z8">
+
+        <span class="table-setting-span">
+          <mat-checkbox [(ngModel)]="displayDates" color="warn" (change)="showDates($event)" class="table-setting">More info</mat-checkbox>
+        </span>
+
+        <span class="table-setting-span">
+          <mat-checkbox [(ngModel)]="eolProducts" color="primary" (change)="filterStatuses($event)" class="table-setting">EOL</mat-checkbox>
+        </span>
+
+        <span class="table-setting-span">
+          <mat-checkbox [(ngModel)]="developmentProducts" color="primary" (change)="filterStatuses($event)" class="table-setting">In Development</mat-checkbox>
+        </span>
+
+        <span class="table-setting-span">
+          <mat-checkbox [(ngModel)]="activeProducts" color="primary" (change)="filterStatuses($event)" class="table-setting">Active</mat-checkbox>
+        </span>
+
+        <span class="table-setting-span">
+          <mat-checkbox [(ngModel)]="allProducts" color="primary" (change)="filterStatuses($event)" class="table-setting">All</mat-checkbox>
+        </span>
+
+        <mat-progress-bar color="accent" *ngIf="productsLoader == true" mode="indeterminate"></mat-progress-bar>
+        <table matTableExporter mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)" #exporter="matTableExporter">
+          
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+            <td mat-cell *matCellDef="let row"> {{row.id}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="thumbnail">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>  </th>
+            <td mat-cell *matCellDef="let row">
+              <img src="{{ storageUrl }}files/{{row.sku}}/47/upload47.png" onerror="this.src='http://127.0.0.1:8000/storage/files/default.png'" width="45" alt="Photo">
+              <!-- <img src="{{ storageUrl }}files/{{row.sku}}/47/{{row.clean_sku}}-thumb.jpg" onerror="this.src='http://127.0.0.1:8000/storage/files/default.png'" width="45" alt="Photo"> -->
+              <!-- <img src="{{ storageUrl }}files/{{row.sku}}/47/{{row.clean_sku}}-thumb.jpg" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" width="45" alt="Photo"> -->
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="sku">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> SKU </th>
+            <td mat-cell *matCellDef="let row" routerLink="{{row.clean_sku}}"> {{row.sku}} </td>
+          </ng-container>
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+            <td mat-cell *matCellDef="let row" routerLink="{{row.clean_sku}}"> {{row.name}} </td>
+          </ng-container>
+          <ng-container matColumnDef="brand">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Brand </th>
+            <td mat-cell *matCellDef="let row">{{ brand }} </td>
+          </ng-container>
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
+            <td mat-cell *matCellDef="let row"> {{ row.short_description }} </td>
+          </ng-container>
+          <ng-container matColumnDef="is_active">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Active </th>
+            <td mat-cell *matCellDef="let row">
+              <span *ngIf="row.is_active == 1" (click)="iconClick(row.sku + ' is active')"><mat-icon color="primary">check_circle</mat-icon></span>
+              <span *ngIf="row.is_active == 0" (click)="iconClick('Nothing here')"><mat-icon class="inactive">radio_button_unchecked</mat-icon></span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="is_in_development">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> In Development </th>
+            <td mat-cell *matCellDef="let row">
+              <span *ngIf="row.is_in_development == 1" (click)="iconClick(row.sku + ' is in development')"><mat-icon color="accent">check_circle</mat-icon></span>
+              <span *ngIf="row.is_in_development == 0" (click)="iconClick('Nothing here')"><mat-icon class="inactive">radio_button_unchecked</mat-icon></span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="is_eol">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> EOL </th>
+            <td mat-cell *matCellDef="let row">
+              <span *ngIf="row.is_eol == 1" (click)="iconClick(row.sku + ' is in end of life')"><mat-icon color="warn">check_circle</mat-icon></span>
+              <span *ngIf="row.is_eol == 0" (click)="iconClick('Nothing here')"><mat-icon class="inactive">radio_button_unchecked</mat-icon></span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="updated_at">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Updated </th>
+            <td mat-cell *matCellDef="let row">{{ row.updated_at | date }} </td>
+          </ng-container>
+          <ng-container matColumnDef="created_at">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Created </th>
+            <td mat-cell *matCellDef="let row">{{ row.created_at | date }} </td>
+          </ng-container>
+          <ng-container matColumnDef="view">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>  </th>
+            <td mat-cell *matCellDef="let row">
+              <button mat-raised-button  routerLink="../../{{row.sku}}" aria-label="Product details">
+                View Details
+              </button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          <!-- Row shown when there is no matching data. -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+          </tr>
+        </table>
+        <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" aria-label="Select page of products"></mat-paginator>
+      </div>
+    </div>
+    <div class="col-md-12"></div>
+  </div>
+  
 </div>
