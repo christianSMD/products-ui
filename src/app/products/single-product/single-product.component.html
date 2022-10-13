@@ -115,6 +115,16 @@
                           <i>please wait...</i>
                         </div>
                       </mat-card>
+                      <mat-card style="margin-top: 30px !important;">
+                        <div class="row">
+                          <div class="col-md-3 p-3" *ngFor="let image of imageServerFiles; let index = index">
+                            <a href="https://images.smdtechnologies.co.za/uploads/{{image[index].filename}}" target="_blank"  download="myimage">
+                              <img mat-card-image src="https://images.smdtechnologies.co.za/uploads/{{image[index].filename}}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" width="100" alt="Photo">   
+                            </a>
+                          </div>
+                        </div>
+                      </mat-card>
+                      
                     </div>
                   </div>
                 </div>
@@ -397,6 +407,26 @@
           <mat-tab label="Media">
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <mat-tab-group>
+                <mat-tab label="Image Server">
+                  <div class="mt-5 custom-tab" style="overflow: hidden !important;">
+                    <div class="row">
+                      <div class="col-md-3" *ngFor="let image of imageServerFiles; let index = index">
+                        <mat-card style="max-width: 280px; margin-bottom: 2rem; background-color: rgb(254, 254, 254);">
+                          <div style="height: 120px; width: 130px; overflow: hidden;">
+                            <img mat-card-image src="https://images.smdtechnologies.co.za/uploads/{{image[index].filename}}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" alt="Photo">
+                          </div>
+                          <mat-card-content>
+                            <mat-chip-list aria-label="Fish selection">
+                              <mat-chip *ngFor="let type of typesList | typeGroup : 'Image Type'" >{{ type.name }}</mat-chip>
+                            </mat-chip-list>
+                          </mat-card-content>
+                          <mat-card-actions class="img-action">
+                          </mat-card-actions>       
+                        </mat-card>
+                      </div>
+                    </div>
+                  </div>
+                </mat-tab>
                 <mat-tab label="Images">
                   <div class="row">   
                     <div class="col-md-3">
@@ -485,28 +515,8 @@
                 <mat-tab label="Videos">
                   <div class="mt-5 custom-tab" style="overflow: hidden !important;">
                   </div>
-                  </mat-tab>
-                <mat-tab label="Image Server">
-                  <div class="mt-5 custom-tab" style="overflow: hidden !important;">
-                    <div class="row">
-                      <div class="col-md-3" *ngFor="let number of [0,1,2,3,4,5,6,7,8,9,10]; let index = index">
-                        <mat-card style="max-width: 280px; margin-bottom: 2rem; background-color: rgb(254, 254, 254);">
-                          {{number}}
-                          <div style="height: 120px; width: 130px; overflow: hidden;">
-                            <img mat-card-image src="{{ imageserver(productSku, number) }}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" alt="Photo">
-                          </div>
-                          <mat-card-content>
-                            <mat-chip-list aria-label="Fish selection">
-                              <mat-chip *ngFor="let type of typesList | typeGroup : 'Image Type'" >{{ type.name }}</mat-chip>
-                            </mat-chip-list>
-                          </mat-card-content>
-                          <mat-card-actions class="img-action">
-                          </mat-card-actions>       
-                        </mat-card>
-                      </div>
-                    </div>
-                  </div>
                 </mat-tab>
+                
               </mat-tab-group>
               
             </div>
@@ -521,7 +531,6 @@
       <div class="text-muted">
         <mat-card>
           <mat-card-content>
-
             <mat-grid-list cols="3" rowHeight="100px">
               <mat-grid-tile colspan="3">
                 <mat-progress-spinner
@@ -561,7 +570,7 @@
             </mat-list>
           </mat-card-content>          
           <div style="text-align: center;">
-            <button mat-raised-button color="primary" (click)="SavePDF()">Export PDF</button>
+            <button mat-raised-button color="primary" disabled (click)="SavePDF()">Export PDF</button>
           </div>
           
         </mat-card>

@@ -30,6 +30,10 @@ export class ApiService {
     return this.http.get<any[]>(this.baseUrl + endpoint);
   }
 
+  public IMAGESERVER(sku: string): Observable<any[]> {
+    return this.http.get<any[]>('https://images.smdtechnologies.co.za/products_system/' + sku);
+  }
+
   public upload(endpoint: string, data: any): Observable<HttpEvent<any>> {
     const formData: FormData = new FormData();
     formData.append('file', data.file);

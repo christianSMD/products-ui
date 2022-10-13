@@ -1,5 +1,5 @@
 import { HttpEventType, HttpResponse } from '@angular/common/http';
-import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild, ɵɵsetComponentScope } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params, Router } from '@angular/router';
@@ -18,7 +18,6 @@ import * as FileSaver from 'file-saver';
 import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
 import jsPDF from "jspdf";
 import autoTable from 'jspdf-autotable';
-
 
 @Component({
   selector: 'download-dialog',
@@ -51,6 +50,7 @@ export class SingleProductComponent implements OnInit {
   product: any;
   files: any[] = []
   mediaFiles: any[] = [];
+  imageServerFiles: any[] = [];
   documentFiles: any[] = [];
   filePermissions: any[] = [];
   parent: string;
@@ -224,6 +224,7 @@ export class SingleProductComponent implements OnInit {
           this.getPackaging(this.id);
           this.getPdsAttributes(sku);
           this.getProductRegions(this.id);
+          this.imageserver(sku);
 
           this.productForm = this.formBuilder.group({
             sku : [{value: this.product.sku, disabled: true}, Validators.required],
@@ -297,7 +298,7 @@ export class SingleProductComponent implements OnInit {
                 this.attrCount = this.attrCount + 1;
               }
             } else {
-              console.log('here..');
+
             }
             
             // Loop attributes on each category
@@ -708,7 +709,8 @@ export class SingleProductComponent implements OnInit {
     const attributes = (this.attributes.length > 0) ? 1 : 0;
     const packaging = (this.packagingCount > 0) ? 1 : 0;
     const documents = (this.documentFiles.length > 0) ? 1 : 0;
-    const media = (this.mediaFiles.length > 0) ? 1 : 0;
+    const media = (this.mediaFiles.length > 0 || this.imageServerFiles.length > 0) ? 1 : 0;
+    const imageServer = (this.imageServerFiles.length > 0) ? 1 : 0;
     const brand = (this.productForm.value.brand_type_id) ? 1 : 0;
     const total = categories + attributes + packaging + documents + media + brand + status + verified;
     const p = (total / 8) * 100;
@@ -845,8 +847,22 @@ export class SingleProductComponent implements OnInit {
     doc.save(this.sku + ".pdf");
   } 
 
-  imageserver(productSku: string, number: number) {
-    return `https://images.smdtechnologies.co.za/api/store/${productSku}/${number}`;
+  imageserver(productSku: string) {
+    this.api.IMAGESERVER(productSku).subscribe({  
+      next:(res)=>{
+        console.log('iles: ', res);
+        for (let index = 1; index < 10; index++) {
+          if (res[index]) {
+            this.imageServerFiles.push(res[index]);
+          } else {
+            break;
+          }
+        }
+        console.log('imgFiles: ', this.imageServerFiles);
+      }, error:(res)=> {
+        console.log(res);
+      }
+    });   
   }
 
 
@@ -859,5 +875,5 @@ export class SingleProductComponent implements OnInit {
       console.log(err);
     });
   }
-  
+   
 }
