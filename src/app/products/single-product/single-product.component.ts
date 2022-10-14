@@ -710,7 +710,6 @@ export class SingleProductComponent implements OnInit {
     const packaging = (this.packagingCount > 0) ? 1 : 0;
     const documents = (this.documentFiles.length > 0) ? 1 : 0;
     const media = (this.mediaFiles.length > 0 || this.imageServerFiles.length > 0) ? 1 : 0;
-    const imageServer = (this.imageServerFiles.length > 0) ? 1 : 0;
     const brand = (this.productForm.value.brand_type_id) ? 1 : 0;
     const total = categories + attributes + packaging + documents + media + brand + status + verified;
     const p = (total / 8) * 100;
@@ -869,6 +868,16 @@ export class SingleProductComponent implements OnInit {
   downloadURI(uri: any, id: number, name: string, file: File) { 
     let path = file.path; 
     this.api.download('download-file-api', uri, this.product.id, this.product.sku, file.type_id, path.replace("public/", "storage/"), id).subscribe((res: BlobPart) => {
+      const blob = new Blob([res], { type: 'application/octet-stream' });
+      FileSaver.saveAs(blob, name);
+    }, (err: any) => {
+      console.log(err);
+    });
+  }
+
+  downloadImageServer(uri: any, id: number, name: string, file: File) { 
+    let path = file.path; 
+    this.api.download('download-file-api', uri, this.product.id, this.product.sku, file.type_id, uri, id).subscribe((res: BlobPart) => {
       const blob = new Blob([res], { type: 'application/octet-stream' });
       FileSaver.saveAs(blob, name);
     }, (err: any) => {

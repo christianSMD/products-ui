@@ -115,12 +115,38 @@
                           <i>please wait...</i>
                         </div>
                       </mat-card>
-                      <mat-card style="margin-top: 30px !important;">
+                      <mat-card style="margin-top: 30px !important; height: auto;">
+
                         <div class="row">
-                          <div class="col-md-3 p-3" *ngFor="let image of imageServerFiles; let index = index">
-                            <a href="https://images.smdtechnologies.co.za/uploads/{{image[index].filename}}" target="_blank"  download="myimage">
-                              <img mat-card-image src="https://images.smdtechnologies.co.za/uploads/{{image[index].filename}}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" width="100" alt="Photo">   
-                            </a>
+                          <!-- image server -->
+                          <div class="col-md-3  p-3" *ngFor="let image of imageServerFiles; let index = index">
+                            <div class="flip-card">
+                              <div class="flip-card-inner">
+                                <div class="flip-card-front">
+                                  <img mat-card-image src="https://images.smdtechnologies.co.za/uploads/{{image[index].filename}}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" width="100" >
+                                </div>
+                                <div class="flip-card-back">
+                                  <mat-chip-list aria-label="Fish selection">
+                                    <mat-chip class="mat-chip-list" *ngFor="let type of typesList | typeGroup : 'Image Type'" (click)="downloadImageServer('https://images.smdtechnologies.co.za/uploads/' + image[index].filename, type.id, image[index].filename, image[index])">{{ type.name }}</mat-chip>
+                                  </mat-chip-list>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <!-- system images -->
+                          <div class="col-md-3 p-3" *ngFor="let image of mediaFiles; let index = index">
+                            <div class="flip-card">
+                              <div class="flip-card-inner">
+                                <div class="flip-card-front">
+                                  <img mat-card-image src="{{ storageUrl + filePath(image.path) }}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'">
+                                </div>
+                                <div class="flip-card-back">
+                                  <mat-chip-list aria-label="Fish selection">
+                                    <mat-chip class="mat-chip-list" *ngFor="let type of typesList | typeGroup : 'Image Type'"  (click)="downloadURI('storage/' + filePath(image.path), type.id, image.name, image)">{{ type.name }}</mat-chip>
+                                  </mat-chip-list>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </mat-card>
@@ -407,7 +433,7 @@
           <mat-tab label="Media">
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <mat-tab-group>
-                <mat-tab label="Image Server">
+                <mat-tab label="Images">
                   <div class="mt-5 custom-tab" style="overflow: hidden !important;">
                     <div class="row">
                       <div class="col-md-3" *ngFor="let image of imageServerFiles; let index = index">
@@ -417,17 +443,18 @@
                           </div>
                           <mat-card-content>
                             <mat-chip-list aria-label="Fish selection">
-                              <mat-chip *ngFor="let type of typesList | typeGroup : 'Image Type'" >{{ type.name }}</mat-chip>
+                              <mat-chip *ngFor="let type of typesList | typeGroup : 'Image Type'" (click)="downloadImageServer('https://images.smdtechnologies.co.za/uploads/' + image[index].filename, type.id, image[index].filename, image[index])">{{ type.name }}</mat-chip>
                             </mat-chip-list>
                           </mat-card-content>
                           <mat-card-actions class="img-action">
                           </mat-card-actions>       
                         </mat-card>
                       </div>
+                      
                     </div>
                   </div>
                 </mat-tab>
-                <mat-tab label="Images">
+                <mat-tab label="Manage Images">
                   <div class="row">   
                     <div class="col-md-3">
                       <div cdkDropList class="file-list" (cdkDropListDropped)="drop($event)" *ngIf="mediaFiles.length > 0">
@@ -565,7 +592,7 @@
               </mat-list-item>
               <mat-list-item role="listitem">
                 <mat-icon *ngIf="mediaFiles.length < 1">radio_button_unchecked</mat-icon>
-                <mat-icon *ngIf="mediaFiles.length > 0">check_circle</mat-icon> Images ({{mediaFiles.length}})
+                <mat-icon *ngIf="mediaFiles.length > 0">check_circle</mat-icon> Images ({{mediaFiles.length + imageServerFiles.length}})
               </mat-list-item>
             </mat-list>
           </mat-card-content>          

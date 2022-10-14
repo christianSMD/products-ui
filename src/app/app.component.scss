@@ -87,13 +87,16 @@
 
 /* Extra small devices (phones, 600px and down) */
 @media only screen and (max-width: 600px) {
+
 .menu-button {
-  color: #fafafa;
+  top: -47px;
+  left: 83%;
 }
-.sidenav {
-  display: none;
+
+.minisidenav {
+  width: 70px;
 }
-  
+
 .content-area {
   padding: 0rem;
 }
@@ -109,6 +112,8 @@
 .content-area {
   padding: 1rem;
 }
+
+
 }
 
 /* Medium devices (landscape tablets, 768px and up) */
