@@ -1,30 +1,27 @@
-table {
-    width: 100%;
+.checkbox-div {
+    padding: 1rem;
+    background-color: cornsilk;
 }
 
-.mat-table {
-    overflow-x: scroll;
+.checkbox {
+    margin-right: 2rem;
+}
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+
 }
 
-.mat-cell,
-.mat-header-cell {
-  word-wrap: initial;
-  display: table-cell;
-  padding: 0px 10px;
-  line-break: unset;
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  vertical-align: middle;
-}
-.mat-row,
-.mat-header-row {
-    min-width: 800px;
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+
 }
 
-.data {
-    max-height: 500px;
-    overflow: auto;
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+
 }
 
-  
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+
+}

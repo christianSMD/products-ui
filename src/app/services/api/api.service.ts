@@ -34,6 +34,10 @@ export class ApiService {
     return this.http.get<any[]>('https://images.smdtechnologies.co.za/products_system/' + sku);
   }
 
+  public IMAGESERVERHIRES(sku: string): Observable<any[]> {
+    return this.http.get<any[]>('https://images.smdtechnologies.co.za/products_system_hi_res/' + sku);
+  }
+
   public upload(endpoint: string, data: any): Observable<HttpEvent<any>> {
     const formData: FormData = new FormData();
     formData.append('file', data.file);
@@ -63,6 +67,17 @@ export class ApiService {
       product_sku: product_sku,
       original_type_id: old_type_id,
       new_type_id: new_type_id
+    }, { responseType:'arraybuffer' })
+    
+  }
+
+  public downloadCSV(endpoint: string, brand: string, active: boolean, development: boolean, eol: boolean) {
+   
+    return this.http.post(this.baseUrl + endpoint, {
+      brand: brand,
+      active: active,
+      development: development,
+      eol: eol,
     }, { responseType:'arraybuffer' })
     
   }

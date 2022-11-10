@@ -1,0 +1,87 @@
+<p>
+    <a routerLink="/">Products</a> / Dashboard
+</p>
+<!-- All products: {{allProducts}} <br>
+All categories: {{categoriesCount}} <br>
+All Brands: {{brandsCount}} -->
+<br />
+<div class="row">
+    <div class="col-12 col-sm-6 col-md-3">
+        <mat-card style="background-color:rgb(26, 26, 26); color: white; margin-bottom: 1rem;">
+            <div class="row">
+                <div class="col-md-8">
+                    <h2>{{ allProducts }}</h2>
+                </div>
+                <div class="col-md-4">
+                    <mat-icon style="color:cornflowerblue; float: right;">storage</mat-icon>
+                </div>
+            </div>
+            All Products
+            <mat-progress-bar mode="determinate" value="100"></mat-progress-bar>
+        </mat-card>
+    </div>
+    <div class="col-12 col-sm-6 col-md-3">
+        <mat-card style="background-color:rgb(26, 26, 26); color: white; margin-bottom: 1rem;">
+            <div class="row">
+                <div class="col-md-8">
+                    <h2>{{ activeProducts }}</h2>
+                </div>
+                <div class="col-md-4">
+                    <mat-icon style="color:rgb(100, 237, 157); float: right;">check_circle_outline</mat-icon>
+                </div>
+            </div>
+            Active
+            <mat-progress-bar color="primary" mode="determinate" value="{{ (activeProducts/allProducts) * 100 }}"></mat-progress-bar>
+        </mat-card>
+    </div>
+    <div class="col-12 col-sm-6 col-md-3">
+        <mat-card style="background-color:rgb(26, 26, 26); color: white; margin-bottom: 1rem;">
+            <div class="row">
+                <div class="col-md-8">
+                    <h2>{{ developmentProducts }}</h2>
+                </div>
+                <div class="col-md-4">
+                    <mat-icon style="color:rgb(237, 223, 100); float: right;">design_services</mat-icon>
+                </div>
+            </div>
+            In Development
+            <mat-progress-bar color="accent" mode="determinate" value="{{ (developmentProducts/allProducts) * 100 }}"></mat-progress-bar>
+        </mat-card>
+    </div>
+    <div class="col-12 col-sm-6 col-md-3">
+        <mat-card style="background-color:rgb(26, 26, 26); color: white; margin-bottom: 1rem;">
+            <div class="row">
+                <div class="col-md-8">
+                    <h2>{{ eolProducts }}</h2>
+                </div>
+                <div class="col-md-4">
+                    <mat-icon style="color:rgb(237, 100, 100); float: right;">heart_broken</mat-icon>
+                </div>
+            </div>
+            EoL
+            <mat-progress-bar color="warn" mode="determinate" value="{{ (eolProducts/allProducts) * 100 }}"></mat-progress-bar>
+        </mat-card>
+    </div>  
+</div>
+<br />
+<h2>{{brandsCount}} Brands</h2>
+<div class="row">
+    <div class="col-md-4 brands card">
+        <div class="row" style="margin-bottom: 1rem;">
+            <div class="col-md-12">No Brand<span style="float: right;">{{ uknownBrandProducts }} Products</span></div>
+            <div class="col-md-12"><mat-progress-bar color="warn" mode="determinate" value="{{ uknownBrandProducts / allProducts * 100 }}" height="12px"></mat-progress-bar></div>
+        </div>
+        <div class="row" *ngFor="let brand of productsByBrand" style="margin-bottom: 1rem;">
+            <div class="col-md-12">{{ brand.name }}:<span style="float: right;">{{ brand.totalProducts }} Products</span></div>
+            <div class="col-md-12"><mat-progress-bar mode="determinate" value="{{ brand.totalProducts / allProducts * 100 }}" height="12px"></mat-progress-bar></div>
+        </div>
+    </div>
+    <div class="col-md-8">  
+        <dl>
+            <dt>
+                Top 5 Brands 
+            </dt>
+            <dd *ngFor="let brand of productsByBrand | slice:0:5" class="percentage percentage-{{ brand.totalProducts}}"><span class="text">{{ brand.name }}: {{ brand.totalProducts }}</span></dd>
+        </dl>
+    </div>
+</div>

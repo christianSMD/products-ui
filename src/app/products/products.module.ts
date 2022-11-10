@@ -38,6 +38,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { ExportComponent } from './export/export.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ExportCSVComponent } from './export/export-csv/export-csv.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 
 @NgModule({
@@ -50,7 +51,8 @@ import { ExportCSVComponent } from './export/export-csv/export-csv.component';
     TypesPipe,
     CategoriesPipe,
     ExportComponent,
-    ExportCSVComponent
+    ExportCSVComponent,
+    DashboardComponent
   ],
   imports: [
     CommonModule,

@@ -14,6 +14,11 @@
             </div>
         </div>
         <mat-selection-list #sideMenus [multiple]="false">
+            <mat-list-option class="menu-item" routerLink="products/dashboard">
+                <mat-icon matListIcon>leaderboard</mat-icon>
+                <h3>Dashboard</h3>
+            </mat-list-option>
+            <mat-divider></mat-divider>
             <mat-list-option class="menu-item" routerLink="/">
                 <mat-icon matListIcon>inventory</mat-icon>
                 <h3>Products</h3>

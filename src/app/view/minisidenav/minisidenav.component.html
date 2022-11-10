@@ -10,6 +10,10 @@
             <!-- <img src="./../../../assets/img/user.png" routerLink="users/manage" height="35"> -->
         </div>
         <mat-selection-list #sideMenus [multiple]="false">
+            <mat-list-option class="menu-item" routerLink="products/dashboard">
+                <mat-icon matListIcon>leaderboard</mat-icon>
+            </mat-list-option>
+            <mat-divider></mat-divider>
             <mat-list-option class="menu-item" routerLink="/">
                 <mat-icon matListIcon>inventory</mat-icon>
             </mat-list-option>
@@ -33,5 +37,4 @@
             </mat-list-option>
         </mat-selection-list>
     </div>
-
 </div>

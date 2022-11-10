@@ -18,6 +18,7 @@ import * as FileSaver from 'file-saver';
 import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
 import jsPDF from "jspdf";
 import autoTable from 'jspdf-autotable';
+import { FocusMonitor } from '@angular/cdk/a11y';
 
 @Component({
   selector: 'download-dialog',
@@ -42,6 +43,7 @@ export class DownloadDialog {
 export class SingleProductComponent implements OnInit {
 
   typesList: Type[] = [];
+  designTypesList: Type[] = [];
   typesLoader = false;
   productsLoader = false;
   id: string;
@@ -91,6 +93,9 @@ export class SingleProductComponent implements OnInit {
   attrKey: string;
   requiredField = false;
   shoutoutsForm: FormGroup;
+  featuresAndBenefitsForm: FormGroup;
+  extendedFabsForm: FormGroup;
+  packageContentsForm: FormGroup;
   regionsForm: FormGroup;
   productRegionList: any[] = [];
   pdsAttributes: any[] = [];
@@ -98,6 +103,8 @@ export class SingleProductComponent implements OnInit {
   expiry_date: string;
   today = new Date();
   onImageServer = true;
+  isPamphlet: boolean = false;
+  linkedProductSKUs: any = [];
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -135,6 +142,7 @@ export class SingleProductComponent implements OnInit {
     });
     this.getDetails(this.sku);
     this.getAllTypes();
+    this.getDesignAllTypes();
     this.getAllCategories();
 
     this.productForm = this.formBuilder.group({
@@ -168,6 +176,18 @@ export class SingleProductComponent implements OnInit {
       shoutouts: this.formBuilder.array([])
     });
 
+    this.featuresAndBenefitsForm = this.formBuilder.group({
+      features: this.formBuilder.array([])
+    });
+
+    this.extendedFabsForm = this.formBuilder.group({
+      fabs: this.formBuilder.array([])
+    });
+
+    this.packageContentsForm = this.formBuilder.group({
+      contents: this.formBuilder.array([])
+    });
+
     this.regionsForm = this.formBuilder.group({
       regions: this.formBuilder.array([])
     });
@@ -187,6 +207,18 @@ export class SingleProductComponent implements OnInit {
 
   get shoutouts() {
     return this.shoutoutsForm.get('shoutouts') as FormArray
+  }
+
+  get features() {
+    return this.featuresAndBenefitsForm.get('features') as FormArray
+  }
+
+  get fabs() {
+    return this.extendedFabsForm.get('fabs') as FormArray
+  }
+
+  get contents() {
+    return this.packageContentsForm.get('contents') as FormArray
   }
 
   get regions() {
@@ -211,13 +243,18 @@ export class SingleProductComponent implements OnInit {
     this.productsLoader = true;
     this.api.GET(`products/${sku}`).subscribe({
       next:(res)=>{
+        console.log('details', res[0]);
         this.productsLoader = false;
         if (res.length > 0) {
           this.detailProgress++;
           this.product = res[0];
           this.productName = this.product.name;
           this.id = this.product.id;
-
+          if (res[0].type == 'Pamphlet') {
+            this.isPamphlet = true;
+            this.linkedProductsImages();
+          }
+          
           this.media();
           this.documents();
           this.getProductCategories();
@@ -334,6 +371,10 @@ export class SingleProductComponent implements OnInit {
         this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
       }
     });
+  }
+
+  getDesignAllTypes(): void {
+    
   }
 
   getPackaging(id: string): void {
@@ -603,9 +644,59 @@ export class SingleProductComponent implements OnInit {
 
   updateRegion() {
     for (let index = 0; index < this.regionsForm.value.regions.length; index++) {
-      this.api.POST(`product-regions`, { 
+      this.api.POST(`products-regions`, { 
         product_id: this.id,
         region_id: this.regionsForm.value.regions[index].regionField 
+      }).subscribe({
+        next:(res)=>{
+          console.log(res);
+          this.getProductRegions(this.id,);
+          this.openSnackBar('Region Updated 😃', 'Okay');
+        }, error:(res)=>{
+          console.log(res);
+        }
+      });
+    }
+  }
+
+  updateFeature() {
+    for (let index = 0; index < this.featuresAndBenefitsForm.value.features.length; index++) {
+      this.api.POST(`products/update-features-and-benefits`, { 
+        product_id: this.id,
+        feature_id: this.featuresAndBenefitsForm.value.features[index].featureField 
+      }).subscribe({
+        next:(res)=>{
+          console.log(res);
+          this.getProductRegions(this.id,);
+          this.openSnackBar('Region Updated 😃', 'Okay');
+        }, error:(res)=>{
+          console.log(res);
+        }
+      });
+    }
+  }
+
+  updateFab() {
+    for (let index = 0; index < this.regionsForm.value.regions.length; index++) {
+      this.api.POST(`products/update-fabs`, { 
+        product_id: this.id,
+        fab_id: this.extendedFabsForm.value.fabs[index].fabField 
+      }).subscribe({
+        next:(res)=>{
+          this.getProductRegions(this.id,);
+          this.openSnackBar('Region Updated 😃', 'Okay');
+        }, error:(res)=>{
+          console.log(res);
+        }
+      });
+    }
+  }
+
+  updateContent() {
+    for (let index = 0; index < this.packageContentsForm.value.contents.length; index++) {
+      this.api.POST(`products/package-contents`, { 
+        product_id: this.id,
+        content_id: this.packageContentsForm.value.contents[index].regionField 
       }).subscribe({
         next:(res)=>{
           console.log(res);
@@ -734,13 +825,48 @@ export class SingleProductComponent implements OnInit {
     const shouts = this.formBuilder.group({
       shoutoutField: [],
     })
-    console.log('Is shoutouts an array? ', Array.isArray(this.shoutouts))
     this.shoutouts.push(shouts);
+  }
+
+  addFeature(): void {
+    const features = this.formBuilder.group({
+      featureField: [],
+    })
+    this.features.push(features);
+  }
+
+  addFab(): void {
+    const features = this.formBuilder.group({
+      featureField: [],
+    })
+    this.features.push(features);
+  }
+
+  addContent(): void {
+    const features = this.formBuilder.group({
+      featureField: [],
+    })
+    this.features.push(features);
   }
 
   removeShoutout(i: number): void {
     this.shoutouts.removeAt(i);
     this.shoutoutsForm.markAsDirty();
+  }
+
+  removeFeature(i: number): void {
+    this.features.removeAt(i);
+    this.featuresAndBenefitsForm.markAsDirty();
+  }
+
+  removeFab(i: number): void {
+    this.fabs.removeAt(i);
+    this.extendedFabsForm.markAsDirty();
+  }
+
+  removeContent(i: number): void {
+    this.contents.removeAt(i);
+    this.packageContentsForm.markAsDirty();
   }
 
   addRegion(): void {
@@ -814,56 +940,16 @@ export class SingleProductComponent implements OnInit {
     });
   }
 
-  public SavePDF():void{  
-    console.log(this.productForm.value);
-    let status: any[] = [];
-    if(this.productForm.value.is_in_development == 1) {
-      status.push('Active ')
-    }
-    if(this.productForm.value.is_eol == 1) {
-      status.push(' End of Life ')
-    }
-    if(this.productForm.value.is_in_development == 1) {
-      status.push(' In Development ')
-    }
-    const doc = new jsPDF()
-    doc.text(this.productName, 10, 10);
-    // It can parse html:
-    // autoTable(doc, { html: '#my-table' })
-    // Or use javascript directly:
-    autoTable(doc, {
-      // head: [['Name', 'Email', 'Country']],
-      body: [
-        ['Product Code',':', this.sku],
-        ['Short Description',':', this.productForm.value.short_description],
-        ['Description',':', this.productForm.value.description],
-        ['Status',':', status],
-        ['Categories',':', status],
-        // ...
-      ],
-    })
-
-    doc.save(this.sku + ".pdf");
-  } 
-
   imageserver(productSku: string) {
-    this.api.IMAGESERVER(productSku).subscribe({  
+    this.api.IMAGESERVERHIRES(productSku).subscribe({  
       next:(res)=>{
-        console.log('iles: ', res);
-        for (let index = 1; index < 10; index++) {
-          if (res[index]) {
-            this.imageServerFiles.push(res[index]);
-          } else {
-            break;
-          }
-        }
-        console.log('imgFiles: ', this.imageServerFiles);
+        console.log('hi-res files: ', res);
+        this.imageServerFiles = res;
       }, error:(res)=> {
         console.log(res);
       }
     });   
   }
-
 
   downloadURI(uri: any, id: number, name: string, file: File) { 
     let path = file.path; 
@@ -882,6 +968,35 @@ export class SingleProductComponent implements OnInit {
       FileSaver.saveAs(blob, name);
     }, (err: any) => {
       console.log(err);
+    });
+  }
+
+  linkedProductsImages() {
+    console.log('isPamphlet, ', this.isPamphlet);
+    this.api.GET(`linked-products/${this.id}`).subscribe({
+      next:(res)=>{
+        console.log("Linked IDs", res);
+        for (let index = 0; index < res.length; index++) {
+          this.api.GET(`products/search-by-id/${res[index].child_id}`).subscribe({
+            next:(p)=>{
+              let obj: any = {};
+              obj = p;
+              this.linkedProductSKUs.push(obj.sku);
+              this.api.IMAGESERVERHIRES(obj.sku).subscribe({  
+                next:(i)=>{
+                  console.log('hi-res files: ', i);
+                  this.imageServerFiles = i;
+                }, error:(res)=> {
+                }
+              }); 
+            }, error:(res)=> {
+              console.log(res);
+            }
+          });
+        }
+      }, error:(res)=> {
+        console.log(res);
+      }
     });
   }
    

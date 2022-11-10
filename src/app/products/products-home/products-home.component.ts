@@ -15,6 +15,7 @@ import { CdkTableExporterModule } from 'cdk-table-exporter';
 import { InfoService } from 'src/app/services/info/info.service';
 import { Router } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-products-home',
@@ -41,6 +42,10 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   eolProducts: boolean = false;
   developmentProducts: boolean = false;
   allProducts: boolean = true;
+  newPamphlet: any[] = [];
+  newPamphletSKUs: any[] = [];
+  showNewPamphletPanel: boolean = false;
+  newProductForm !: FormGroup;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -55,7 +60,8 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     private _snackBar: MatSnackBar,
     private _liveAnnouncer: LiveAnnouncer,
     private info: InfoService,
-    private router: Router
+    private router: Router,
+    private formBuilder : FormBuilder
   ) {
     super();
     this.info.isUserLoggedIn.subscribe(value => {
@@ -99,7 +105,6 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
           this.getAllCategories();
           this.addProductRole = this.info.role(61);
           this.addCategoryRole = this.info.role(60);
-          
         } else {
           this.router.navigate(['login']);
         }
@@ -107,8 +112,14 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
       console.log('On inint Role: ' + this.viewAllProductsRole);
     }
 
+    this.newProductForm = this.formBuilder.group({
+      name : ['', Validators.required],
+      brand_type_id : ['', Validators.required],
+      // description : ['', Validators.required],
+      // short_description : ['', Validators.required],
+    });
+
     this.info.auth();
-    console.log('isUserLoggedIn:', this.loggedIn);
   }
 
   ngAfterContentInit(): void {
@@ -138,7 +149,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     if (this.viewAllProductsRole) {
       url = 'products';
     }
-    this.blockUI.start('Loading products..');
+    //this.blockUI.start('Loading products..');
     this.productsLoader = true;
     this.api.GET(url).subscribe({
       next:(res)=>{
@@ -149,9 +160,27 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         this.blockUI.stop();
+        this.entireProducts();
       }, error:(res)=>{
         this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
       }
+    });
+  }
+
+  // JUST TESTING
+  entireProducts() {
+    // let url: string = 'products-verified';
+    // if (this.viewAllProductsRole) {
+    //   url = 'products';
+    // }
+    let url: string = 'products-all';
+    this.api.GET(url).subscribe({
+      next:(res)=>{
+        this.productsList = res;
+        this.dataSource = new MatTableDataSource(this.productsList);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      }, error:(res)=>{}
     });
   }
 
@@ -278,6 +307,57 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     this.dataSource = new MatTableDataSource(results);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+  }
+
+  showPamphletCheckboxes () {
+    this.showNewPamphletPanel = !this.showNewPamphletPanel;
+    if (this.showNewPamphletPanel) {
+      this.displayedColumns = ['pamphlet', 'thumbnail', 'sku', 'name', 'brand', 'description', 'view'];
+    } else {
+      this.displayedColumns = ['thumbnail', 'sku', 'name', 'brand', 'description', 'view'];
+    }
+  }
+
+  addToPamphlet (productId: string, sku: string, e: any) {
+    if (e.checked) {
+      this.newPamphlet.push(productId);
+      this.newPamphletSKUs.push(sku);
+    } else {
+      const x = this.newPamphlet.indexOf(productId);
+      const y = this.newPamphletSKUs.indexOf(sku);
+      if (x > -1) { 
+        this.newPamphlet.splice(x, 1);
+      }
+      if (y > -1) { 
+        this.newPamphletSKUs.splice(y, 1);
+      }
+    }
+  }
+
+  saveProduct() {
+    this.api.POST('products-pamphlet', this.newProductForm.value).subscribe({
+      next:(res) => {
+        this.info.activity('Created new pamphlet', 0);
+        this.openSnackBar(res.name + ' Created 😃', 'Okay');
+        console.log("New ID: ", res);
+        // Now add linked products
+        for (let index = 0; index < this.newPamphlet.length; index++) {
+          this.api.POST('link-products', {
+            parent_id: res.id,
+            child_id: this.newPamphlet[index]
+          }).subscribe({
+            next:(res) => {
+              console.log(res);
+            }, error:(res)=>{
+              this.openSnackBar('😢 ' + res.message, 'Okay');
+            }
+          });
+        }
+        this.router.navigate([res.sku]);
+      }, error:(res)=>{
+        this.openSnackBar('😢 ' + res.message, 'Okay');
+      }
+    });
   }
 
 }

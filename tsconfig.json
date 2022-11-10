@@ -23,7 +23,8 @@
       "es2020",
       "dom",
       "ES2021.String"
-    ]
+    ],
+    "allowSyntheticDefaultImports": true // custom
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

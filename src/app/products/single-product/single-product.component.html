@@ -101,6 +101,71 @@
                           <button mat-raised-button type="submit" *ngIf="editRole" [disabled]="!shoutoutsForm.dirty" color="primary" (click)="updateShoutout()" style="margin-left: 1rem;">Save Changes</button>
                         </form>
                       </mat-card>
+                      <br>
+                      <mat-card>
+                        <strong>Features and Benefits</strong><br><br>
+                        <form [formGroup]="featuresAndBenefitsForm">
+                          <ng-container formArrayName="features">
+                            <ng-container *ngFor="let x of features.controls; let index = index">
+                                <div [formGroupName]="index">
+                                  <mat-form-field appearance="outline" style="width: 90%;">
+                                    <mat-label>Feature / Benefit</mat-label>
+                                    <input matInput id="featureField" type="text" formControlName="featureField" placeholder="Enter Feature or Benefit" required>
+                                    <mat-icon matSuffix (click)="removeFeature(index)">delete</mat-icon>
+                                  </mat-form-field>              
+                                </div>
+                            </ng-container>
+                          </ng-container>
+                          <button mat-raised-button type="button" (click)="addFeature()" style="margin-left: 1rem;">
+                            Add Feature / Benefit
+                          </button>
+                          <button mat-raised-button type="submit" *ngIf="editRole" [disabled]="!featuresAndBenefitsForm.dirty" color="primary" (click)="updateFeature()" style="margin-left: 1rem;">Save Changes</button>
+                        </form>
+                      </mat-card>
+
+                      <br>
+                      <mat-card>
+                        <strong>Extended FABs</strong><br><br>
+                        <form [formGroup]="extendedFabsForm">
+                          <ng-container formArrayName="fabs">
+                            <ng-container *ngFor="let x of fabs.controls; let index = index">
+                                <div [formGroupName]="index">
+                                  <mat-form-field appearance="outline" style="width: 90%;">
+                                    <mat-label>FAB</mat-label>
+                                    <input matInput id="fabsField" type="text" formControlName="fabsField" placeholder="Enter FAB" required>
+                                    <mat-icon matSuffix (click)="removeFab(index)">delete</mat-icon>
+                                  </mat-form-field>              
+                                </div>
+                            </ng-container>
+                          </ng-container>
+                          <button mat-raised-button type="button" (click)="addFab()" style="margin-left: 1rem;">
+                            Add FAB
+                          </button>
+                          <button mat-raised-button type="submit" *ngIf="editRole" [disabled]="!extendedFabsForm.dirty" color="primary" (click)="updateFab()" style="margin-left: 1rem;">Save Changes</button>
+                        </form>
+                      </mat-card>
+
+                      <br>
+                      <mat-card>
+                        <strong>Package Contents</strong><br><br>
+                        <form [formGroup]="packageContentsForm">
+                          <ng-container formArrayName="contents">
+                            <ng-container *ngFor="let x of contents.controls; let index = index">
+                                <div [formGroupName]="index">
+                                  <mat-form-field appearance="outline" style="width: 90%;">
+                                    <mat-label>Package Content</mat-label>
+                                    <input matInput id="contentField" type="text" formControlName="contentField" placeholder="Enter Content" required>
+                                    <mat-icon matSuffix (click)="removeContent(index)">delete</mat-icon>
+                                  </mat-form-field>              
+                                </div>
+                            </ng-container>
+                          </ng-container>
+                          <button mat-raised-button type="button" (click)="addContent()" style="margin-left: 1rem;">
+                            Add Content
+                          </button>
+                          <button mat-raised-button type="submit" *ngIf="editRole" [disabled]="!packageContentsForm.dirty" color="primary" (click)="updateContent()" style="margin-left: 1rem;">Save Changes</button>
+                        </form>
+                      </mat-card>
                     </div>
                
                     <div class="col-md-8">
@@ -115,19 +180,35 @@
                           <i>please wait...</i>
                         </div>
                       </mat-card>
+
+                      <mat-card *ngIf="isPamphlet" style="margin-top: 2rem;">
+                        <strong>Linked Products</strong><br><br>
+                          <div *ngIf="!loadingPdsAttributes">
+                            <ul>
+                              <li *ngFor="let i of linkedProductSKUs">{{ i }}</li>
+                            </ul>
+                          </div>
+                          <div *ngIf="loadingPdsAttributes">
+                            <i>please wait...</i>
+                          </div>
+                      </mat-card>
+
+                      
+
                       <mat-card style="margin-top: 30px !important; height: auto;">
 
                         <div class="row">
                           <!-- image server -->
-                          <div class="col-md-3  p-3" *ngFor="let image of imageServerFiles; let index = index">
+                          <div class="col-md-3  p-3" *ngFor="let image of imageServerFiles;">
                             <div class="flip-card">
                               <div class="flip-card-inner">
                                 <div class="flip-card-front">
-                                  <img mat-card-image src="https://images.smdtechnologies.co.za/uploads/{{image[index].filename}}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" width="100" >
+                                  <p style="font-size:x-small; background-color:rgb(235, 235, 235); color:rgb(165, 165, 165); padding-left: 6px;">Image Server</p>
+                                  <img mat-card-image src="https://images.smdtechnologies.co.za/uploads/{{image.filename}}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" width="100" >
                                 </div>
                                 <div class="flip-card-back">
                                   <mat-chip-list aria-label="Fish selection">
-                                    <mat-chip class="mat-chip-list" *ngFor="let type of typesList | typeGroup : 'Image Type'" (click)="downloadImageServer('https://images.smdtechnologies.co.za/uploads/' + image[index].filename, type.id, image[index].filename, image[index])">{{ type.name }}</mat-chip>
+                                    <mat-chip class="mat-chip-list" *ngFor="let type of typesList | typeGroup : 'Image Type'" (click)="downloadImageServer('https://images.smdtechnologies.co.za/uploads/' + image.filename, type.id, image.filename, image)">{{ type.name }}</mat-chip>
                                   </mat-chip-list>
                                 </div>
                               </div>
@@ -138,6 +219,7 @@
                             <div class="flip-card">
                               <div class="flip-card-inner">
                                 <div class="flip-card-front">
+                                  <p style="color: white;">...</p>
                                   <img mat-card-image src="{{ storageUrl + filePath(image.path) }}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'">
                                 </div>
                                 <div class="flip-card-back">
@@ -439,11 +521,11 @@
                       <div class="col-md-3" *ngFor="let image of imageServerFiles; let index = index">
                         <mat-card style="max-width: 280px; margin-bottom: 2rem; background-color: rgb(254, 254, 254);">
                           <div style="height: 120px; width: 130px; overflow: hidden;">
-                            <img mat-card-image src="https://images.smdtechnologies.co.za/uploads/{{image[index].filename}}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" alt="Photo">
+                            <img mat-card-image src="https://images.smdtechnologies.co.za/uploads/{{image.filename}}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" alt="Photo">
                           </div>
                           <mat-card-content>
                             <mat-chip-list aria-label="Fish selection">
-                              <mat-chip *ngFor="let type of typesList | typeGroup : 'Image Type'" (click)="downloadImageServer('https://images.smdtechnologies.co.za/uploads/' + image[index].filename, type.id, image[index].filename, image[index])">{{ type.name }}</mat-chip>
+                              <mat-chip *ngFor="let type of typesList | typeGroup : 'Image Type'" (click)="downloadImageServer('https://images.smdtechnologies.co.za/uploads/' + image.filename, type.id, image.filename, image)">{{ type.name }}</mat-chip>
                             </mat-chip-list>
                           </mat-card-content>
                           <mat-card-actions class="img-action">
@@ -596,9 +678,9 @@
               </mat-list-item>
             </mat-list>
           </mat-card-content>          
-          <div style="text-align: center;">
+          <!-- <div style="text-align: center;">
             <button mat-raised-button color="primary" disabled (click)="SavePDF()">Export PDF</button>
-          </div>
+          </div> -->
           
         </mat-card>
       </div>
