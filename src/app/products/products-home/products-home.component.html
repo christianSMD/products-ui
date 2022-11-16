@@ -46,6 +46,10 @@
                   <mat-option *ngFor="let type of typesList | typeGroup : 'Brand'" value="{{ type.id }}">{{ type.name }}</mat-option>
                 </mat-select>
               </mat-form-field>
+              <mat-form-field style="width: 90%;" appearance="outline">
+                <mat-label>Description</mat-label>
+                <textarea #description rows="3" matInput formControlName="description" placeholder="Enter product description..."></textarea>
+              </mat-form-field>
             </div>
             <div class="col-md-4">
               <h3>Selected Products:</h3>
@@ -56,9 +60,8 @@
               </mat-card>
             </div>
             <div class="col-md-2">
-              <div class="m-3">
-                <button type="submit" mat-raised-button type="submit" color="primary" (click)="saveProduct()" style="float: right;">Create Pamphlet</button>               
-              </div>
+              <h3 style="color: #ffff;">...</h3>
+              <button type="submit" mat-raised-button type="submit" color="primary" (click)="saveProduct()" style="float: right;">Create Pamphlet</button> 
             </div>
           </div>
         </div>
@@ -111,8 +114,9 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Create Pamphlet</th>
             <td mat-cell *matCellDef="let row">
               <span style="padding: 9px; background-color:#f0f0f0; color:green;">
-                <mat-checkbox color="primary" (change)="addToPamphlet(row.id, row.sku, $event)" class="table-setting">Add to pamphlet</mat-checkbox>
+                <mat-checkbox color="primary" (change)="addToPamphlet(row.product_id, row.sku, $event)" class="table-setting">Add to list</mat-checkbox>
               </span>
+              
             </td>
           </ng-container>
           <ng-container matColumnDef="thumbnail">

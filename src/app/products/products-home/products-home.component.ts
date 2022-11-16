@@ -115,7 +115,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     this.newProductForm = this.formBuilder.group({
       name : ['', Validators.required],
       brand_type_id : ['', Validators.required],
-      // description : ['', Validators.required],
+      description : ['', Validators.required],
       // short_description : ['', Validators.required],
     });
 
@@ -167,15 +167,11 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     });
   }
 
-  // JUST TESTING
   entireProducts() {
-    // let url: string = 'products-verified';
-    // if (this.viewAllProductsRole) {
-    //   url = 'products';
-    // }
     let url: string = 'products-all';
     this.api.GET(url).subscribe({
       next:(res)=>{
+        console.log(res);
         this.productsList = res;
         this.dataSource = new MatTableDataSource(this.productsList);
         this.dataSource.paginator = this.paginator;
@@ -319,6 +315,10 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   }
 
   addToPamphlet (productId: string, sku: string, e: any) {
+    // get id for sku
+    const product = this.productsList.find((p: any) => p.sku == sku);
+    const id = product?.id;
+    console.log("product id: ", id);
     if (e.checked) {
       this.newPamphlet.push(productId);
       this.newPamphletSKUs.push(sku);
@@ -332,14 +332,18 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
         this.newPamphletSKUs.splice(y, 1);
       }
     }
+
+    console.log("Selected IDs: ", this.newPamphlet);
   }
 
+
   saveProduct() {
+    console.log(this.newProductForm.value);
+    //Still need to add items on the images object
     this.api.POST('products-pamphlet', this.newProductForm.value).subscribe({
       next:(res) => {
         this.info.activity('Created new pamphlet', 0);
         this.openSnackBar(res.name + ' Created 😃', 'Okay');
-        console.log("New ID: ", res);
         // Now add linked products
         for (let index = 0; index < this.newPamphlet.length; index++) {
           this.api.POST('link-products', {

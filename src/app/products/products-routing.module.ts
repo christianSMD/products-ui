@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CategoriesComponent } from './categories/categories.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 import { ExportCSVComponent } from './export/export-csv/export-csv.component';
 import { ExportComponent } from './export/export.component';
 import { ListProductsComponent } from './list-products/list-products.component';
@@ -15,7 +16,8 @@ const routes: Routes = [
   { path: 'add/new', component: NewProductComponent },
   { path: 'categories/manage', component: CategoriesComponent },
   { path: 'products/export', component: ExportComponent },
-  { path: 'products/export-csv', component: ExportCSVComponent }
+  { path: 'products/export-csv', component: ExportCSVComponent },
+  { path: 'products/dashboard', component: DashboardComponent }
 ];
 
 @NgModule({

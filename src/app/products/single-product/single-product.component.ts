@@ -1,5 +1,5 @@
 import { HttpEventType, HttpResponse } from '@angular/common/http';
-import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild, ɵɵsetComponentScope } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params, Router } from '@angular/router';
@@ -10,30 +10,12 @@ import { NavbarService } from 'src/app/services/navbar/navbar.service';
 import { TreeService } from 'src/app/services/tree/tree.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Category } from 'src/app/interfaces/category';
-import { ThemePalette } from '@angular/material/core';
 import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
 import { InfoService } from 'src/app/services/info/info.service';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import * as FileSaver from 'file-saver';
-import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import jsPDF from "jspdf";
-import autoTable from 'jspdf-autotable';
-import { FocusMonitor } from '@angular/cdk/a11y';
-
-@Component({
-  selector: 'download-dialog',
-  templateUrl: 'download.html',
-})
-export class DownloadDialog {
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    public dialogRef: MatDialogRef<DownloadDialog>,
-  ) {}
-
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
-}
 
 @Component({
   selector: 'app-single-product',
@@ -43,7 +25,6 @@ export class DownloadDialog {
 export class SingleProductComponent implements OnInit {
 
   typesList: Type[] = [];
-  designTypesList: Type[] = [];
   typesLoader = false;
   productsLoader = false;
   id: string;
@@ -92,10 +73,6 @@ export class SingleProductComponent implements OnInit {
   catFromProductTbl: any[] = [];
   attrKey: string;
   requiredField = false;
-  shoutoutsForm: FormGroup;
-  featuresAndBenefitsForm: FormGroup;
-  extendedFabsForm: FormGroup;
-  packageContentsForm: FormGroup;
   regionsForm: FormGroup;
   productRegionList: any[] = [];
   pdsAttributes: any[] = [];
@@ -105,6 +82,15 @@ export class SingleProductComponent implements OnInit {
   onImageServer = true;
   isPamphlet: boolean = false;
   linkedProductSKUs: any = [];
+  // Design
+  shoutoutsForm: FormGroup;
+  featuresAndBenefitsForm: FormGroup;
+  extendedFabsForm: FormGroup;
+  packageContentsForm: FormGroup;
+  designLoader: boolean = false;
+
+  //test
+  parentChildCategories: any[] = [];
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -172,6 +158,10 @@ export class SingleProductComponent implements OnInit {
       attributes: this.formBuilder.array([])
     });
 
+    this.regionsForm = this.formBuilder.group({
+      regions: this.formBuilder.array([])
+    });
+
     this.shoutoutsForm = this.formBuilder.group({
       shoutouts: this.formBuilder.array([])
     });
@@ -188,10 +178,6 @@ export class SingleProductComponent implements OnInit {
       contents: this.formBuilder.array([])
     });
 
-    this.regionsForm = this.formBuilder.group({
-      regions: this.formBuilder.array([])
-    });
-
     if(this.sku == 'products' || this.sku == 'product') {
       this.router.navigate(['/']);
     }
@@ -203,6 +189,10 @@ export class SingleProductComponent implements OnInit {
 
   get attributes() {
     return this.productFormAttributes.get('attributes') as FormArray
+  }
+
+  get regions() {
+    return this.regionsForm.get('regions') as FormArray
   }
 
   get shoutouts() {
@@ -219,10 +209,6 @@ export class SingleProductComponent implements OnInit {
 
   get contents() {
     return this.packageContentsForm.get('contents') as FormArray
-  }
-
-  get regions() {
-    return this.regionsForm.get('regions') as FormArray
   }
 
   getAllCategories() {
@@ -257,11 +243,12 @@ export class SingleProductComponent implements OnInit {
           
           this.media();
           this.documents();
-          this.getProductCategories();
+          this.getProductCategories(this.id);
           this.getPackaging(this.id);
           this.getPdsAttributes(sku);
           this.getProductRegions(this.id);
           this.imageserver(sku);
+          this.getDesigns(this.id);
 
           this.productForm = this.formBuilder.group({
             sku : [{value: this.product.sku, disabled: true}, Validators.required],
@@ -276,13 +263,6 @@ export class SingleProductComponent implements OnInit {
             family_grouping: [this.product.family_grouping],
           });
 
-          const shoutouts = JSON.parse(this.product.shoutout);
-          for (let y = 0; y < shoutouts.length; y++) {
-            const shouts = this.formBuilder.group({
-              shoutoutField: [shoutouts[y], Validators.required],
-            })
-            this.shoutouts.push(shouts);
-          }
           // Attributes from productsTable
           let obj: any[] = [];
           obj = JSON.parse(this.product.attributes);
@@ -311,10 +291,11 @@ export class SingleProductComponent implements OnInit {
    * @todo Get categories asigned to product.
    * @todo Loop each category for attributes.
    */
-   getProductCategories(): void {
-    this.api.GET(`product-categories/search/${this.id}`).subscribe({
+   getProductCategories(id: string): void {
+    this.api.GET(`product-categories/search/${id}`).subscribe({
       next:(res)=>{
         this.productCategories = res;
+        this.parentChildCategories.push(res); // test
         if (res.length > 0) {
           this.detailProgress++;
           // Loop Categories linked to product
@@ -622,81 +603,11 @@ export class SingleProductComponent implements OnInit {
     });
   }
 
-  updateShoutout(): void {
-    const shoutouts = this.shoutoutsForm.value.shoutouts;
-    const l = shoutouts.length;
-    let shoutoutArray: string[] = [];
-    console.log(shoutouts);
-    console.log(l);
-    for (let index = 0; index < l; index++) {
-      shoutoutArray.push(this.shoutoutsForm.value.shoutouts[index].shoutoutField)
-    }
-    this.api.POST(`products/update-shoutout/${this.id}`, shoutoutArray).subscribe({
-      next:(res)=>{
-        console.log(res);
-        this.info.activity('Updated product shoutout', this.product.id);
-        this.openSnackBar('Product Updated 😃', 'Okay');
-      }, error:(res)=>{
-        this.openSnackBar('😢 ' + res.message, 'Okay');
-      }
-    });
-  }
-
   updateRegion() {
     for (let index = 0; index < this.regionsForm.value.regions.length; index++) {
       this.api.POST(`products-regions`, { 
         product_id: this.id,
-        region_id: this.regionsForm.value.regions[index].regionField 
-      }).subscribe({
-        next:(res)=>{
-          console.log(res);
-          this.getProductRegions(this.id,);
-          this.openSnackBar('Region Updated 😃', 'Okay');
-        }, error:(res)=>{
-          console.log(res);
-        }
-      });
-    }
-  }
-
-  updateFeature() {
-    for (let index = 0; index < this.featuresAndBenefitsForm.value.features.length; index++) {
-      this.api.POST(`products/update-features-and-benefits`, { 
-        product_id: this.id,
-        feature_id: this.featuresAndBenefitsForm.value.features[index].featureField 
-      }).subscribe({
-        next:(res)=>{
-          console.log(res);
-          this.getProductRegions(this.id,);
-          this.openSnackBar('Region Updated 😃', 'Okay');
-        }, error:(res)=>{
-          console.log(res);
-        }
-      });
-    }
-  }
-
-  updateFab() {
-    for (let index = 0; index < this.regionsForm.value.regions.length; index++) {
-      this.api.POST(`products/update-fabs`, { 
-        product_id: this.id,
-        fab_id: this.extendedFabsForm.value.fabs[index].fabField 
-      }).subscribe({
-        next:(res)=>{
-          this.getProductRegions(this.id,);
-          this.openSnackBar('Region Updated 😃', 'Okay');
-        }, error:(res)=>{
-          console.log(res);
-        }
-      });
-    }
-  }
-
-  updateContent() {
-    for (let index = 0; index < this.packageContentsForm.value.contents.length; index++) {
-      this.api.POST(`products/package-contents`, { 
-        product_id: this.id,
-        content_id: this.packageContentsForm.value.contents[index].regionField 
+        region_id: this.regionsForm.value.regions[index].designField 
       }).subscribe({
         next:(res)=>{
           console.log(res);
@@ -821,54 +732,6 @@ export class SingleProductComponent implements OnInit {
     this.attrCount = this.attrCount - 1;
   }
 
-  addShoutout(): void {
-    const shouts = this.formBuilder.group({
-      shoutoutField: [],
-    })
-    this.shoutouts.push(shouts);
-  }
-
-  addFeature(): void {
-    const features = this.formBuilder.group({
-      featureField: [],
-    })
-    this.features.push(features);
-  }
-
-  addFab(): void {
-    const features = this.formBuilder.group({
-      featureField: [],
-    })
-    this.features.push(features);
-  }
-
-  addContent(): void {
-    const features = this.formBuilder.group({
-      featureField: [],
-    })
-    this.features.push(features);
-  }
-
-  removeShoutout(i: number): void {
-    this.shoutouts.removeAt(i);
-    this.shoutoutsForm.markAsDirty();
-  }
-
-  removeFeature(i: number): void {
-    this.features.removeAt(i);
-    this.featuresAndBenefitsForm.markAsDirty();
-  }
-
-  removeFab(i: number): void {
-    this.fabs.removeAt(i);
-    this.extendedFabsForm.markAsDirty();
-  }
-
-  removeContent(i: number): void {
-    this.contents.removeAt(i);
-    this.packageContentsForm.markAsDirty();
-  }
-
   addRegion(): void {
     const regs = this.formBuilder.group({
       regionField: [],
@@ -911,7 +774,7 @@ export class SingleProductComponent implements OnInit {
           category_id: vals[i]
         }).subscribe({
           next:(res)=>{
-            this.getProductCategories();
+            this.getProductCategories(this.id);
             this.openSnackBar('Category Added 😃', 'Okay');
           }, error:(res)=>{
             this.openSnackBar('😢 ' + res.message, 'Okay');
@@ -972,20 +835,21 @@ export class SingleProductComponent implements OnInit {
   }
 
   linkedProductsImages() {
-    console.log('isPamphlet, ', this.isPamphlet);
     this.api.GET(`linked-products/${this.id}`).subscribe({
       next:(res)=>{
         console.log("Linked IDs", res);
         for (let index = 0; index < res.length; index++) {
+          // Get child categories
+          this.getProductCategories(res[index].child_id);
+          // Get child details by ID
           this.api.GET(`products/search-by-id/${res[index].child_id}`).subscribe({
-            next:(p)=>{
+            next:(child)=>{
               let obj: any = {};
-              obj = p;
+              obj = child;
               this.linkedProductSKUs.push(obj.sku);
               this.api.IMAGESERVERHIRES(obj.sku).subscribe({  
-                next:(i)=>{
-                  console.log('hi-res files: ', i);
-                  this.imageServerFiles = i;
+                next:(e)=>{
+                  this.imageServerFiles = e;
                 }, error:(res)=> {
                 }
               }); 
@@ -994,10 +858,155 @@ export class SingleProductComponent implements OnInit {
             }
           });
         }
+        console.log("new files: ", this.imageServerFiles);
       }, error:(res)=> {
         console.log(res);
       }
     });
+
+    console.log('ParentChild: ' , this.parentChildCategories);
   }
-   
+
+  addDesign(type: number): void {
+
+    const df = this.formBuilder.group({
+      designField: [],
+    })
+
+    switch (type) {
+      case 80:
+        this.shoutouts.push(df);
+        break;
+      case 81:
+        this.features.push(df);
+        break;
+      case 82:
+        this.fabs.push(df);
+        break;
+      case 83:
+        this.contents.push(df);
+        break;
+      default:
+        break;
+    }    
+  }
+  
+  removeDesign(i: number, type: number): void {
+    this.designLoader = true;
+    let deleteId: number = 0;
+    switch (type) {
+      case 80:   
+        deleteId = this.shoutoutsForm.value.shoutouts[i].designId;
+        this.shoutouts.removeAt(i);
+        this.shoutoutsForm.markAsDirty();
+        break;
+      case 81:
+        deleteId = this.featuresAndBenefitsForm.value.features[i].designId;
+        this.features.removeAt(i);
+        this.featuresAndBenefitsForm.markAsDirty();
+        break;
+      case 82:
+        deleteId = this.featuresAndBenefitsForm.value.fabs[i].designId;
+        this.fabs.removeAt(i);
+        this.extendedFabsForm.markAsDirty();
+        break;
+      case 83:
+        deleteId = this.packageContentsForm.value.contents[i].designId;
+        this.contents.removeAt(i);
+        this.packageContentsForm.markAsDirty();
+        break;
+      default:
+        break;
+    } 
+
+    console.log('Deleting ', deleteId);
+
+    this.api.GET(`delete-design/${deleteId}`).subscribe({
+      next:(res)=>{
+        this.openSnackBar('Item removed', 'Okay');
+        this.designLoader = false;
+        //this.getDesigns(this.id)
+      }, error:(res)=> {
+        console.log(res);
+        this.openSnackBar('🔴 Item could not be removed', 'Okay');
+      }
+    });
+
+  }
+
+  design(type: number) {
+    switch (type) {
+      case 80:
+        this.saveDesign(this.shoutoutsForm.value.shoutouts, type);
+        break;
+      case 81:
+        this.saveDesign(this.featuresAndBenefitsForm.value.features, type);
+        break;
+      case 82:
+        this.saveDesign(this.extendedFabsForm.value.fabs, type);
+        break;
+      case 83:
+        this.saveDesign(this.packageContentsForm.value.contents, type);
+        break;
+      default:
+        break;
+    } 
+  }
+
+  saveDesign (formObj: any, typeId: number) {
+    for (let index = 0; index < formObj.length; index++) {
+      const checkValue = formObj[index].designField;
+      const valueFound = formObj.find((x: any) => x.designField == checkValue);
+      const insertId = valueFound.designId;
+      if (insertId == undefined) {
+        this.designLoader = true;
+        console.log("inserting ", checkValue);
+        this.api.POST(`design`, { 
+          product_id: this.id,
+          design_type_id: typeId,
+          value: checkValue
+        }).subscribe({
+          next:(res)=>{
+            this.designLoader = false;
+            console.log(res);
+          }
+        });
+      }
+    }
+  }
+
+  getDesigns(id: string) {
+    this.designLoader = true;
+    this.api.GET(`design/${id}`).subscribe({
+      next:(res)=>{
+        this.designLoader = false;
+        if (res !== null) {
+          for (let index = 0; index < res.length; index++) {
+            const designs = this.formBuilder.group({
+              designField: [res[index].value, Validators.required],
+              designId: [res[index].id]
+            })
+            switch (res[index].design_type_id) {
+              case 80:
+                this.shoutouts.push(designs);
+                break;
+              case 81:
+                this.features.push(designs);
+                break;
+              case 82:
+                this.fabs.push(designs);
+                break;
+              case 83:
+                this.contents.push(designs);
+                break;
+              default:
+                break;
+            }
+          }
+        }
+      }, error:(res)=>{
+        //this.designLoader = false;
+      }
+    });
+  }
 }
