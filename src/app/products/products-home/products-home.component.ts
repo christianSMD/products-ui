@@ -78,7 +78,6 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     });
     
     this.info.isRefreshed();
-    console.log(Date.now());
     if(localStorage.getItem('blockui') == 'yes') {
       this.blockUI.start(`${this.info.greeting()} ${this.info.getUserName()}!`);
     } else {
@@ -315,53 +314,12 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   }
 
   addToPamphlet (productId: string, sku: string, e: any) {
-    // get id for sku
-    const product = this.productsList.find((p: any) => p.sku == sku);
-    const id = product?.id;
-    console.log("product id: ", id);
-    if (e.checked) {
-      this.newPamphlet.push(productId);
-      this.newPamphletSKUs.push(sku);
-    } else {
-      const x = this.newPamphlet.indexOf(productId);
-      const y = this.newPamphletSKUs.indexOf(sku);
-      if (x > -1) { 
-        this.newPamphlet.splice(x, 1);
-      }
-      if (y > -1) { 
-        this.newPamphletSKUs.splice(y, 1);
-      }
-    }
-
-    console.log("Selected IDs: ", this.newPamphlet);
+    // Moved to New Product
   }
 
 
   saveProduct() {
-    console.log(this.newProductForm.value);
-    //Still need to add items on the images object
-    this.api.POST('products-pamphlet', this.newProductForm.value).subscribe({
-      next:(res) => {
-        this.info.activity('Created new pamphlet', 0);
-        this.openSnackBar(res.name + ' Created 😃', 'Okay');
-        // Now add linked products
-        for (let index = 0; index < this.newPamphlet.length; index++) {
-          this.api.POST('link-products', {
-            parent_id: res.id,
-            child_id: this.newPamphlet[index]
-          }).subscribe({
-            next:(res) => {
-              console.log(res);
-            }, error:(res)=>{
-              this.openSnackBar('😢 ' + res.message, 'Okay');
-            }
-          });
-        }
-        this.router.navigate([res.sku]);
-      }, error:(res)=>{
-        this.openSnackBar('😢 ' + res.message, 'Okay');
-      }
-    });
+    // Moved to New Product
   }
 
 }

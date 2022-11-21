@@ -16,4 +16,5 @@ export interface Product {
     is_active: number;
     is_in_development: number;
     is_eol: number;
+    product_id: number;
 }

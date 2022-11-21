@@ -1,33 +1,31 @@
 
-<p><a routerLink="/">Products</a> / Add New Product</p>
+<p><a routerLink="/">Products</a> / Add New {{ newProductType }}</p>
 <div class="row">
   <div class="col-md-9">
     <mat-card>
       <mat-tab-group [(selectedIndex)]="activeTabIndex">
-        <mat-tab  label="1. General">
+        <mat-tab label="1. General">
           <form [formGroup]="newProductForm">
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <div class="row">
                 <div class="col-md-6">
-                  <mat-form-field appearance="outline" style="width: 90%;">
+                  <mat-form-field appearance="outline" style="width: 90%;" *ngIf="newProductType == 'product'">
                     <mat-label>SKU</mat-label>
                     <input #sku matInput formControlName="sku" placeholder="Product Code / SKU" (keyup)="checkSku($event)">
-                    <mat-icon matSuffix>qr_code_2</mat-icon>
                     <div *ngIf="invalidSku" class="invalid">Enter a valid SKU</div>
                     <div *ngIf="!invalidSku" class="valid">✔</div>
                   </mat-form-field>
                   <mat-form-field appearance="outline" style="width: 90%;">
                     <mat-label>Product Name</mat-label>
                     <input #name matInput formControlName="name" placeholder="Enter Product Name">
-                    <mat-icon matSuffix>create</mat-icon>
                   </mat-form-field>
-                  <mat-form-field appearance="outline" style="width: 90%;">
+                  <mat-form-field *ngIf="newProductType == 'product'" appearance="outline" style="width: 90%;">
                     <mat-label>Product Brand</mat-label>
                     <mat-select #brand matInput formControlName="brand_type_id">
                       <mat-option *ngFor="let type of typesList | typeGroup : 'Brand'" value="{{ type.id }}">{{ type.name }}</mat-option>
                     </mat-select>
                   </mat-form-field>
-                  <mat-form-field style="width: 90%;" appearance="outline">
+                  <mat-form-field *ngIf="newProductType == 'product'" style="width: 90%;" appearance="outline">
                     <mat-label>Short Description</mat-label>
                     <textarea #short_description rows="7" matInput formControlName="short_description" placeholder="Enter short product description"></textarea>
                   </mat-form-field>
@@ -37,18 +35,42 @@
                   </mat-form-field>
                 </div>
                 <div class="col-md-6">
-                  <div class="m-3">
+
+                  <div *ngIf="newProductType == 'linked-product'">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Search Product</mat-label>
+                      <input type="text" placeholder="Enter SKU" aria-label="Number" matInput [formControl]="autocompleteControl" [matAutocomplete]="auto">
+                      <mat-autocomplete (optionSelected)="addToBundle($event)" #auto="matAutocomplete">
+                        <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                          {{option}}
+                        </mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline" *ngFor="let sku of newPamphletSKUs" style="margin-bottom: 1rem;">
+                      <mat-label>Selected Product</mat-label>
+                      <input type="text" placeholder="Search SKU" aria-label="Number" matInput value="{{sku}}" readonly>
+                      <mat-icon matSuffix (click)="removeFromBundle(sku)">delete</mat-icon>
+                      <mat-hint><a target="_blank" href="https://products.smdtechnologies.com/{{sku}}">View this product</a></mat-hint>
+                    </mat-form-field>
+  
+                    <button type="submit" style="float: right;" mat-raised-button type="submit" color="primary" (click)="saveBundleProduct()">Save New {{ newProductType }}</button>
+  
+                  </div>
+
+                  
+                  <div class="m-3" *ngIf="newProductType == 'product'">
                     <mat-checkbox #is_in_development formControlName="is_in_development">Is in development</mat-checkbox><br>
                     <mat-checkbox #is_eol formControlName="is_eol">Is EOL</mat-checkbox><br>
                     <mat-checkbox #is_active formControlName="is_active">Is Active</mat-checkbox><hr>
                     <!-- <button *ngIf="parent == true" mat-raised-button type="submit" color="primary" (click)="saveProduct()">Save New Product</button> -->
-                    <button type="submit" [disabled]="!newProductForm.dirty || invalidSku" mat-raised-button type="submit" color="primary" (click)="saveProduct()">Save New Product</button>
-                    
+                    <button type="submit" [disabled]="!newProductForm.dirty || invalidSku" mat-raised-button type="submit" color="primary" (click)="saveProduct()">Save New {{ newProductType }}</button>
                   </div>
                 </div>
               </div>
             </div>
           </form>
+
         </mat-tab>
         <mat-tab label="2. Select Categories">
           <div class="mt-5 custom-tab" style="overflow: hidden !important;">

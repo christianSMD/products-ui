@@ -42,6 +42,7 @@ import { BlockUIModule  } from 'ng-block-ui';
 import { SettingsComponent } from './settings/settings.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MinisidenavComponent } from './view/minisidenav/minisidenav.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
   declarations: [
@@ -90,6 +91,7 @@ import { MinisidenavComponent } from './view/minisidenav/minisidenav.component';
     MatTooltipModule,
     MatTabsModule,
     BlockUIModule.forRoot(),
+    MatAutocompleteModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true },

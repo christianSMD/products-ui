@@ -170,16 +170,15 @@
                         </div>
                       </mat-card>
 
-                      <mat-card *ngIf="isPamphlet" style="margin-top: 2rem;">
+                      <mat-card *ngIf="isBundle" style="margin-top: 2rem;">
                         <strong>Linked Products</strong><br><br>
-                          <div *ngIf="!loadingPdsAttributes">
-                            <ul>
-                              <li *ngFor="let i of linkedProductSKUs">{{ i }}</li>
-                            </ul>
-                          </div>
-                          <div *ngIf="loadingPdsAttributes">
-                            <i>please wait...</i>
-                          </div>
+
+                        <mat-form-field appearance="outline" *ngFor="let sku of linkedProductSKUs" style="margin-bottom: 1rem; width: 50%;">
+                          <input type="text" placeholder="Search SKU" aria-label="Number" matInput value="{{sku}}" readonly>
+                          <mat-icon matSuffix (click)="removeFromBundle(sku)" style="color:#545454;">delete</mat-icon>
+                          <mat-hint><a target="_blank" href="https://products.smdtechnologies.com/{{sku}}">View this product</a></mat-hint>
+                        </mat-form-field>
+
                       </mat-card>
 
                       <mat-card style="margin-top: 30px !important; height: auto;">
@@ -205,7 +204,7 @@
                       </mat-card>
 
                       <mat-card style="margin-top: 30px !important; height: auto;">
-                        <strong>Image Server</strong><br><br>
+                        <!-- <strong>Image Server</strong><br><br> -->
                         <div class="row">
                           <!-- image server -->
                           <div class="col-md-3  p-3" *ngFor="let image of imageServerFiles;">

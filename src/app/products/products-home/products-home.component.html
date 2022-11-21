@@ -8,13 +8,14 @@
 
   <div class="row">
     <div class="col-xs-12 col-ms-12 col-md-4 col-lg-3">
-      <button *ngIf="addProductRole" mat-raised-button class="m-1" style="width: 100%;" routerLink="add/new" >
+      <button *ngIf="addProductRole" mat-raised-button class="m-1" style="width: 100%;" [routerLink]="['add/new', 'product']" >
         <mat-icon>add</mat-icon> Add New Product
       </button>
     </div>
     <div class="col-xs-12 col-ms-12 col-md-4 col-lg-3">
-      <button *ngIf="addProductRole" mat-raised-button class="m-1" style="width: 100%; background-color: #f0f0f0;" (click)="showPamphletCheckboxes()">
-        <mat-icon>newspaper</mat-icon> Create Pamphlet
+      <!-- (click)="showPamphletCheckboxes()" -->
+      <button *ngIf="addProductRole" mat-raised-button class="m-1" style="width: 100%; background-color: #f0f0f0;" [routerLink]="['add/new', 'linked-product']" >
+        <mat-icon>add</mat-icon> Create Pamphlet
       </button>
     </div>
     <div class="col-xs-12 col-ms-12 col-md-4 col-lg-3">
@@ -116,7 +117,6 @@
               <span style="padding: 9px; background-color:#f0f0f0; color:green;">
                 <mat-checkbox color="primary" (change)="addToPamphlet(row.product_id, row.sku, $event)" class="table-setting">Add to list</mat-checkbox>
               </span>
-              
             </td>
           </ng-container>
           <ng-container matColumnDef="thumbnail">

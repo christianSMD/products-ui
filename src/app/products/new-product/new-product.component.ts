@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ApiService } from 'src/app/services/api/api.service';
 import { NavbarService } from 'src/app/services/navbar/navbar.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -8,10 +8,12 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Category } from 'src/app/interfaces/category';
 import { Type } from 'src/app/interfaces/type';
 import { MatListOption } from '@angular/material/list'
-import { Observable } from 'rxjs';
+import { map, Observable, startWith } from 'rxjs';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { InfoService } from 'src/app/services/info/info.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ProductsHomeComponent } from '../products-home/products-home.component';
 
 @Component({
   selector: 'app-new-product',
@@ -64,8 +66,24 @@ export class NewProductComponent implements OnInit {
   storageUrl: string;
   skuPattern = "^[a-zA-Z0-9_-]{4,12}$";
   invalidSku = true
+  newProductType: any; // New Product or new Linked/Bundle products
+  autocompleteControl = new FormControl('');
+  options: string[] = [];
+  filteredOptions: Observable<string[]>;
+
+  newPamphlet: any[] = [];
+  newPamphletSKUs: any[] = [];
   
-  constructor(public navbar: NavbarService, private api: ApiService, private formBuilder : FormBuilder, private _snackBar: MatSnackBar, public info: InfoService) {}
+  constructor(
+    public navbar: NavbarService,
+    private api: ApiService,
+    private formBuilder : FormBuilder,
+    private _snackBar: MatSnackBar,
+    public info: InfoService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private productaHomeComponent: ProductsHomeComponent
+  ) {}
 
   ngOnInit(): void {
     this.info.auth();
@@ -74,6 +92,18 @@ export class NewProductComponent implements OnInit {
     this.navbar.show();
     this.getAllTypes();
     this.getAllCategories();
+    this.entireProducts();
+
+
+    // Auto complete SKUs
+    this.filteredOptions = this.autocompleteControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value || '')),
+    );
+    
+    this.route.paramMap.subscribe(paramMap => {
+      this.newProductType = paramMap.get('type');
+    });
 
     window.addEventListener("beforeunload", function (e) {
       const confirmationMessage = "\o/";
@@ -105,6 +135,24 @@ export class NewProductComponent implements OnInit {
     this.newProductFormAttributes = this.formBuilder.group({
       attributes: this.formBuilder.array([])
     });
+  }
+
+  entireProducts() {
+    let url: string = 'products-all';
+    this.api.GET(url).subscribe({
+      next:(res)=>{
+        this.productsList = res;
+        for (let index = 0; index < res.length; index++) {
+          this.options.push(res[index].sku);
+        }
+        console.log('res ', res[0].sku);
+      }, error:(res)=>{}
+    });
+  }
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.options.filter(option => option.toLowerCase().includes(filterValue));
   }
 
   get attributes() {
@@ -168,6 +216,57 @@ export class NewProductComponent implements OnInit {
         this.openSnackBar('😢 ' + res.message, 'Okay');
       }
     });
+
+  }
+
+  saveBundleProduct() {
+    console.log(this.newProductForm.value);
+    //Still need to add items on the images object
+    this.api.POST('products-pamphlet', this.newProductForm.value).subscribe({
+      next:(res) => {
+        this.info.activity('Created new pamphlet', 0);
+        this.openSnackBar(res.name + ' Created 😃', 'Okay');
+        // Now add linked products
+        for (let index = 0; index < this.newPamphlet.length; index++) {
+          this.api.POST('link-products', {
+            parent_id: res.id,
+            child_id: this.newPamphlet[index]
+          }).subscribe({
+            next:(res) => {
+              console.log(res);
+            }, error:(res)=>{
+              this.openSnackBar('😢 ' + res.message, 'Okay');
+            }
+          });
+        }
+        this.router.navigate([res.sku]);
+      }, error:(res)=>{
+        this.openSnackBar('😢 ' + res.message, 'Okay');
+      }
+    });
+  }
+
+  addToBundle (e: any) {
+    // get id for sku
+    const product = this.productsList.find((p: any) => p.sku == e.option.value);
+    const id = product?.product_id;
+    console.log('Product: ', product);
+    this.newPamphlet.push(id);
+    this.newPamphletSKUs.push(e.option.value);
+    this.autocompleteControl.reset();
+  }
+
+  removeFromBundle (sku: string) {
+    const product = this.productsList.find((p: any) => p.sku == sku);
+    const id = product?.id;
+    const x = this.newPamphlet.indexOf(id);
+    const y = this.newPamphletSKUs.indexOf(sku);
+    if (x > -1) { 
+      this.newPamphlet.splice(x, 1);
+    }
+    if (y > -1) { 
+      this.newPamphletSKUs.splice(y, 1);
+    }
   }
 
   saveCategories() {

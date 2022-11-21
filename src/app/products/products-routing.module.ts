@@ -13,7 +13,7 @@ const routes: Routes = [
   { path: '', component: ProductsHomeComponent },
   { path: ':sku', component: SingleProductComponent },
   { path: 'brand/:brand', component: ListProductsComponent },
-  { path: 'add/new', component: NewProductComponent },
+  { path: 'add/new/:type', component: NewProductComponent },
   { path: 'categories/manage', component: CategoriesComponent },
   { path: 'products/export', component: ExportComponent },
   { path: 'products/export-csv', component: ExportCSVComponent },

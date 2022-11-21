@@ -80,8 +80,13 @@ export class SingleProductComponent implements OnInit {
   expiry_date: string;
   today = new Date();
   onImageServer = true;
-  isPamphlet: boolean = false;
+
+  //Linked products
+  isBundle: boolean = false;
+  linkedProducts: any = [];
+  linkedProductsIDs: any = [];
   linkedProductSKUs: any = [];
+  bundleLoader: boolean = true;
   // Design
   shoutoutsForm: FormGroup;
   featuresAndBenefitsForm: FormGroup;
@@ -108,7 +113,7 @@ export class SingleProductComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
+    this.info.auth();
     window.scroll({ 
       top: 0, 
       left: 0, 
@@ -237,7 +242,7 @@ export class SingleProductComponent implements OnInit {
           this.productName = this.product.name;
           this.id = this.product.id;
           if (res[0].type == 'Pamphlet') {
-            this.isPamphlet = true;
+            this.isBundle = true;
             this.linkedProductsImages();
           }
           
@@ -835,32 +840,44 @@ export class SingleProductComponent implements OnInit {
   }
 
   linkedProductsImages() {
+    this.bundleLoader = true;
     this.api.GET(`linked-products/${this.id}`).subscribe({
       next:(res)=>{
         console.log("Linked IDs", res);
+        this.linkedProducts = res;
+        //this.linkedProducts = res;
         for (let index = 0; index < res.length; index++) {
           // Get child categories
           this.getProductCategories(res[index].child_id);
           // Get child details by ID
+          this.bundleLoader = true;
           this.api.GET(`products/search-by-id/${res[index].child_id}`).subscribe({
             next:(child)=>{
+              this.bundleLoader = true;
               let obj: any = {};
               obj = child;
               this.linkedProductSKUs.push(obj.sku);
+              this.linkedProductsIDs.push(obj.id);
+              console.log(obj);
+              
               this.api.IMAGESERVERHIRES(obj.sku).subscribe({  
                 next:(e)=>{
                   this.imageServerFiles = e;
                 }, error:(res)=> {
                 }
               }); 
+              this.bundleLoader = false;
             }, error:(res)=> {
+              this.bundleLoader = false;
               console.log(res);
             }
           });
         }
         console.log("new files: ", this.imageServerFiles);
+        
       }, error:(res)=> {
         console.log(res);
+        this.bundleLoader = false;
       }
     });
 
@@ -1009,4 +1026,11 @@ export class SingleProductComponent implements OnInit {
       }
     });
   }
+
+  removeFromBundle (sku: string) {
+    console.log(this.linkedProductSKUs.indexOf(sku));
+    const x = this.linkedProductSKUs.indexOf(sku);
+    
+  }
+
 }
