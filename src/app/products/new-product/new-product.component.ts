@@ -13,7 +13,6 @@ import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { InfoService } from 'src/app/services/info/info.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ProductsHomeComponent } from '../products-home/products-home.component';
 
 @Component({
   selector: 'app-new-product',
@@ -82,7 +81,6 @@ export class NewProductComponent implements OnInit {
     public info: InfoService,
     private route: ActivatedRoute,
     private router: Router,
-    private productaHomeComponent: ProductsHomeComponent
   ) {}
 
   ngOnInit(): void {
