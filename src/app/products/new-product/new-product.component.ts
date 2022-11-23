@@ -72,6 +72,7 @@ export class NewProductComponent implements OnInit {
 
   newPamphlet: any[] = [];
   newPamphletSKUs: any[] = [];
+  SKUsLoader: boolean = true
   
   constructor(
     public navbar: NavbarService,
@@ -91,7 +92,6 @@ export class NewProductComponent implements OnInit {
     this.getAllTypes();
     this.getAllCategories();
     this.entireProducts();
-
 
     // Auto complete SKUs
     this.filteredOptions = this.autocompleteControl.valueChanges.pipe(
@@ -136,21 +136,41 @@ export class NewProductComponent implements OnInit {
   }
 
   entireProducts() {
-    let url: string = 'products-all';
-    this.api.GET(url).subscribe({
-      next:(res)=>{
-        this.productsList = res;
-        for (let index = 0; index < res.length; index++) {
-          this.options.push(res[index].sku);
-        }
-        console.log('res ', res[0].sku);
-      }, error:(res)=>{}
-    });
+    this.api.selectedProduct$.subscribe((value) => {
+      console.log('Value: ', value.length);
+      if(value.length !== undefined){
+        // Use data from the service if it is available
+        console.log('Useing data from service...');
+        this.productsList = value;
+        this.options = value.map((x: Product) => x.sku);
+      } else {
+        // If data from the service is cleared, get a fresh copy from the server
+        console.log('Fetching frsh copy form the server...');
+        let url: string = 'products-all';
+        this.api.GET(url).subscribe({
+          next:(res)=>{
+            this.productsList = res;
+            this.options = res.map((x: Product) => x.sku);
+          }, error:(res)=>{}
+        });
+      }
+    });    
   }
 
+  /**
+   * 
+   * @param value Input from the searchbox
+   * @todo This functions filters SKUs from an array of over 20k products
+   * @todo The filter will only trigger when the input string has more than 4 chars
+   * @returns Filtered array
+   */
   private _filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.options.filter(option => option.toLowerCase().includes(filterValue));
+    let x: string[]= [];
+    if(value.length > 4){
+      const filterValue = value.toLowerCase();
+      x = this.options.filter(option => option.toLowerCase().includes(filterValue));
+    }
+    return x;
   }
 
   get attributes() {
@@ -214,10 +234,9 @@ export class NewProductComponent implements OnInit {
         this.openSnackBar('😢 ' + res.message, 'Okay');
       }
     });
-
   }
 
-  saveBundleProduct() {
+  saveBundleProduct(relationship: string) {
     console.log(this.newProductForm.value);
     //Still need to add items on the images object
     this.api.POST('products-pamphlet', this.newProductForm.value).subscribe({
@@ -228,7 +247,8 @@ export class NewProductComponent implements OnInit {
         for (let index = 0; index < this.newPamphlet.length; index++) {
           this.api.POST('link-products', {
             parent_id: res.id,
-            child_id: this.newPamphlet[index]
+            child_id: this.newPamphlet[index],
+            relationship: relationship
           }).subscribe({
             next:(res) => {
               console.log(res);
@@ -247,7 +267,8 @@ export class NewProductComponent implements OnInit {
   addToBundle (e: any) {
     // get id for sku
     const product = this.productsList.find((p: any) => p.sku == e.option.value);
-    const id = product?.product_id;
+    //const id = product?.product_id;
+    const id = product?.id;
     console.log('Product: ', product);
     this.newPamphlet.push(id);
     this.newPamphletSKUs.push(e.option.value);

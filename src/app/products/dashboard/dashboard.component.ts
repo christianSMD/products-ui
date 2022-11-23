@@ -61,24 +61,37 @@ export class DashboardComponent implements OnInit {
   }
 
   getAllProducts() {
-    this.blockUI.start('Loading products..');
-    this.productsLoader = true;
-    this.api.GET('products-all').subscribe({
-      next:(res)=>{
-        this.productsLoader = false;
-        this.productsList = res;
-        this.allProducts = res.length;
-        const active = res.filter(x => x.is_active == 1);
-        this.activeProducts = active.length;
-        const development = res.filter(x => x.is_in_development == 1);
-        this.developmentProducts = development.length;
-        const eol = res.filter(x => x.is_eol == 1);
-        this.eolProducts = eol.length;
-        this.blockUI.stop();
-      }, error:(res)=>{
-        this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
-      }
+    this.api.selectedProduct$.subscribe((res) => {
+      this.productsLoader = false;
+      this.productsList = res;
+      this.allProducts = res.length;
+      const active = res.filter((x: Product) => x.is_active == 1);
+      this.activeProducts = active.length;
+      const development = res.filter((x: Product)  => x.is_in_development == 1);
+      this.developmentProducts = development.length;
+      const eol = res.filter((x: Product)  => x.is_eol == 1);
+      this.eolProducts = eol.length;
     });
+
+
+    // this.blockUI.start('Loading products..');
+    // this.productsLoader = true;
+    // this.api.GET('products-all').subscribe({
+    //   next:(res)=>{
+    //     this.productsLoader = false;
+    //     this.productsList = res;
+    //     this.allProducts = res.length;
+    //     const active = res.filter(x => x.is_active == 1);
+    //     this.activeProducts = active.length;
+    //     const development = res.filter(x => x.is_in_development == 1);
+    //     this.developmentProducts = development.length;
+    //     const eol = res.filter(x => x.is_eol == 1);
+    //     this.eolProducts = eol.length;
+    //     this.blockUI.stop();
+    //   }, error:(res)=>{
+    //     this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
+    //   }
+    // });
   }
   
   getAllTypes() {
@@ -107,9 +120,8 @@ export class DashboardComponent implements OnInit {
   productsBybrand () {
     this.api.GET('dashboard').subscribe({
       next:(res)=>{
-        console.log(res);
+        console.log('by brands ', res);
         this.productsByBrand = res;
-        this.uknownBrandProducts = this.allProducts - this.productsByBrand.length;
       }, error:(res)=> {
         console.log(res);
       }

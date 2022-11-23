@@ -67,13 +67,13 @@ All Brands: {{brandsCount}} -->
 <h2>{{brandsCount}} Brands</h2>
 <div class="row">
     <div class="col-md-4 brands card">
-        <div class="row" style="margin-bottom: 1rem;">
+        <!-- <div class="row" style="margin-bottom: 1rem;">
             <div class="col-md-12">No Brand<span style="float: right;">{{ uknownBrandProducts }} Products</span></div>
             <div class="col-md-12"><mat-progress-bar color="warn" mode="determinate" value="{{ uknownBrandProducts / allProducts * 100 }}" height="12px"></mat-progress-bar></div>
-        </div>
+        </div> -->
         <div class="row" *ngFor="let brand of productsByBrand" style="margin-bottom: 1rem;">
-            <div class="col-md-12">{{ brand.name }}:<span style="float: right;">{{ brand.totalProducts }} Products</span></div>
-            <div class="col-md-12"><mat-progress-bar mode="determinate" value="{{ brand.totalProducts / allProducts * 100 }}" height="12px"></mat-progress-bar></div>
+            <div class="col-md-12">{{ brand.name }}:<span style="float: right; font-size: smaller;">{{ brand.totalProducts }} Products ({{ brand.totalProducts / allProducts * 100 | number : '1.2-2' }}%)</span></div>
+            <div class="col-md-12"><mat-progress-bar mode="determinate" value="{{ brand.totalProducts / allProducts * 100}}" height="12px"></mat-progress-bar></div>
         </div>
     </div>
     <div class="col-md-8">  
@@ -81,7 +81,7 @@ All Brands: {{brandsCount}} -->
             <dt>
                 Top 5 Brands 
             </dt>
-            <dd *ngFor="let brand of productsByBrand | slice:0:5" class="percentage percentage-{{ brand.totalProducts}}"><span class="text">{{ brand.name }}: {{ brand.totalProducts }}</span></dd>
+            <dd *ngFor="let brand of productsByBrand | slice:0:5" class="percentage percentage-{{  brand.totalProducts / allProducts * 100  }}"><span class="text">{{ brand.name }}: {{ brand.totalProducts }}</span></dd>
         </dl>
     </div>
 </div>

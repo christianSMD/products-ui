@@ -1,6 +1,6 @@
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { File } from 'src/app/interfaces/file';
@@ -16,6 +16,8 @@ import { MatDialog } from '@angular/material/dialog';
 import * as FileSaver from 'file-saver';
 import { HttpClient } from '@angular/common/http';
 import jsPDF from "jspdf";
+import { Product } from 'src/app/interfaces/product';
+import { map, Observable, startWith } from 'rxjs';
 
 @Component({
   selector: 'app-single-product',
@@ -87,15 +89,25 @@ export class SingleProductComponent implements OnInit {
   linkedProductsIDs: any = [];
   linkedProductSKUs: any = [];
   bundleLoader: boolean = true;
+  autocompleteControl = new FormControl('');
+  productsList: Product[] = [];
+  newPamphlet: any[] = [];
+  newPamphletSKUs: any[] = [];
+  SKUsLoader: boolean = true
+  options: string[] = [];
+  filteredOptions: Observable<string[]>;
+  newProductForm !: FormGroup;
+
   // Design
   shoutoutsForm: FormGroup;
   featuresAndBenefitsForm: FormGroup;
   extendedFabsForm: FormGroup;
   packageContentsForm: FormGroup;
   designLoader: boolean = false;
-
+  
   //test
   parentChildCategories: any[] = [];
+  audits: any[] = [];
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -135,6 +147,7 @@ export class SingleProductComponent implements OnInit {
     this.getAllTypes();
     this.getDesignAllTypes();
     this.getAllCategories();
+    this.entireProducts();
 
     this.productForm = this.formBuilder.group({
       sku : ['0', Validators.required],
@@ -190,6 +203,12 @@ export class SingleProductComponent implements OnInit {
     if(this.sku == 'users' || this.sku == 'user') {
       this.router.navigate(['/users/manage']);
     }
+
+    // Auto complete SKUs
+    this.filteredOptions = this.autocompleteControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value || '')),
+    );
   }
 
   get attributes() {
@@ -254,6 +273,7 @@ export class SingleProductComponent implements OnInit {
           this.getProductRegions(this.id);
           this.imageserver(sku);
           this.getDesigns(this.id);
+          this.audit(this.id);
 
           this.productForm = this.formBuilder.group({
             sku : [{value: this.product.sku, disabled: true}, Validators.required],
@@ -266,6 +286,10 @@ export class SingleProductComponent implements OnInit {
             is_eol: [this.product.is_eol],
             verified: [this.product.verified],
             family_grouping: [this.product.family_grouping],
+          });
+
+          this.newProductForm = this.formBuilder.group({
+            sku : ['', [Validators.required]]
           });
 
           // Attributes from productsTable
@@ -857,9 +881,7 @@ export class SingleProductComponent implements OnInit {
               let obj: any = {};
               obj = child;
               this.linkedProductSKUs.push(obj.sku);
-              this.linkedProductsIDs.push(obj.id);
-              console.log(obj);
-              
+              this.linkedProductsIDs.push(obj.id);              
               this.api.IMAGESERVERHIRES(obj.sku).subscribe({  
                 next:(e)=>{
                   this.imageServerFiles = e;
@@ -872,9 +894,7 @@ export class SingleProductComponent implements OnInit {
               console.log(res);
             }
           });
-        }
-        console.log("new files: ", this.imageServerFiles);
-        
+        }        
       }, error:(res)=> {
         console.log(res);
         this.bundleLoader = false;
@@ -948,7 +968,6 @@ export class SingleProductComponent implements OnInit {
         this.openSnackBar('🔴 Item could not be removed', 'Okay');
       }
     });
-
   }
 
   design(type: number) {
@@ -1027,10 +1046,85 @@ export class SingleProductComponent implements OnInit {
     });
   }
 
-  removeFromBundle (sku: string) {
-    console.log(this.linkedProductSKUs.indexOf(sku));
-    const x = this.linkedProductSKUs.indexOf(sku);
-    
+  addToBundle (e: any) {
+    const product = this.productsList.find((p: any) => p.sku == e.option.value);
+    const id = product?.id;
+    this.autocompleteControl.reset();
+    this.api.POST('link-products', {
+      parent_id: this.id,
+      child_id: id,
+      relationship: "Pamphlet"
+    }).subscribe({
+      next:(res) => {
+        console.log(res);
+        this.info.activity('Added new SKU to linked products', 0);
+      }, error:(res)=>{
+        this.openSnackBar('😢 ' + res.message, 'Okay');
+      }
+    });
   }
+
+  entireProducts() {
+    this.api.selectedProduct$.subscribe((value) => {
+      console.log('Value: ', value.length);
+      if(value.length !== undefined){
+        // Use data from the service if it is available
+        console.log('Useing data from service...');
+        this.productsList = value;
+        this.options = value.map((x: Product) => x.sku);
+      } else {
+        // If data from the service is cleared, get a fresh copy from the server
+        console.log('Fetching frsh copy form the server...');
+        let url: string = 'products-all';
+        this.api.GET(url).subscribe({
+          next:(res)=>{
+            this.productsList = res;
+            this.options = res.map((x: Product) => x.sku);
+          }, error:(res)=>{}
+        });
+      }
+    });    
+  }
+
+  /**
+   * 
+   * @param value Input from the searchbox
+   * @todo This functions filters SKUs from an array of over 20k products
+   * @todo The filter will only trigger when the input string has more than 4 chars
+   * @returns Filtered array
+   */
+   private _filter(value: string): string[] {
+    let x: string[]= [];
+    if(value.length > 4){
+      const filterValue = value.toLowerCase();
+      x = this.options.filter(option => option.toLowerCase().includes(filterValue));
+    }
+    return x;
+  }
+  
+  removeFromBundle (sku: string) {
+    let child = this.productsList.find((p: any) => p.sku == sku);
+    const relationship = this.linkedProducts.find((r: any) => r.child_id == child?.id && r.parent_id == this.id)
+    this.api.GET(`linked-products/delete/${relationship.id}`).subscribe({
+      next:(res)=>{
+        console.log(res);
+        this.info.activity('Removed product from linked products', 0);
+      }, error:(res)=> {
+        console.log(res);
+      }
+    });
+  }
+
+  audit(id: string) {
+    this.api.GET(`activity/${this.id}`).subscribe({
+      next:(res)=>{
+        console.log('audits', res);
+        this.audits = res;
+      }, error:(res)=> {
+        console.log(res);
+      }
+    });
+  }
+
 
 }

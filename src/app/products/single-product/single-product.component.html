@@ -9,226 +9,250 @@
   </p>
 
   <div class="row" id="pdfContent">
-    <div class="col-md-10">
+    <div class="col-md-9">
       <mat-card style="background: #EFEFEF;">
         <mat-tab-group>
           <mat-tab label="Product Details">
-              <form [formGroup]="productForm">
-                <div class="mt-5" style="overflow: hidden !important;">
-                  <div class="row">
-                    <div class="col-md-4">
-                      <mat-card>
-                        <strong>General Details</strong><br><br>
-                        <mat-form-field appearance="outline" style="width: 90%;">
-                          <mat-label>SKU</mat-label>
-                          <input #sku matInput formControlName="sku" placeholder="Enter Product SKU">
-                        </mat-form-field>
-                        <mat-form-field appearance="outline" style="width: 90%;">
-                          <mat-label>Product Name</mat-label>
-                          <input #name matInput formControlName="name" placeholder="Enter Product Name">
-                        </mat-form-field>
-                        <mat-form-field appearance="outline" style="width: 90%;">
-                          <mat-label>Product Brand</mat-label>
-                          <mat-select #brand matInput formControlName="brand_type_id">
-                            <mat-option *ngFor="let type of typesList | typeGroup : 'Brand'" value="{{ type.id }}">{{ type.name }}</mat-option>
-                          </mat-select>
-                        </mat-form-field>
-                        <mat-form-field appearance="outline" style="width: 90%;">
-                          <mat-label>Family Grouping</mat-label>
-                          <input #family_grouping matInput formControlName="family_grouping" placeholder="Enter Product Family Grouping">
-                        </mat-form-field>
-                        <strong>Description</strong><br><br>
-                        <mat-form-field style="width: 90%;" appearance="outline">
-                          <mat-label>Short Description</mat-label>
-                          <textarea #short_description rows="7" matInput formControlName="short_description" placeholder="Enter short product description"></textarea>
-                        </mat-form-field>
-                        <mat-form-field style="width: 90%;" appearance="outline">
-                          <mat-label>Description</mat-label>
-                          <textarea #description rows="15" matInput formControlName="description" placeholder="Enter product description..."></textarea>
-                        </mat-form-field>
-                        <br>
-                        <div style="padding-left: 1rem;">
-                          <mat-checkbox #is_in_development formControlName="is_in_development">Is In Development</mat-checkbox><br>
-                          <mat-checkbox #is_eol formControlName="is_eol">Is EOL</mat-checkbox><br>
-                          <mat-checkbox #is_active formControlName="is_active">Is Active</mat-checkbox><hr>
-                          <mat-checkbox #verified formControlName="verified">Verified</mat-checkbox><hr>
-                          <button mat-raised-button [disabled]="!productForm.dirty" *ngIf="editRole" type="submit" color="primary" (click)="updateProduct()">Save Changes</button>
-                        </div>
-                      </mat-card>
+            <div class="mt-5" style="overflow: hidden !important;">
+              <div class="row">
+                <div class="col-md-4">
+                  <mat-card>
+                    <form [formGroup]="productForm">
+                      <strong>General Details</strong><br><br>
+                      <mat-form-field appearance="outline" style="width: 90%;">
+                        <mat-label>SKU</mat-label>
+                        <input #sku matInput formControlName="sku" placeholder="Enter Product SKU">
+                      </mat-form-field>
+                      <mat-form-field appearance="outline" style="width: 90%;">
+                        <mat-label>Product Name</mat-label>
+                        <input #name matInput formControlName="name" placeholder="Enter Product Name">
+                      </mat-form-field>
+                      <mat-form-field appearance="outline" style="width: 90%;">
+                        <mat-label>Product Brand</mat-label>
+                        <mat-select #brand matInput formControlName="brand_type_id">
+                          <mat-option *ngFor="let type of typesList | typeGroup : 'Brand'" value="{{ type.id }}">{{ type.name }}</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                      <mat-form-field appearance="outline" style="width: 90%;">
+                        <mat-label>Family Grouping</mat-label>
+                        <input #family_grouping matInput formControlName="family_grouping" placeholder="Enter Product Family Grouping">
+                      </mat-form-field>
+                      <strong>Description</strong><br><br>
+                      <mat-form-field style="width: 90%;" appearance="outline">
+                        <mat-label>Short Description</mat-label>
+                        <textarea #short_description rows="7" matInput formControlName="short_description" placeholder="Enter short product description"></textarea>
+                      </mat-form-field>
+                      <mat-form-field style="width: 90%;" appearance="outline">
+                        <mat-label>Description</mat-label>
+                        <textarea #description rows="15" matInput formControlName="description" placeholder="Enter product description..."></textarea>
+                      </mat-form-field>
                       <br>
-                      <mat-card>
-                        <strong>Regions </strong>🌐<br><br>            
-                        <form [formGroup]="regionsForm">
-                          <ng-container formArrayName="regions">
-                            <ng-container *ngFor="let x of regions.controls; let index = index">
-                                <div [formGroupName]="index">
-                                  <mat-form-field appearance="outline" style="width: 90%;">
-                                    <mat-label>Product Region</mat-label>
-                                    
-                                    <mat-select #regionField matInput formControlName="regionField">
-                                      <mat-option *ngFor="let type of typesList | typeGroup : 'Region'" value="{{ type.id }}">{{ type.name }}</mat-option>
-                                    </mat-select>
-                                  </mat-form-field>            
-                                </div>
-                            </ng-container>
-                          </ng-container>
-                          <button mat-raised-button type="button" (click)="addRegion()" style="margin-left: 1rem;">
-                            Add Region
-                          </button>
-                          <button mat-raised-button type="submit" *ngIf="editRole" [disabled]="!regionsForm.dirty" color="primary" (click)="updateRegion()" style="margin-left: 1rem;">Save Region</button>
-                        </form>
-                      </mat-card>
-
-                      <mat-card *ngFor="let type of typesList | typeGroup : 'Design'" style="margin-top: 1rem;">
-                        <strong>{{ type.name }}</strong><br><br>
-                        
-                        <form *ngIf="type.id == 80" [formGroup]="shoutoutsForm">
-                          <ng-container formArrayName="shoutouts">
-                            <ng-container *ngFor="let x of shoutouts.controls; let index = index">
-                                <div [formGroupName]="index">
-                                  <mat-form-field appearance="outline" style="width: 90%;">
-                                    <mat-label>{{ type.name }}:</mat-label>
-                                    <input matInput #designField type="text" formControlName="designField" placeholder="" required>
-                                    <mat-icon matSuffix (click)="removeDesign(index, type.id)">delete</mat-icon>
-                                  </mat-form-field>              
-                                </div>
-                            </ng-container>
-                          </ng-container>
-                          <button mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
-                            Add New
-                          </button>
-                          <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;">Save</button>
-                        </form>
-
-                        <form *ngIf="type.id == 81" [formGroup]="featuresAndBenefitsForm">
-                          <ng-container formArrayName="features">
-                            <ng-container *ngFor="let x of features.controls; let index = index">
-                                <div [formGroupName]="index">
-                                  <mat-form-field appearance="outline" style="width: 90%;">
-                                    <mat-label>{{ type.name }}:</mat-label>
-                                    <input matInput type="text" formControlName="designField" placeholder="" required>
-                                    <mat-icon matSuffix (click)="removeDesign(index, type.id)">delete</mat-icon>
-                                  </mat-form-field>              
-                                </div>
-                            </ng-container>
-                          </ng-container>
-                          <button mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
-                            Add New
-                          </button>
-                          <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;">Save</button>
-                        </form>
-
-                        <form *ngIf="type.id == 82" [formGroup]="extendedFabsForm">
-                          <ng-container formArrayName="fabs">
-                            <ng-container *ngFor="let x of fabs.controls; let index = index">
-                                <div [formGroupName]="index">
-                                  <mat-form-field appearance="outline" style="width: 90%;">
-                                    <mat-label>{{ type.name }}:</mat-label>
-                                    <input matInput type="text" formControlName="designField" placeholder="" required>
-                                    <mat-icon matSuffix (click)="removeDesign(index, type.id)">delete</mat-icon>
-                                  </mat-form-field>              
-                                </div>
-                            </ng-container>
-                          </ng-container>
-                          <button mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
-                            Add New
-                          </button>
-                          <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;">Save</button>
-                        </form>
-
-                        <form *ngIf="type.id == 83" [formGroup]="packageContentsForm">
-                          <ng-container formArrayName="contents">
-                            <ng-container *ngFor="let x of contents.controls; let index = index">
-                                <div [formGroupName]="index">
-                                  <mat-form-field appearance="outline" style="width: 90%;">
-                                    <mat-label>{{ type.name }}:</mat-label>
-                                    <input matInput type="text" formControlName="designField" placeholder="" required>
-                                    <mat-icon matSuffix (click)="removeDesign(index, type.id)">delete</mat-icon>
-                                  </mat-form-field>              
-                                </div>
-                            </ng-container>
-                          </ng-container>
-                          <button mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
-                            Add New
-                          </button>
-                          <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;">Save</button>
-                        </form>
-
-                      </mat-card>
-                    </div>
-               
-                    <div class="col-md-8">
-                      <mat-card>
-                        <strong>PDS Attributes</strong><br><br>
-                        <div *ngIf="!loadingPdsAttributes">
-                          <ul>
-                            <li *ngFor="let i of pdsAttributes"><span>{{ i.attribute_key }} </span>: {{ i.attribute_value }}</li>
-                          </ul>
-                        </div>
-                        <div *ngIf="loadingPdsAttributes">
-                          <i>please wait...</i>
-                        </div>
-                      </mat-card>
-
-                      <mat-card *ngIf="isBundle" style="margin-top: 2rem;">
-                        <strong>Linked Products</strong><br><br>
-
-                        <mat-form-field appearance="outline" *ngFor="let sku of linkedProductSKUs" style="margin-bottom: 1rem; width: 50%;">
-                          <input type="text" placeholder="Search SKU" aria-label="Number" matInput value="{{sku}}" readonly>
-                          <mat-icon matSuffix (click)="removeFromBundle(sku)" style="color:#545454;">delete</mat-icon>
-                          <mat-hint><a target="_blank" href="https://products.smdtechnologies.com/{{sku}}">View this product</a></mat-hint>
-                        </mat-form-field>
-
-                      </mat-card>
-
-                      <mat-card style="margin-top: 30px !important; height: auto;">
-                        <strong>Images</strong><br><br>
-                        <div class="row">
-                          <!-- system images -->
-                          <div class="col-md-3 p-3" *ngFor="let image of mediaFiles; let index = index">
-                            <div class="flip-card">
-                              <div class="flip-card-inner">
-                                <div class="flip-card-front">
-                                  <p style="color: white;">...</p>
-                                  <img mat-card-image src="{{ storageUrl + filePath(image.path) }}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'">
-                                </div>
-                                <div class="flip-card-back">
-                                  <mat-chip-list aria-label="Fish selection">
-                                    <mat-chip class="mat-chip-list" *ngFor="let type of typesList | typeGroup : 'Image Type'"  (click)="downloadURI('storage/' + filePath(image.path), type.id, image.name, image)">{{ type.name }}</mat-chip>
-                                  </mat-chip-list>
-                                </div>
-                              </div>
+                      <div style="padding-left: 1rem;">
+                        <mat-checkbox #is_in_development formControlName="is_in_development">Is In Development</mat-checkbox><br>
+                        <mat-checkbox #is_eol formControlName="is_eol">Is EOL</mat-checkbox><br>
+                        <mat-checkbox #is_active formControlName="is_active">Is Active</mat-checkbox><hr>
+                        <mat-checkbox #verified formControlName="verified">Verified</mat-checkbox><hr>
+                        <button mat-raised-button [disabled]="!productForm.dirty" *ngIf="editRole" type="submit" color="primary" (click)="updateProduct()">Save Changes</button>
+                      </div>
+                    </form>
+                  </mat-card>
+                  <br>
+                  <mat-card>
+                    <strong>Regions </strong>🌐<br><br>            
+                    <form [formGroup]="regionsForm">
+                      <ng-container formArrayName="regions">
+                        <ng-container *ngFor="let x of regions.controls; let index = index">
+                            <div [formGroupName]="index">
+                              <mat-form-field appearance="outline" style="width: 90%;">
+                                <mat-label>Product Region</mat-label>
+                                
+                                <mat-select #regionField matInput formControlName="regionField">
+                                  <mat-option *ngFor="let type of typesList | typeGroup : 'Region'" value="{{ type.id }}">{{ type.name }}</mat-option>
+                                </mat-select>
+                              </mat-form-field>            
                             </div>
-                          </div>
-                        </div>
-                      </mat-card>
+                        </ng-container>
+                      </ng-container>
+                      <button mat-raised-button type="button" (click)="addRegion()" style="margin-left: 1rem;">
+                        Add Region
+                      </button>
+                      <button mat-raised-button type="submit" *ngIf="editRole" [disabled]="!regionsForm.dirty" color="primary" (click)="updateRegion()" style="margin-left: 1rem;">Save Region</button>
+                    </form>
+                  </mat-card>
 
-                      <mat-card style="margin-top: 30px !important; height: auto;">
-                        <!-- <strong>Image Server</strong><br><br> -->
-                        <div class="row">
-                          <!-- image server -->
-                          <div class="col-md-3  p-3" *ngFor="let image of imageServerFiles;">
-                            <div class="flip-card">
-                              <div class="flip-card-inner">
-                                <div class="flip-card-front">
-                                  <p style="font-size:x-small; background-color:rgb(235, 235, 235); color:rgb(165, 165, 165); padding-left: 6px;">Image Server</p>
-                                  <img mat-card-image src="https://images.smdtechnologies.co.za/uploads/{{image.filename}}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" width="100" >
-                                </div>
-                                <div class="flip-card-back">
-                                  <mat-chip-list aria-label="Fish selection">
-                                    <mat-chip class="mat-chip-list" *ngFor="let type of typesList | typeGroup : 'Image Type'" (click)="downloadImageServer('https://images.smdtechnologies.co.za/uploads/' + image.filename, type.id, image.filename, image)">{{ type.name }}</mat-chip>
-                                  </mat-chip-list>
-                                </div>
-                              </div>
+                  <mat-card *ngFor="let type of typesList | typeGroup : 'Design'" style="margin-top: 1rem;">
+                    <strong>{{ type.name }}</strong><br><br>
+                    
+                    <form *ngIf="type.id == 80" [formGroup]="shoutoutsForm">
+                      <ng-container formArrayName="shoutouts">
+                        <ng-container *ngFor="let x of shoutouts.controls; let index = index">
+                            <div [formGroupName]="index">
+                              <mat-form-field appearance="outline" style="width: 90%;">
+                                <mat-label>{{ type.name }}:</mat-label>
+                                <input matInput #designField type="text" formControlName="designField" placeholder="" required>
+                                <mat-icon matSuffix (click)="removeDesign(index, type.id)">delete</mat-icon>
+                              </mat-form-field>              
                             </div>
-                          </div>
-                        </div>
-                      </mat-card>
-                                            
-                    </div>
-                  </div>
+                        </ng-container>
+                      </ng-container>
+                      <button mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
+                        Add New
+                      </button>
+                      <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;">Save</button>
+                    </form>
+
+                    <form *ngIf="type.id == 81" [formGroup]="featuresAndBenefitsForm">
+                      <ng-container formArrayName="features">
+                        <ng-container *ngFor="let x of features.controls; let index = index">
+                            <div [formGroupName]="index">
+                              <mat-form-field appearance="outline" style="width: 90%;">
+                                <mat-label>{{ type.name }}:</mat-label>
+                                <input matInput type="text" formControlName="designField" placeholder="" required>
+                                <mat-icon matSuffix (click)="removeDesign(index, type.id)">delete</mat-icon>
+                              </mat-form-field>              
+                            </div>
+                        </ng-container>
+                      </ng-container>
+                      <button mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
+                        Add New
+                      </button>
+                      <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;">Save</button>
+                    </form>
+
+                    <form *ngIf="type.id == 82" [formGroup]="extendedFabsForm">
+                      <ng-container formArrayName="fabs">
+                        <ng-container *ngFor="let x of fabs.controls; let index = index">
+                            <div [formGroupName]="index">
+                              <mat-form-field appearance="outline" style="width: 90%;">
+                                <mat-label>{{ type.name }}:</mat-label>
+                                <input matInput type="text" formControlName="designField" placeholder="" required>
+                                <mat-icon matSuffix (click)="removeDesign(index, type.id)">delete</mat-icon>
+                              </mat-form-field>              
+                            </div>
+                        </ng-container>
+                      </ng-container>
+                      <button mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
+                        Add New
+                      </button>
+                      <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;">Save</button>
+                    </form>
+
+                    <form *ngIf="type.id == 83" [formGroup]="packageContentsForm">
+                      <ng-container formArrayName="contents">
+                        <ng-container *ngFor="let x of contents.controls; let index = index">
+                            <div [formGroupName]="index">
+                              <mat-form-field appearance="outline" style="width: 90%;">
+                                <mat-label>{{ type.name }}:</mat-label>
+                                <input matInput type="text" formControlName="designField" placeholder="" required>
+                                <mat-icon matSuffix (click)="removeDesign(index, type.id)">delete</mat-icon>
+                              </mat-form-field>              
+                            </div>
+                        </ng-container>
+                      </ng-container>
+                      <button mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
+                        Add New
+                      </button>
+                      <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;">Save</button>
+                    </form>
+
+                  </mat-card>
                 </div>
-              </form>
+            
+                <div class="col-md-8">
+                  <mat-card>
+                    <strong>PDS Attributes</strong><br><br>
+                    <div *ngIf="!loadingPdsAttributes">
+                      <ul>
+                        <li *ngFor="let i of pdsAttributes"><span>{{ i.attribute_key }} </span>: {{ i.attribute_value }}</li>
+                      </ul>
+                    </div>
+                    <div *ngIf="loadingPdsAttributes">
+                      <i>please wait...</i>
+                    </div>
+                  </mat-card>
+
+                  <mat-card *ngIf="isBundle" style="margin-top: 2rem;">
+                    
+                    <strong>Linked Products</strong><br><br>
+
+                    <mat-form-field appearance="outline" *ngFor="let sku of linkedProductSKUs" style="margin-bottom: 1rem; width: 50%;">
+                      <input type="text" placeholder="Search SKU" aria-label="Number" matInput value="{{sku}}" readonly>
+                      <mat-icon matSuffix (click)="removeFromBundle(sku)" style="color:#545454;">delete</mat-icon>
+                      <mat-hint><a target="_blank" href="https://products.smdtechnologies.com/{{sku}}">View this product</a></mat-hint>
+                    </mat-form-field>
+
+                    <form [formGroup]="newProductForm">
+                      <mat-form-field appearance="outline" *ngFor="let sku of newPamphletSKUs" style="margin-bottom: 1rem; width: 50%;">
+                        <mat-label>Selected Product</mat-label>
+                        <input type="text" placeholder="Search SKU" aria-label="Number" matInput value="{{sku}}" readonly>
+                        <mat-icon matSuffix (click)="removeFromBundle(sku)">delete</mat-icon>
+                        <mat-hint><a target="_blank" href="https://products.smdtechnologies.com/{{sku}}">View this product</a></mat-hint>
+                      </mat-form-field>
+
+                      <mat-form-field appearance="outline" style="margin-bottom: 1rem; width: 50%;">
+                        <mat-label>Add Product</mat-label>
+                        <input type="text" placeholder="Enter SKU" aria-label="Number" matInput [formControl]="autocompleteControl" [matAutocomplete]="auto">
+                        <mat-autocomplete (optionSelected)="addToBundle($event)" #auto="matAutocomplete">
+                          <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                            {{option}}
+                          </mat-option>
+                        </mat-autocomplete>
+                      </mat-form-field>
+
+                      <!-- <button type="submit" style="float: right;" mat-raised-button type="submit" color="primary" (click)="saveBundleProduct('Pamphlet')">Save Changes</button> -->
+    
+                    </form>
+
+                  </mat-card>
+
+                  <mat-card style="margin-top: 30px !important; height: auto;">
+                    <strong>Images</strong><br><br>
+                    <div class="row">
+                      <!-- system images -->
+                      <div class="col-md-3 p-3" *ngFor="let image of mediaFiles; let index = index">
+                        <div class="flip-card">
+                          <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                              <p style="color: white;">...</p>
+                              <img mat-card-image src="{{ storageUrl + filePath(image.path) }}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'">
+                            </div>
+                            <div class="flip-card-back">
+                              <mat-chip-list aria-label="Fish selection">
+                                <mat-chip class="mat-chip-list" *ngFor="let type of typesList | typeGroup : 'Image Type'"  (click)="downloadURI('storage/' + filePath(image.path), type.id, image.name, image)">{{ type.name }}</mat-chip>
+                              </mat-chip-list>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </mat-card>
+
+                  <mat-card style="margin-top: 30px !important; height: auto;">
+                    <!-- <strong>Image Server</strong><br><br> -->
+                    <div class="row">
+                      <!-- image server -->
+                      <div class="col-md-3  p-3" *ngFor="let image of imageServerFiles;">
+                        <div class="flip-card">
+                          <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                              <p style="font-size:x-small; background-color:rgb(235, 235, 235); color:rgb(165, 165, 165); padding-left: 6px;">Image Server</p>
+                              <img mat-card-image src="https://images.smdtechnologies.co.za/uploads/{{image.filename}}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" width="100" >
+                            </div>
+                            <div class="flip-card-back">
+                              <mat-chip-list aria-label="Fish selection">
+                                <mat-chip class="mat-chip-list" *ngFor="let type of typesList | typeGroup : 'Image Type'" (click)="downloadImageServer('https://images.smdtechnologies.co.za/uploads/' + image.filename, type.id, image.filename, image)">{{ type.name }}</mat-chip>
+                              </mat-chip-list>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </mat-card>
+                                        
+                </div>
+              </div>
+            </div>
+            
           </mat-tab>
           <mat-tab label="Categories">
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
@@ -627,7 +651,7 @@
         </mat-tab-group>
       </mat-card>
     </div>
-    <div class="col-md-2">
+    <div class="col-md-3">
 
       <div class="text-muted">
         <mat-card>
@@ -673,8 +697,23 @@
           <!-- <div style="text-align: center;">
             <button mat-raised-button color="primary" disabled (click)="SavePDF()">Export PDF</button>
           </div> -->
-          
+     
+          <mat-card-content>
+            <hr>
+            <h3 style="text-align: center;">Histroy</h3>
+            <table>
+              <tr>
+                <th>Action</th>
+                <th>Date</th>
+              </tr>
+              <tr *ngFor="let x of audits">
+                <td>{{x.activity}}</td>
+                <td>{{x.created_at | date: 'dd/MM/yyyy'}}</td>
+              </tr>
+            </table>
+          </mat-card-content>          
         </mat-card>
+
       </div>
     </div>
   </div>

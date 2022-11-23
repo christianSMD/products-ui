@@ -2,17 +2,28 @@
 import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import {saveAs} from 'file-saver';
+import * as FileSaver from 'file-saver';
+import { BehaviorSubject } from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
 
+  // private baseUrl = 'http://127.0.0.1:8000/api/';
+  // private storageUrl = 'http://127.0.0.1:8000/storage/';
+  // public domainUrl = 'http://localhost:4200/login';
+
   private baseUrl = 'https://products.smdtechnologies.com/public/api/';
   private storageUrl = 'https://products.smdtechnologies.com/public/storage/';
   public domainUrl = 'https://products.smdtechnologies.com/login';
 
-  constructor(private http : HttpClient) { }
+  private product$ = new BehaviorSubject<any>({});
+  selectedProduct$ = this.product$.asObservable();
+
+  constructor(private http : HttpClient) {}
 
   public getBaseUrl() {
     return this.baseUrl;
@@ -36,6 +47,10 @@ export class ApiService {
 
   public IMAGESERVERHIRES(sku: string): Observable<any[]> {
     return this.http.get<any[]>('https://images.smdtechnologies.co.za/products_system_hi_res/' + sku);
+  }
+
+  public setProducts(products: any): void {
+    this.product$.next(products);
   }
 
   public upload(endpoint: string, data: any): Observable<HttpEvent<any>> {

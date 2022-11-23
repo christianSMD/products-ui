@@ -167,11 +167,13 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   }
 
   entireProducts() {
+    console.log('Entire products');
     let url: string = 'products-all';
     this.api.GET(url).subscribe({
       next:(res)=>{
         console.log(res);
         this.productsList = res;
+        this.api.setProducts(res);
         this.dataSource = new MatTableDataSource(this.productsList);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
