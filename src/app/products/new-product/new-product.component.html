@@ -17,7 +17,8 @@
                   </mat-form-field>
                   <mat-form-field appearance="outline" style="width: 90%;">
                     <mat-label>Product Name</mat-label>
-                    <input #name matInput formControlName="name" placeholder="Enter Product Name">
+                    <input #name matInput formControlName="name" placeholder="Enter Product Name" (keyup)="checkProductName($event)">
+                    <mat-hint *ngIf="similarProduct">⚠ There is already a product with this name.</mat-hint>
                   </mat-form-field>
                   <mat-form-field *ngIf="newProductType == 'product'" appearance="outline" style="width: 90%;">
                     <mat-label>Product Brand</mat-label>
@@ -335,10 +336,15 @@
   <div class="col-md-3">
     <mat-card>
       <h2>
-        <strong> {{ newProductName }}</strong> | 
+        <strong> {{ newProductName }}</strong>
         <small>{{ newProductSKU }}</small>
       </h2>
-      
+    </mat-card>
+    <mat-card style="margin-top: 1rem; background-color: rgb(255, 210, 159);" *ngIf="similarProduct">
+      <p>⚠ It looks like there is already a brand with the name: <i>{{ similarProduct.name }}</i></p>
+      <p>{{ similarProduct.short_description }}</p>
+      <img src="https://images.smdtechnologies.co.za/api/store/{{similarProduct.clean_sku}}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" width="45" alt="Photo">
+      <span>&nbsp;{{ similarProduct.sku }}</span>
     </mat-card>
   </div>
 </div>

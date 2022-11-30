@@ -18,6 +18,8 @@ import { HttpClient } from '@angular/common/http';
 import jsPDF from "jspdf";
 import { Product } from 'src/app/interfaces/product';
 import { map, Observable, startWith } from 'rxjs';
+import { LookupService } from 'src/app/services/lookup/lookup.service';
+import { ProductsService } from 'src/app/services/products/products.service';
 
 @Component({
   selector: 'app-single-product',
@@ -37,6 +39,9 @@ export class SingleProductComponent implements OnInit {
   mediaFiles: any[] = [];
   imageServerFiles: any[] = [];
   documentFiles: any[] = [];
+  imageServerDocumentFiles: any[] = []; // Instruction Manuals already uploaded on the image server
+  mediaFilesForLinkedProducts: any[] = [];
+  linkedImagesLoader: boolean = false;
   filePermissions: any[] = [];
   parent: string;
   productForm !: FormGroup;
@@ -120,8 +125,9 @@ export class SingleProductComponent implements OnInit {
     private formBuilder : FormBuilder,
     private info: InfoService,
     public dialog: MatDialog,
-    
-    private http: HttpClient
+    private lookup: LookupService,
+    private http: HttpClient,
+    private products: ProductsService
   ) { }
 
   ngOnInit(): void {
@@ -131,7 +137,8 @@ export class SingleProductComponent implements OnInit {
       left: 0, 
       behavior: 'smooth' 
     });
-
+    
+    localStorage.setItem('route', this.router.url);
     this.detailProgress = 0;
     this.editRole = this.info.role(56);
     this.uploadRole = this.info.role(57);
@@ -145,7 +152,6 @@ export class SingleProductComponent implements OnInit {
     });
     this.getDetails(this.sku);
     this.getAllTypes();
-    this.getDesignAllTypes();
     this.getAllCategories();
     this.entireProducts();
 
@@ -236,20 +242,10 @@ export class SingleProductComponent implements OnInit {
   }
 
   getAllCategories() {
-    this.categoriesLoader = true;
-    this.api.GET('categories').subscribe({
-      next:(res)=>{
-        console.log("Categories List: ", res);
-        this.categoriesLoader = false;
-        this.categoriesList = res;
-      }, error:(res)=>{
-        this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
-      }
-    });
+    this.categoriesList = this.products.getCategories();
   }
 
   getDetails(sku: string): void {
-    
     this.productsLoader = true;
     this.api.GET(`products/${sku}`).subscribe({
       next:(res)=>{
@@ -262,7 +258,7 @@ export class SingleProductComponent implements OnInit {
           this.id = this.product.id;
           if (res[0].type == 'Pamphlet') {
             this.isBundle = true;
-            this.linkedProductsImages();
+            this.getLinkedProducts();
           }
           
           this.media();
@@ -372,19 +368,7 @@ export class SingleProductComponent implements OnInit {
   }
 
   getAllTypes(): void {
-    this.api.GET('types').subscribe({
-      next:(res)=>{
-        this.typesLoader = false;
-        this.typesList = res;
-      }, error:(res)=>{
-        this.typesLoader = false;
-        this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
-      }
-    });
-  }
-
-  getDesignAllTypes(): void {
-    
+    this.typesList = this.lookup.getTypes();
   }
 
   getPackaging(id: string): void {
@@ -518,7 +502,6 @@ export class SingleProductComponent implements OnInit {
         if(res.length > 0) {
           this.detailProgress++;
           this.mediaFiles = res;
-          console.log('Saved files: ', res);
           this.getProductImageOrder();
         }
       }, error:(res)=> {
@@ -526,6 +509,29 @@ export class SingleProductComponent implements OnInit {
       }
     });
   }
+
+  imageserver(productSku: string) {
+    this.api.IMAGESERVERHIRES(productSku).subscribe({  
+      next:(res)=>{   
+        if(res.length > 0) {
+          for (let index = 0; index < res.length; index++) {
+            const filename: string = res[index].filename;
+            // If file is an image:
+            if (filename.endsWith(".png") || filename.endsWith(".jpg")) {
+              this.imageServerFiles.push(filename);
+            } else {
+              // Push to documents
+              this.imageServerDocumentFiles.push(filename);
+            }
+          }
+          
+        }
+      }, error:(res)=> {
+        console.log(res);
+      }
+    });   
+  }
+
 
   documents(): void {
     this.api.GET(`product-document-files/${this.id}`).subscribe({
@@ -609,6 +615,7 @@ export class SingleProductComponent implements OnInit {
     this.api.POST(`products/update/${this.id}`, this.productForm.value).subscribe({
       next:(res)=>{
         this.progressPercentage();
+        this.getDetails(this.sku);
         this.info.activity('Updated product', this.product.id);
         this.openSnackBar('Product Updated 😃', 'Okay');
       }, error:(res)=>{
@@ -832,17 +839,6 @@ export class SingleProductComponent implements OnInit {
     });
   }
 
-  imageserver(productSku: string) {
-    this.api.IMAGESERVERHIRES(productSku).subscribe({  
-      next:(res)=>{
-        console.log('hi-res files: ', res);
-        this.imageServerFiles = res;
-      }, error:(res)=> {
-        console.log(res);
-      }
-    });   
-  }
-
   downloadURI(uri: any, id: number, name: string, file: File) { 
     let path = file.path; 
     this.api.download('download-file-api', uri, this.product.id, this.product.sku, file.type_id, path.replace("public/", "storage/"), id).subscribe((res: BlobPart) => {
@@ -863,45 +859,34 @@ export class SingleProductComponent implements OnInit {
     });
   }
 
-  linkedProductsImages() {
+  getLinkedProducts() {
     this.bundleLoader = true;
+    this.linkedImagesLoader = true;
     this.api.GET(`linked-products/${this.id}`).subscribe({
       next:(res)=>{
-        console.log("Linked IDs", res);
         this.linkedProducts = res;
-        //this.linkedProducts = res;
+        this.linkedProductSKUs = [];
+        this.linkedProductsIDs = [];
+        this.mediaFilesForLinkedProducts = [];
         for (let index = 0; index < res.length; index++) {
-          // Get child categories
-          this.getProductCategories(res[index].child_id);
-          // Get child details by ID
-          this.bundleLoader = true;
-          this.api.GET(`products/search-by-id/${res[index].child_id}`).subscribe({
-            next:(child)=>{
-              this.bundleLoader = true;
-              let obj: any = {};
-              obj = child;
-              this.linkedProductSKUs.push(obj.sku);
-              this.linkedProductsIDs.push(obj.id);              
-              this.api.IMAGESERVERHIRES(obj.sku).subscribe({  
-                next:(e)=>{
-                  this.imageServerFiles = e;
-                }, error:(res)=> {
-                }
-              }); 
-              this.bundleLoader = false;
-            }, error:(res)=> {
-              this.bundleLoader = false;
-              console.log(res);
-            }
+          let child = this.productsList.find((x: any)=>x.id == res[index].child_id);
+          this.linkedProductSKUs.push(child?.sku);
+          this.linkedProductsIDs.push(child?.id);
+          this.imageserver(child!.sku);     
+          this.api.GET(`product-media-files/${child?.id}`).subscribe({
+            next:(res)=>{
+              if(res.length > 0) {
+                this.mediaFilesForLinkedProducts.push(res);
+              }
+            }, error:(res)=> {}
           });
-        }        
+        } 
+        this.bundleLoader = false;       
       }, error:(res)=> {
         console.log(res);
         this.bundleLoader = false;
       }
     });
-
-    console.log('ParentChild: ' , this.parentChildCategories);
   }
 
   addDesign(type: number): void {
@@ -1056,34 +1041,35 @@ export class SingleProductComponent implements OnInit {
       relationship: "Pamphlet"
     }).subscribe({
       next:(res) => {
-        console.log(res);
-        this.info.activity('Added new SKU to linked products', 0);
+        this.getLinkedProducts();
+        const id = parseInt(this.id);
+        this.info.activity('Added new SKU to linked products', id);
+        this.openSnackBar('Product added ' , 'Okay')
       }, error:(res)=>{
         this.openSnackBar('😢 ' + res.message, 'Okay');
       }
     });
   }
 
+  /**
+   * @todo get products from the service, or pull from the server if not available on the service.
+   * 
+   */
   entireProducts() {
-    this.api.selectedProduct$.subscribe((value) => {
-      console.log('Value: ', value.length);
-      if(value.length !== undefined){
-        // Use data from the service if it is available
-        console.log('Useing data from service...');
-        this.productsList = value;
-        this.options = value.map((x: Product) => x.sku);
-      } else {
-        // If data from the service is cleared, get a fresh copy from the server
-        console.log('Fetching frsh copy form the server...');
-        let url: string = 'products-all';
-        this.api.GET(url).subscribe({
-          next:(res)=>{
-            this.productsList = res;
-            this.options = res.map((x: Product) => x.sku);
-          }, error:(res)=>{}
-        });
-      }
-    });    
+    this.productsList = this.products.getProducts();  
+    if (this.productsList.length < 1) {
+      this.api.GET('products').subscribe({
+        next:(res)=>{
+          this.productsList = res;
+          this.options = this.productsList.map((x: Product) => x.sku);
+          this.products.setProducts(res);
+        }, error:(res)=>{
+          this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
+        }
+      });
+    }
+    this.options = this.productsList.map((x: Product) => x.sku);
+    console.log('Options: ', this.options);
   }
 
   /**
@@ -1107,8 +1093,10 @@ export class SingleProductComponent implements OnInit {
     const relationship = this.linkedProducts.find((r: any) => r.child_id == child?.id && r.parent_id == this.id)
     this.api.GET(`linked-products/delete/${relationship.id}`).subscribe({
       next:(res)=>{
-        console.log(res);
+        this.linkedProductSKUs = [];
+        this.getLinkedProducts();
         this.info.activity('Removed product from linked products', 0);
+        this.openSnackBar('Product removed ' , 'Okay')
       }, error:(res)=> {
         console.log(res);
       }
@@ -1125,6 +1113,4 @@ export class SingleProductComponent implements OnInit {
       }
     });
   }
-
-
 }

@@ -13,6 +13,8 @@ import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { InfoService } from 'src/app/services/info/info.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { LookupService } from 'src/app/services/lookup/lookup.service';
+import { ProductsService } from 'src/app/services/products/products.service';
 
 @Component({
   selector: 'app-new-product',
@@ -73,6 +75,8 @@ export class NewProductComponent implements OnInit {
   newPamphlet: any[] = [];
   newPamphletSKUs: any[] = [];
   SKUsLoader: boolean = true
+
+  similarProduct: any;
   
   constructor(
     public navbar: NavbarService,
@@ -82,6 +86,8 @@ export class NewProductComponent implements OnInit {
     public info: InfoService,
     private route: ActivatedRoute,
     private router: Router,
+    private lookup: LookupService,
+    private products: ProductsService
   ) {}
 
   ngOnInit(): void {
@@ -136,25 +142,8 @@ export class NewProductComponent implements OnInit {
   }
 
   entireProducts() {
-    this.api.selectedProduct$.subscribe((value) => {
-      console.log('Value: ', value.length);
-      if(value.length !== undefined){
-        // Use data from the service if it is available
-        console.log('Useing data from service...');
-        this.productsList = value;
-        this.options = value.map((x: Product) => x.sku);
-      } else {
-        // If data from the service is cleared, get a fresh copy from the server
-        console.log('Fetching frsh copy form the server...');
-        let url: string = 'products-all';
-        this.api.GET(url).subscribe({
-          next:(res)=>{
-            this.productsList = res;
-            this.options = res.map((x: Product) => x.sku);
-          }, error:(res)=>{}
-        });
-      }
-    });    
+    this.productsList = this.products.getProducts();
+    this.options = this.productsList.map((x: Product) => x.sku);
   }
 
   /**
@@ -195,27 +184,12 @@ export class NewProductComponent implements OnInit {
   }
 
   getAllCategories() {
-    this.categoriesLoader = true;
-    this.api.GET('categories').subscribe({
-      next:(res)=>{
-        this.categoriesLoader = false;
-        this.categoriesList = res;
-      }, error:(res)=>{
-        this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
-      }
-    });
+    this.categoriesList = this.products.getCategories();
   }
 
   getAllTypes() {
-    this.categoriesLoader = true;
-    this.api.GET('types').subscribe({
-      next:(res)=>{
-        this.typesLoader = false;
-        this.typesList = res;
-      }, error:(res)=>{
-        this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
-      }
-    });
+    this.typesList = this.lookup.getTypes();
+    //this.lookup.checkTypes(this.typesList);
   }
 
   saveProduct() {
@@ -564,5 +538,9 @@ export class NewProductComponent implements OnInit {
       this.selectedCategories.splice(i, 1);
     }
     console.log(this.selectedCategories);
+  }
+
+  checkProductName(e: any) {
+    this.similarProduct = this.products.searchProductByName(e.target.value);
   }
 }

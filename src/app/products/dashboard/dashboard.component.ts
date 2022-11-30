@@ -10,8 +10,9 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { Product } from 'src/app/interfaces/product';
 import { Category } from 'src/app/interfaces/category';
 import { Type } from 'src/app/interfaces/type';
-//import Chart from 'chart.js';
 import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
+import { LookupService } from 'src/app/services/lookup/lookup.service';
+import { ProductsService } from 'src/app/services/products/products.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -47,7 +48,9 @@ export class DashboardComponent implements OnInit {
     private api: ApiService, 
     private _snackBar: MatSnackBar,
     private info: InfoService,
-    private router: Router
+    private router: Router,
+    private lookup: LookupService,
+    private products: ProductsService
   ) { }
 
   ngOnInit(): void {
@@ -61,60 +64,22 @@ export class DashboardComponent implements OnInit {
   }
 
   getAllProducts() {
-    this.api.selectedProduct$.subscribe((res) => {
-      this.productsLoader = false;
-      this.productsList = res;
-      this.allProducts = res.length;
-      const active = res.filter((x: Product) => x.is_active == 1);
-      this.activeProducts = active.length;
-      const development = res.filter((x: Product)  => x.is_in_development == 1);
-      this.developmentProducts = development.length;
-      const eol = res.filter((x: Product)  => x.is_eol == 1);
-      this.eolProducts = eol.length;
-    });
-
-
-    // this.blockUI.start('Loading products..');
-    // this.productsLoader = true;
-    // this.api.GET('products-all').subscribe({
-    //   next:(res)=>{
-    //     this.productsLoader = false;
-    //     this.productsList = res;
-    //     this.allProducts = res.length;
-    //     const active = res.filter(x => x.is_active == 1);
-    //     this.activeProducts = active.length;
-    //     const development = res.filter(x => x.is_in_development == 1);
-    //     this.developmentProducts = development.length;
-    //     const eol = res.filter(x => x.is_eol == 1);
-    //     this.eolProducts = eol.length;
-    //     this.blockUI.stop();
-    //   }, error:(res)=>{
-    //     this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
-    //   }
-    // });
+    this.productsList = this.products.getProducts();
+    this.allProducts = this.productsList.length;
+    const active = this.productsList.filter(x => x.is_active == 1);
+    this.activeProducts = active.length;
+    const development = this.productsList.filter(x => x.is_in_development == 1);
+    this.developmentProducts = development.length;
+    const eol = this.productsList.filter(x => x.is_eol == 1);
+    this.eolProducts = eol.length;
   }
   
   getAllTypes() {
-    this.api.GET('types').subscribe({
-      next:(res)=>{
-        console.log(res);
-        const brands = res.filter(x => x.grouping == 'Brand');
-        this.brandsCount = brands.length;
-        this.brands = brands;
-      }, error:(res)=>{
-        this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
-      }
-    });
+    this.typesList = this.lookup.getTypes();
   }
 
   getAllCategories(): void {
-    this.api.GET('categories').subscribe({
-      next:(res)=>{
-        this.categoriesCount = res.length;
-      }, error:(res)=>{
-        alert(res);
-      }
-    });
+    this.categoriesList = this.products.getCategories();
   }
 
   productsBybrand () {

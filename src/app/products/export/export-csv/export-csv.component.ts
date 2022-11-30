@@ -13,6 +13,8 @@ import { Category } from 'src/app/interfaces/category';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { CdkTableExporterModule } from 'cdk-table-exporter';
 import { InfoService } from 'src/app/services/info/info.service';
+import { LookupService } from 'src/app/services/lookup/lookup.service';
+import { ProductsService } from 'src/app/services/products/products.service';
 
 @Component({
   selector: 'app-export-csv',
@@ -51,7 +53,9 @@ export class ExportCSVComponent extends CdkTableExporterModule implements OnInit
     private api: ApiService, 
     private _snackBar: MatSnackBar,
     private _liveAnnouncer: LiveAnnouncer,
-    private info: InfoService
+    private info: InfoService,
+    private lookup: LookupService,
+    private products: ProductsService
   ) {
     super();
     this.info.isUserLoggedIn.subscribe(value => {
@@ -84,30 +88,14 @@ export class ExportCSVComponent extends CdkTableExporterModule implements OnInit
   }
 
   getAllProducts() {
-    this.productsLoader = true;
-    this.api.GET('products').subscribe({
-      next:(res)=>{
-        console.log(res);
-        this.productsLoader = false;
-        this.productsList = res;
-        this.dataSource = new MatTableDataSource(this.productsList);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-      }, error:(res)=>{
-        this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
-      }
-    });
+    this.productsList = this.products.getProducts();
+    this.dataSource = new MatTableDataSource(this.productsList);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   getAllCategories(): void {
-    this.api.GET('categories').subscribe({
-      next:(res)=>{
-        console.log('Categories' , res);
-        this.categoriesList = res;
-      }, error:(res)=>{
-        this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
-      }
-    });
+    this.categoriesList = this.products.getCategories();
   }
 
   getImages() {
@@ -140,14 +128,7 @@ export class ExportCSVComponent extends CdkTableExporterModule implements OnInit
   }
 
   getAllTypes() {
-    this.api.GET('types').subscribe({
-      next:(res)=>{
-        console.log(res);
-        this.typesList = res;
-      }, error:(res)=>{
-        console.log('Failed to communicate with the server: ' + res.message);
-      }
-    });
+    this.typesList = this.lookup.getTypes();
   }
 
   getProductCategories () {

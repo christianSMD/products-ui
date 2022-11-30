@@ -160,21 +160,20 @@
             
                 <div class="col-md-8">
                   <mat-card>
-                    <strong>PDS Attributes</strong><br><br>
+                    <strong>PDS Attributes</strong>
+                    <mat-progress-bar color="accent" *ngIf="loadingPdsAttributes" mode="indeterminate"></mat-progress-bar>
+                    <br><br>
                     <div *ngIf="!loadingPdsAttributes">
                       <ul>
                         <li *ngFor="let i of pdsAttributes"><span>{{ i.attribute_key }} </span>: {{ i.attribute_value }}</li>
                       </ul>
                     </div>
-                    <div *ngIf="loadingPdsAttributes">
-                      <i>please wait...</i>
-                    </div>
                   </mat-card>
 
                   <mat-card *ngIf="isBundle" style="margin-top: 2rem;">
-                    
-                    <strong>Linked Products</strong><br><br>
-
+                    <strong>Linked Products</strong>
+                    <mat-progress-bar color="accent" *ngIf="bundleLoader" mode="indeterminate"></mat-progress-bar>
+                    <br><br>
                     <mat-form-field appearance="outline" *ngFor="let sku of linkedProductSKUs" style="margin-bottom: 1rem; width: 50%;">
                       <input type="text" placeholder="Search SKU" aria-label="Number" matInput value="{{sku}}" readonly>
                       <mat-icon matSuffix (click)="removeFromBundle(sku)" style="color:#545454;">delete</mat-icon>
@@ -206,10 +205,30 @@
                   </mat-card>
 
                   <mat-card style="margin-top: 30px !important; height: auto;">
-                    <strong>Images</strong><br><br>
+                    <strong>Images</strong>
+                    <mat-progress-bar color="accent" *ngIf="loadingPdsAttributes" mode="indeterminate"></mat-progress-bar>
+                    <br><br>
                     <div class="row">
                       <!-- system images -->
                       <div class="col-md-3 p-3" *ngFor="let image of mediaFiles; let index = index">
+                        <div class="flip-card">
+                          <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                              <p style="color: white;">...</p>
+                              <img mat-card-image src="{{ storageUrl + filePath(image.path) }}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'">
+                            </div>
+                            <div class="flip-card-back">
+                              <mat-chip-list aria-label="Fish selection">
+                                <mat-chip class="mat-chip-list" *ngFor="let type of typesList | typeGroup : 'Image Type'"  (click)="downloadURI('storage/' + filePath(image.path), type.id, image.name, image)">{{ type.name }}</mat-chip>
+                              </mat-chip-list>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row" *ngFor="let images of mediaFilesForLinkedProducts;">
+                      <!-- system images Linked Products-->
+                      <div class="col-md-3 p-3" *ngFor="let image of images; let index = index">
                         <div class="flip-card">
                           <div class="flip-card-inner">
                             <div class="flip-card-front">
@@ -236,7 +255,7 @@
                           <div class="flip-card-inner">
                             <div class="flip-card-front">
                               <p style="font-size:x-small; background-color:rgb(235, 235, 235); color:rgb(165, 165, 165); padding-left: 6px;">Image Server</p>
-                              <img mat-card-image src="https://images.smdtechnologies.co.za/uploads/{{image.filename}}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" width="100" >
+                              <img mat-card-image src="https://images.smdtechnologies.co.za/uploads/{{image}}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" width="100" >
                             </div>
                             <div class="flip-card-back">
                               <mat-chip-list aria-label="Fish selection">

@@ -15,6 +15,8 @@ import { CdkTableExporterModule } from 'cdk-table-exporter';
 import { ActivatedRoute, Params } from '@angular/router';
 import { InfoService } from 'src/app/services/info/info.service';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
+import { LookupService } from 'src/app/services/lookup/lookup.service';
+import { ProductsService } from 'src/app/services/products/products.service';
 
 @Component({
   selector: 'app-list-products',
@@ -42,7 +44,7 @@ export class ListProductsComponent extends CdkTableExporterModule implements OnI
   allProducts: boolean = true;
   urlParam: string;
   brand: string;
-  typeId: string;
+  typeId: number;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -57,7 +59,9 @@ export class ListProductsComponent extends CdkTableExporterModule implements OnI
     private route: ActivatedRoute,
     private _snackBar: MatSnackBar,
     private _liveAnnouncer: LiveAnnouncer,
-    public info: InfoService
+    public info: InfoService,
+    private lookup: LookupService,
+    private products: ProductsService
   ) {
     super();
   }
@@ -71,7 +75,7 @@ export class ListProductsComponent extends CdkTableExporterModule implements OnI
     this.getAllCategories();
   }
 
-  ngAfterViewInit(): void {
+  ngAfterContentInit(): void {
     this.route.params.subscribe((params: Params) => {
       this.urlParam = params['brand'];
       this.brand = this.urlParam.toUpperCase();
@@ -87,20 +91,24 @@ export class ListProductsComponent extends CdkTableExporterModule implements OnI
     }
   }
 
-  getAllProducts(id: string) {
-    this.productsLoader = true;
-    this.api.GET(`products-by-brand/${id}`).subscribe({
-      next:(res)=>{
-        console.log('Products', res);
-        this.productsLoader = false;
-        this.productsList = res;
-        this.dataSource = new MatTableDataSource(this.productsList);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-      }, error:(res)=>{
-        this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
-      }
-    });
+  getAllTypes() {
+    try {
+      this.typesList = this.lookup.getTypes();
+      let type: any;
+      type = this.typesList.find((t: Type) => t.name.toLocaleLowerCase() == this.brand.toLocaleLowerCase());
+    this.getAllProducts(type.id);
+    } catch (error) {
+      console.log("Handled");
+    }
+    
+  }
+
+  getAllProducts(id: number) {
+    const products: any = this.products.getProducts();
+    this.productsList = products.filter((x: any) => x.brand_type_id == id);
+    this.dataSource = new MatTableDataSource(this.productsList);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   openSnackBar(message: string, action: string) {
@@ -113,22 +121,6 @@ export class ListProductsComponent extends CdkTableExporterModule implements OnI
     } else {
       this._liveAnnouncer.announce('Sorting cleared');
     }
-  }
-
-  getAllTypes() {
-    this.api.GET('types').subscribe({
-      next:(res)=>{
-        for (let i = 0; i < res.length; i++) {
-          if ((res[i].name).toLocaleLowerCase() == this.brand.toLocaleLowerCase()) {
-            console.log('Found type id', res[i].id);
-            this.typeId = res[i].id;
-            this.getAllProducts(this.typeId);
-          }
-        }
-      }, error:(res)=>{
-        console.log(res);
-      }
-    });
   }
 
   getBrandName(id: string) {

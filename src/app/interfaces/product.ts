@@ -17,4 +17,5 @@ export interface Product {
     is_in_development: number;
     is_eol: number;
     product_id: number;
+    brand_type_id: NumberConstructor;
 }

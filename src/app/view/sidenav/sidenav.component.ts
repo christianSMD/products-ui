@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Type } from 'src/app/interfaces/type';
 import { ApiService } from 'src/app/services/api/api.service';
 import { InfoService } from 'src/app/services/info/info.service';
+import { LookupService } from 'src/app/services/lookup/lookup.service';
 import { SidenavService } from 'src/app/services/sidenav/sidenav.service';
 
 @Component({
@@ -17,18 +19,20 @@ export class SidenavComponent {
   showFiller = false;
   listBrands: string[] = [];
   searchForm !: FormGroup;
-  brandsLoader = true;
+  brandsLoader = false;
   loggedIn: boolean;
   authRole: boolean = false;
   rolesRole: boolean = false;
   settingsRole: boolean = false;
+  typesList: Type[] = [];
 
   constructor(
     public sideNav: SidenavService, 
     private router: Router,
     private formBuilder : FormBuilder,
     private api: ApiService,
-    private info: InfoService
+    private info: InfoService,
+    private lookup: LookupService
   ) { 
     this.info.isUserLoggedIn.subscribe(value => {
       this.loggedIn = value;
@@ -55,27 +59,13 @@ export class SidenavComponent {
   }
 
   getAllTypes() {
-    this.api.GET('types').subscribe({
-      next:(res)=>{
-        console.log(res);
-        this.brandsLoader = false;
-        for (let index = 0; index < res.length; index++) {
-          if (res[index].grouping == 'Brand') {
-            this.listBrands.push(res[index].name);
-          }
-        }
-      }, error:(res)=>{
-        this.brandsLoader = false;
+    this.typesList = this.lookup.getTypes();
+    for (let index = 0; index < this.typesList.length; index++) {
+      if (this.typesList[index].grouping == 'Brand') {
+        this.listBrands.push(this.typesList[index].name);
       }
-    });
+    }
   }
-
-  // searchBrand(e: any) {
-  //   console.log('original', this.listBrands);
-  //   console.log('searching...', this.searchForm.value);
-  //   this.listBrands =  this.listBrands.filter(item => item == this.searchForm.value);
-  //   console.log('results', this.listBrands);
-  // }
 
   selectBrand(brand: String): void {
     this.router.navigate(['/brand', brand.toLowerCase()]);
@@ -92,7 +82,6 @@ export class SidenavComponent {
     this.api.POST(`logout`, this.userEmail).subscribe({
       next:(res)=> {
         this.router.navigate(['/login']);
-        
       }, error:(res)=> {
         console.log(res);
       }

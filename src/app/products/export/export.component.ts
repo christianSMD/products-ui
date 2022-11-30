@@ -10,6 +10,8 @@ import { Category } from 'src/app/interfaces/category';
 import { InfoService } from 'src/app/services/info/info.service';
 import { Router } from '@angular/router';
 import FileSaver from 'file-saver';
+import { LookupService } from 'src/app/services/lookup/lookup.service';
+import { ProductsService } from 'src/app/services/products/products.service';
 
 @Component({
   selector: 'app-export',
@@ -37,7 +39,9 @@ export class ExportComponent implements OnInit {
     private api: ApiService, 
     private _snackBar: MatSnackBar,
     private info: InfoService,
-    private router: Router
+    private router: Router,
+    private lookup: LookupService,
+    private products: ProductsService
   ) {}
  
   ngOnInit(): void {
@@ -50,14 +54,7 @@ export class ExportComponent implements OnInit {
   }
 
   getAllTypes() {
-    this.api.GET('types').subscribe({
-      next:(res)=>{
-        console.log(res);
-        this.types = res;
-      }, error:(res)=>{
-        this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
-      }
-    });
+    this.types = this.lookup.getTypes();
   }
 
   selectBrand(e: any): void {
@@ -66,18 +63,21 @@ export class ExportComponent implements OnInit {
   }
 
   getAllCategories(): void {
-    this.api.GET('categories').subscribe({
-      next:(res)=>{
-        this.categories = res;
-        for (let index = 0; index < res.length; index++) {
-          if (res[index].grouping == 'Brand') {
-            this.brands.push(res[index].name);
-          }
-        }
-      }, error:(res)=>{
-        alert(res);
-      }
-    });
+    //this.categories = this.products.getCategories();
+    // this.api.GET('categories').subscribe({
+    //   next:(res)=>{
+    //     this.categories = res;
+    //     for (let index = 0; index < res.length; index++) {
+    //       if (res[index].grouping == 'Brand') {
+    //         this.brands.push(res[index].name);
+    //       }
+    //     }
+    //     console.log('Brands: ', this.brands);
+    //   }, error:(res)=>{
+    //     alert(res);
+    //   }
+    // });
+    
   }
 
   export(): void {

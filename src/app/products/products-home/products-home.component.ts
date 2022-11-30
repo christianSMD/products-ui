@@ -16,6 +16,8 @@ import { InfoService } from 'src/app/services/info/info.service';
 import { Router } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { LookupService } from 'src/app/services/lookup/lookup.service';
+import { ProductsService } from 'src/app/services/products/products.service';
 
 @Component({
   selector: 'app-products-home',
@@ -56,12 +58,14 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     public sideNav: SidenavService,
     public topNav: NavbarService,
     public treeNav: TreeService,
-    private api: ApiService, 
-    private _snackBar: MatSnackBar,
-    private _liveAnnouncer: LiveAnnouncer,
-    private info: InfoService,
-    private router: Router,
-    private formBuilder : FormBuilder
+    public api: ApiService, 
+    public _snackBar: MatSnackBar,
+    public _liveAnnouncer: LiveAnnouncer,
+    public info: InfoService,
+    public router: Router,
+    public formBuilder : FormBuilder,
+    public lookup: LookupService,
+    public products: ProductsService
   ) {
     super();
     this.info.isUserLoggedIn.subscribe(value => {
@@ -144,45 +148,53 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   }
 
   getAllProducts() {
-    let url: string = 'products-verified';
-    if (this.viewAllProductsRole) {
-      url = 'products';
-    }
-    //this.blockUI.start('Loading products..');
-    this.productsLoader = true;
-    this.api.GET(url).subscribe({
-      next:(res)=>{
-        console.log('Products: ', res);
-        this.productsLoader = false;
-        this.productsList = res;
-        this.dataSource = new MatTableDataSource(this.productsList);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-        this.blockUI.stop();
-        this.entireProducts();
-      }, error:(res)=>{
-        this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
+    this.productsList = this.products.getProducts();
+    if (this.productsList.length < 1) {
+      let url: string = 'products-verified';
+      if (this.viewAllProductsRole) {
+        url = 'products';
       }
-    });
+      this.productsLoader = true;
+      this.api.GET(url).subscribe({
+        next:(res)=>{
+          this.productsList = res;
+          this.dataSource = new MatTableDataSource(this.productsList);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+          this.productsLoader = false;
+          this.blockUI.stop();
+          this.entireProducts();
+        }, error:(res)=>{
+          this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
+        }
+      });
+    
+    } else {
+      // Products pulled from the service
+      this.dataSource = new MatTableDataSource(this.productsList);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    }
   }
 
+  /**
+   * @todo Gets all the products from the API
+   * @todo Populates the Products Service with dataa from the API
+   */
   entireProducts() {
-    console.log('Entire products');
     let url: string = 'products-all';
     this.api.GET(url).subscribe({
       next:(res)=>{
         console.log(res);
-        this.productsList = res;
-        this.api.setProducts(res);
+        this.products.setProducts(res);
+        this.productsList = this.products.getProducts();
         this.dataSource = new MatTableDataSource(this.productsList);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-      }, error:(res)=>{}
+      }, error:(res)=>{
+        console.log(res);
+      }
     });
-  }
-
-  openSnackBar(message: string, action: string) {
-    this._snackBar.open(message, action, { duration: 2000 });
   }
 
   announceSortChange(sortState: Sort) {
@@ -194,10 +206,11 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   }
 
   getAllTypes() {
+    this.typesList = this.lookup.getTypes();
     this.api.GET('types').subscribe({
       next:(res)=>{
-        console.log(res);
-        this.typesList = res;
+        this.lookup.setTypes(res);
+        this.typesList = this.lookup.getTypes();
       }, error:(res)=>{
         this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
       }
@@ -207,7 +220,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   getBrandName(id: string) {
     let i = 0;
     i = parseInt(id) - 1;
-    if(this.typesList[i] == undefined) {
+    if(this.typesList[i] == undefined || isNaN(i) || i == null) {
       return '';
     }
     return this.typesList[i].name;
@@ -293,9 +306,10 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   getAllCategories(): void {
     this.api.GET('categories').subscribe({
       next:(res)=>{
-        this.categoriesList = res;
+        this.products.setCategories(res);
+        this.categoriesList = this.products.getCategories();
       }, error:(res)=>{
-        alert(res);
+        console.log(res);
       }
     });
   }
@@ -313,6 +327,10 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     } else {
       this.displayedColumns = ['thumbnail', 'sku', 'name', 'brand', 'description', 'view'];
     }
+  }
+
+  openSnackBar(message: string, action: string) {
+    this._snackBar.open(message, action, { duration: 2000 });
   }
 
   addToPamphlet (productId: string, sku: string, e: any) {

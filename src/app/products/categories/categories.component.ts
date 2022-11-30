@@ -5,6 +5,7 @@ import { NavbarService } from 'src/app/services/navbar/navbar.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Category } from 'src/app/interfaces/category';
 import { InfoService } from 'src/app/services/info/info.service';
+import { ProductsService } from 'src/app/services/products/products.service';
 declare var swal: any;
 
 @Component({
@@ -48,7 +49,8 @@ export class CategoriesComponent implements OnInit {
     private api: ApiService, 
     private formBuilder : FormBuilder, 
     private _snackBar: MatSnackBar, 
-    public info: InfoService
+    public info: InfoService,
+    private products: ProductsService
   ) {}
 
   ngOnInit(): void {
@@ -75,14 +77,7 @@ export class CategoriesComponent implements OnInit {
    * Returns all categories from the backend
    */
   getAllCategories(): void {
-    this.api.GET('categories').subscribe({
-      next:(res)=>{
-        console.log('cats', res);
-        this.categoriesList = res;
-      }, error:(res)=>{
-        alert(res);
-      }
-    });
+    this.categoriesList = this.products.getCategories();
   }
 
   addNewCategory() {
