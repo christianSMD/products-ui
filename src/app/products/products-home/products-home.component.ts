@@ -148,33 +148,24 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   }
 
   getAllProducts() {
-    this.productsList = this.products.getProducts();
-    if (this.productsList.length < 1) {
-      let url: string = 'products-verified';
-      if (this.viewAllProductsRole) {
-        url = 'products';
-      }
-      this.productsLoader = true;
-      this.api.GET(url).subscribe({
-        next:(res)=>{
-          this.productsList = res;
-          this.dataSource = new MatTableDataSource(this.productsList);
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
-          this.productsLoader = false;
-          this.blockUI.stop();
-          this.entireProducts();
-        }, error:(res)=>{
-          this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
-        }
-      });
-    
-    } else {
-      // Products pulled from the service
-      this.dataSource = new MatTableDataSource(this.productsList);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+    let url: string = 'products-verified';
+    if (this.viewAllProductsRole) {
+      url = 'products';
     }
+    this.productsLoader = true;
+    this.api.GET(url).subscribe({
+      next:(res)=>{
+        this.productsList = res;
+        this.dataSource = new MatTableDataSource(this.productsList);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        this.productsLoader = false;
+        this.blockUI.stop();
+        this.entireProducts();
+      }, error:(res)=>{
+        this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
+      }
+    });
   }
 
   /**
@@ -185,12 +176,11 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     let url: string = 'products-all';
     this.api.GET(url).subscribe({
       next:(res)=>{
-        console.log(res);
-        this.products.setProducts(res);
-        this.productsList = this.products.getProducts();
+        this.productsList = res;
         this.dataSource = new MatTableDataSource(this.productsList);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
+        this.products.setProducts(res);
       }, error:(res)=>{
         console.log(res);
       }
