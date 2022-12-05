@@ -28,6 +28,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableExporterModule } from 'mat-table-exporter';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { TypesPipe } from '../pipes/types.pipe';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { CategoriesPipe } from '../pipes/categories.pipe';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -38,9 +39,8 @@ import { ExportComponent } from './export/export.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ExportCSVComponent } from './export/export-csv/export-csv.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { SeriesComponent } from './series/series.component';
 import { CommonModuleModule } from '../common-module/common-module.module';
-
+import { SeriesComponent } from './series/series.component';
 
 @NgModule({
   declarations: [
