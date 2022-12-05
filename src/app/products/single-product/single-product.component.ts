@@ -74,6 +74,7 @@ export class SingleProductComponent implements OnInit {
   uploadRole: boolean = false;
   viewAllProductsRole: boolean = false;
   verified: boolean = false;
+  isVerified: boolean = false;
   categoriesList: Category[] = [];
   selectedCategories: any[] = [];
   categoriesLoader = false;
@@ -95,12 +96,14 @@ export class SingleProductComponent implements OnInit {
   linkedProductSKUs: any = [];
   bundleLoader: boolean = true;
   autocompleteControl = new FormControl('');
+  autocompleteControl1 = new FormControl('');
   productsList: Product[] = [];
   newPamphlet: any[] = [];
   newPamphletSKUs: any[] = [];
   SKUsLoader: boolean = true
-  options: string[] = [];
+  options: string[] = []; // SKUs
   filteredOptions: Observable<string[]>;
+  filteredSeries: Observable<string[]>;
   newProductForm !: FormGroup;
 
   // Design
@@ -110,9 +113,11 @@ export class SingleProductComponent implements OnInit {
   packageContentsForm: FormGroup;
   designLoader: boolean = false;
   
-  //test
   parentChildCategories: any[] = [];
   audits: any[] = [];
+  series: any[] = [];
+  newSeries: string;
+  productSeries: any;
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -137,7 +142,7 @@ export class SingleProductComponent implements OnInit {
       left: 0, 
       behavior: 'smooth' 
     });
-    
+    this.getAllTypes();
     localStorage.setItem('route', this.router.url);
     this.detailProgress = 0;
     this.editRole = this.info.role(56);
@@ -151,7 +156,6 @@ export class SingleProductComponent implements OnInit {
       this.productSku = this.sku;
     });
     this.getDetails(this.sku);
-    this.getAllTypes();
     this.getAllCategories();
     this.entireProducts();
 
@@ -215,6 +219,12 @@ export class SingleProductComponent implements OnInit {
       startWith(''),
       map(value => this._filter(value || '')),
     );
+
+    // Auto complete Series
+    this.filteredSeries = this.autocompleteControl1.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterSeries(value || '')),
+    );
   }
 
   get attributes() {
@@ -244,9 +254,11 @@ export class SingleProductComponent implements OnInit {
   getAllCategories() {
     this.categoriesList = this.products.getCategories();
   }
+  
 
   getDetails(sku: string): void {
     this.productsLoader = true;
+    console.log("Types on details", this.typesList);
     this.api.GET(`products/${sku}`).subscribe({
       next:(res)=>{
         console.log('details', res[0]);
@@ -256,11 +268,17 @@ export class SingleProductComponent implements OnInit {
           this.product = res[0];
           this.productName = this.product.name;
           this.id = this.product.id;
+          const seriesType = this.typesList.find((x: Type) => x.id == this.product.family_grouping);
+          this.productSeries = seriesType?.name;
+          console.log('Product Series: ', this.productSeries);
+          if(res[0].verified == 1) {
+            this.isVerified = true;
+          }
           if (res[0].type == 'Pamphlet') {
             this.isBundle = true;
             this.getLinkedProducts();
           }
-          
+          console.log("Is vsrified: ", this.verified);
           this.media();
           this.documents();
           this.getProductCategories(this.id);
@@ -327,7 +345,6 @@ export class SingleProductComponent implements OnInit {
           for (let x = 0; x < res.length; x++) {
             let attributes = JSON.parse(res[x].attributes);
             if(res[x].parent != 0) {
-
               //Attributes from parent categpory
               let parent = this.categoriesList.find(i => i.id == res[x].parent);
               let parentAttributes: string[] = []; 
@@ -358,7 +375,6 @@ export class SingleProductComponent implements OnInit {
                 }
               }
             }
-            
           } 
         }
       }, error:(res)=> {
@@ -409,9 +425,6 @@ export class SingleProductComponent implements OnInit {
 
   onUpload(fileTypeId: string, type: String): void {
     this.loading = !this.loading;
-
-    console.log("This is a function that uplaods files")
-
     if (this.files.length > 0) {
       for(let x = 0; x < this.files.length; x ++) {
         this.api.upload('upload-media', {
@@ -1061,15 +1074,16 @@ export class SingleProductComponent implements OnInit {
       this.api.GET('products').subscribe({
         next:(res)=>{
           this.productsList = res;
-          this.options = this.productsList.map((x: Product) => x.sku);
           this.products.setProducts(res);
+          this.options = this.productsList.map((x: Product) => x.sku);
         }, error:(res)=>{
           this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
         }
       });
     }
     this.options = this.productsList.map((x: Product) => x.sku);
-    console.log('Options: ', this.options);
+    const s = this.typesList.filter((x: Type) => x.grouping == "Series");
+    this.series = s.map((x: Type) => x.name);
   }
 
   /**
@@ -1080,13 +1094,24 @@ export class SingleProductComponent implements OnInit {
    * @returns Filtered array
    */
    private _filter(value: string): string[] {
-    let x: string[]= [];
+    let x: string[] = [];
     if(value.length > 4){
       const filterValue = value.toLowerCase();
       x = this.options.filter(option => option.toLowerCase().includes(filterValue));
     }
     return x;
   }
+
+  private _filterSeries(value: string): string[] {
+    console.log("Series: ", value);
+    let x: string[] = [];
+    if(value.length > 4){
+      const filterValue = value.toLowerCase();
+      x = this.series.filter(option => option.toLowerCase().includes(filterValue));
+    }
+    return x;
+  }
+
   
   removeFromBundle (sku: string) {
     let child = this.productsList.find((p: any) => p.sku == sku);
@@ -1101,6 +1126,22 @@ export class SingleProductComponent implements OnInit {
         console.log(res);
       }
     });
+  }
+
+  addSeries(e: any){
+    console.log(e);
+    this.newSeries = e.option.value;
+    this.productForm.dirty;
+    const lookupType  = this.typesList.find((x: Type) => x.name == this.newSeries);
+    console.log('found:', lookupType);
+    this.productForm.patchValue({
+      family_grouping: lookupType?.id
+    });
+    this.updateProduct();
+  }
+
+  ngOnChanges() {
+    console.log("On change ", this.newSeries);
   }
 
   audit(id: string) {

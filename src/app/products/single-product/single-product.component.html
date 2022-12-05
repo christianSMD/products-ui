@@ -34,8 +34,13 @@
                         </mat-select>
                       </mat-form-field>
                       <mat-form-field appearance="outline" style="width: 90%;">
-                        <mat-label>Family Grouping</mat-label>
-                        <input #family_grouping matInput formControlName="family_grouping" placeholder="Enter Product Family Grouping">
+                        <mat-label>{{productSeries}}</mat-label>
+                        <input #family_grouping matInput [formControl]="autocompleteControl1" [matAutocomplete]="auto" placeholder="Enter Series">
+                        <mat-autocomplete (optionSelected)="addSeries($event)" #auto="matAutocomplete">
+                          <mat-option *ngFor="let option of filteredSeries | async" [value]="option">
+                            {{option}}
+                          </mat-option>
+                        </mat-autocomplete>
                       </mat-form-field>
                       <strong>Description</strong><br><br>
                       <mat-form-field style="width: 90%;" appearance="outline">
@@ -547,7 +552,7 @@
               </div>
             </div>
           </mat-tab>
-          <mat-tab label="Media">
+          <!-- <mat-tab label="Media">
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <mat-tab-group>
                 <mat-tab label="Images">
@@ -602,7 +607,6 @@
     
                           <mat-card style="max-width: 280px; margin-bottom: 2rem; background-color: rgb(254, 254, 254);">
                             <mat-card-header>
-                              <!-- <mat-card-title>{{ file.name }}</mat-card-title> -->
                               <mat-card-subtitle>{{ returnTypeName(file.type_id) }}</mat-card-subtitle>
                             </mat-card-header>
                             <div style="height: 120px; width: 130px; overflow: hidden;">
@@ -665,7 +669,7 @@
               
             </div>
             
-          </mat-tab>
+          </mat-tab> -->
 
         </mat-tab-group>
       </mat-card>
@@ -686,6 +690,7 @@
             </mat-grid-list>
             <br>
           <h3 style="text-align: center;">{{ progressPercentage() }}% Complete</h3>
+          <!-- <span *ngIf="isVerified" style="text-align: center;"> Verified</span> -->
           <hr>
             <mat-list role="list">
               <mat-list-item role="listitem">

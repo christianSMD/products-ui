@@ -43,6 +43,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MinisidenavComponent } from './view/minisidenav/minisidenav.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { CommonModuleModule } from './common-module/common-module.module';
 
 @NgModule({
   declarations: [
@@ -91,7 +92,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatTooltipModule,
     MatTabsModule,
     BlockUIModule.forRoot(),
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    CommonModuleModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true },

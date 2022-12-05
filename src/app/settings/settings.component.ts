@@ -4,6 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatTabNav } from '@angular/material/tabs';
 import { Router } from '@angular/router';
 import { Type } from '../interfaces/type';
 import { ApiService } from '../services/api/api.service';
@@ -23,6 +24,9 @@ export class SettingsComponent implements OnInit {
   types: any[] = [];
   displayedColumns: string [] = ['id', 'name', 'grouping'];
   dataSource: MatTableDataSource<Type>;
+  newType: string = "";
+  groups: string[] = [];
+  groupsTabs: string[] = ['Brand', 'Series'];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -47,20 +51,36 @@ export class SettingsComponent implements OnInit {
     this.getAllTypes();
   }
 
-
   getAllTypes(): void {
     this.api.GET('types').subscribe({
       next:(res)=>{
         this.typesLoader = false;
         this.types = res;
-        this.dataSource = new MatTableDataSource(this.types);
+        const dataSource = this.types.filter((x: Type) => x.grouping == "Brand");
+        this.dataSource = new MatTableDataSource(dataSource);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
+        
+        let temp = this.types.map((x: any) => x.grouping);
+        this.groups = Array.from(new Set(temp));
+        temp = [];
+        console.log("This is a clean array of types:: ", this.groups)
       }, error:(res)=>{
         this.typesLoader = false;
         this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
       }
     });
+  }
+
+  table(e: any): void {
+    let group = e.tab.textLabel;
+    let dataSource = this.types.filter((x: Type) => x.grouping == group);
+    if (group=="") {
+      dataSource = this.types;
+    }
+    this.dataSource = new MatTableDataSource(dataSource);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   announceSortChange(sortState: Sort): void {
@@ -80,9 +100,36 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-
   openSnackBar(message: string, action: string) {
     this._snackBar.open(message, action);
   }
 
+  addNewType(group: string) {
+    // Check if new type does not already exist
+    const newType = this.newType;
+    const typeExists = this.types.find((x: Type) => x.name.toLowerCase() == newType.toLowerCase());
+    if(!typeExists) {
+      // Add this.type to grouping
+      this.api.POST('types', {
+        name: this.newType,
+        grouping: group
+      }).subscribe({
+        next:(res) => {
+          console.log(res);
+          this.getAllTypes();
+          const e = {
+            'index': 0,
+            'tab': {
+              'textLabel': this.newType
+            }
+          };
+          this.table(e);
+          this.openSnackBar(`${this.newType} has been added.`, 'OKay');
+        }, error:(res) => {
+          this.typesLoader = false;
+          this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
+        }
+      });
+    }
+  }
 }
