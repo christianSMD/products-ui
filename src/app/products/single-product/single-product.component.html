@@ -35,7 +35,7 @@
                       </mat-form-field>
                       <mat-form-field appearance="outline" style="width: 90%;">
                         <mat-label>{{productSeries}}</mat-label>
-                        <input #family_grouping matInput [formControl]="autocompleteControl1" [matAutocomplete]="auto" placeholder="Enter Series">
+                        <input #family_grouping matInput [formControl]="autocompleteControl1" [matAutocomplete]="auto" placeholder="Enter Series" value="{{ productSeries }}">
                         <mat-autocomplete (optionSelected)="addSeries($event)" #auto="matAutocomplete">
                           <mat-option *ngFor="let option of filteredSeries | async" [value]="option">
                             {{option}}

@@ -150,4 +150,8 @@ export class InfoService {
       return "Good evening";
     }
   }
+
+  public errorHandler(error: any) {
+    console.log("Error handled: ", error);
+  }
 }

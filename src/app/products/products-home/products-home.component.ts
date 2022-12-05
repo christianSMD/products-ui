@@ -208,12 +208,18 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   }
 
   getBrandName(id: string) {
-    let i = 0;
-    i = parseInt(id) - 1;
-    if(this.typesList[i] == undefined || isNaN(i) || i == null) {
-      return '';
+    try {
+      let i = 0;
+      i = parseInt(id) - 1;
+      if(this.typesList[i] == undefined || isNaN(i) || i == null) {
+        return '';
+      }
+      return this.typesList[i].name;
+    } catch (error) {
+      this.info.errorHandler(error);
+      return "";
     }
-    return this.typesList[i].name;
+    
   }
 
   permission(role: number) {

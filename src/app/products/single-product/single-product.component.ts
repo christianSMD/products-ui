@@ -348,19 +348,20 @@ export class SingleProductComponent implements OnInit {
               //Attributes from parent categpory
               let parent = this.categoriesList.find(i => i.id == res[x].parent);
               let parentAttributes: string[] = []; 
-              parentAttributes = JSON.parse(parent?.attributes);
-              for (let index = 0; index < parentAttributes.length; index++) {
-                const parentAttrs = this.formBuilder.group({
-                  attrName: [parentAttributes[index], Validators.required],
-                  attrValue: ['0', Validators.required]
-                })
-                this.attributes.push(parentAttrs);
-                this.attrCount = this.attrCount + 1;
+              try {
+                parentAttributes = JSON.parse(parent?.attributes);
+                for (let index = 0; index < parentAttributes.length; index++) {
+                  const parentAttrs = this.formBuilder.group({
+                    attrName: [parentAttributes[index], Validators.required],
+                    attrValue: ['0', Validators.required]
+                  })
+                  this.attributes.push(parentAttrs);
+                  this.attrCount = this.attrCount + 1;
+                }
+              } catch (error) {
+                this.info.errorHandler(error);
               }
-            } else {
-
             }
-            
             // Loop attributes on each category
             if (attributes !== null) {
               for (let y = 0; y < attributes.length; y++) {
@@ -407,6 +408,7 @@ export class SingleProductComponent implements OnInit {
         }
         this.packagingLoading = false;
       }, error:(res)=>{
+        this.info.errorHandler(res);
         this.typesLoader = false;
         this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
       }
@@ -450,6 +452,7 @@ export class SingleProductComponent implements OnInit {
             } 
             this.media();
           }, (err: any) => {
+            this.info.errorHandler(err);
             this.uploadProgress = 0;
             const msg = '' + this.files[x].name + ' could not upload the file: ';
             this.messages.push(msg);
@@ -491,6 +494,7 @@ export class SingleProductComponent implements OnInit {
             } 
             this.documents();
           }, (err: any) => {
+            this.info.errorHandler(err);
             this.uploadProgress = 0;
             const msg = '' + this.files[x].name + ' could not upload the file: ';
             this.messages.push(msg);
@@ -518,7 +522,7 @@ export class SingleProductComponent implements OnInit {
           this.getProductImageOrder();
         }
       }, error:(res)=> {
-        console.log(res);
+        this.info.errorHandler(res);
       }
     });
   }
@@ -578,7 +582,7 @@ export class SingleProductComponent implements OnInit {
         }
         this.mediaFiles = this.mediaFiles;
       }, error:(res)=> {
-        console.log(res);
+        this.info.errorHandler(res);
       }
     });
   }
@@ -603,7 +607,7 @@ export class SingleProductComponent implements OnInit {
         }
 
       }, error:(res)=> {
-        console.log(res);
+        this.info.errorHandler(res);
       }
     });
   }
@@ -632,6 +636,7 @@ export class SingleProductComponent implements OnInit {
         this.info.activity('Updated product', this.product.id);
         this.openSnackBar('Product Updated 😃', 'Okay');
       }, error:(res)=>{
+        this.info.errorHandler(res);
         this.openSnackBar('😢 ' + res.message, 'Okay');
       }
     });
@@ -663,7 +668,7 @@ export class SingleProductComponent implements OnInit {
           this.getProductRegions(this.id,);
           this.openSnackBar('Region Updated 😃', 'Okay');
         }, error:(res)=>{
-          console.log(res);
+          this.info.errorHandler(res);
         }
       });
     }
@@ -694,7 +699,7 @@ export class SingleProductComponent implements OnInit {
       next:(res)=>{
         console.log(res);
       }, error:(res)=>{
-        console.log(res);
+        this.info.errorHandler(res);
       }
     });
   }
@@ -721,6 +726,7 @@ export class SingleProductComponent implements OnInit {
           this.openSnackBar('Attributes Saved', 'Okay');
           this.info.activity('Updated product attributes', this.product.id);
         }, error:(res)=> {
+          this.info.errorHandler(res);
           this.saveAttrBtnText = "Failed, try again.";
           this.openSnackBar(res.message, 'Okay');
         }
@@ -735,7 +741,7 @@ export class SingleProductComponent implements OnInit {
           console.log("delete: ", res);
         }
       }, error:(res)=> {
-        console.log(res);
+        this.info.errorHandler(res);
       }
     });
   }
@@ -748,7 +754,7 @@ export class SingleProductComponent implements OnInit {
           console.log('This is for hiding the file or image from the view on the ui');
         }
       }, error:(res)=> {
-        console.log(res);
+        this.info.errorHandler(res);
       }
     });
   }
@@ -826,6 +832,7 @@ export class SingleProductComponent implements OnInit {
             this.getProductCategories(this.id);
             this.openSnackBar('Category Added 😃', 'Okay');
           }, error:(res)=>{
+            this.info.errorHandler(res);
             this.openSnackBar('😢 ' + res.message, 'Okay');
           }
         })
@@ -846,7 +853,7 @@ export class SingleProductComponent implements OnInit {
         this.pdsAttributes = res;
         this.loadingPdsAttributes = false;
       }, error:(res)=> {
-        console.log(res);
+        this.info.errorHandler(res);
         this.loadingPdsAttributes = false;
       }
     });
@@ -868,7 +875,7 @@ export class SingleProductComponent implements OnInit {
       const blob = new Blob([res], { type: 'application/octet-stream' });
       FileSaver.saveAs(blob, name);
     }, (err: any) => {
-      console.log(err);
+      this.info.errorHandler(err);
     });
   }
 
@@ -891,12 +898,14 @@ export class SingleProductComponent implements OnInit {
               if(res.length > 0) {
                 this.mediaFilesForLinkedProducts.push(res);
               }
-            }, error:(res)=> {}
+            }, error:(res)=> {
+              this.info.errorHandler(res);
+            }
           });
         } 
         this.bundleLoader = false;       
       }, error:(res)=> {
-        console.log(res);
+        this.info.errorHandler(res);
         this.bundleLoader = false;
       }
     });
@@ -962,7 +971,7 @@ export class SingleProductComponent implements OnInit {
         this.designLoader = false;
         //this.getDesigns(this.id)
       }, error:(res)=> {
-        console.log(res);
+        this.info.errorHandler(res);
         this.openSnackBar('🔴 Item could not be removed', 'Okay');
       }
     });
@@ -1002,7 +1011,7 @@ export class SingleProductComponent implements OnInit {
         }).subscribe({
           next:(res)=>{
             this.designLoader = false;
-            console.log(res);
+            this.info.errorHandler(res);
           }
         });
       }
@@ -1039,6 +1048,7 @@ export class SingleProductComponent implements OnInit {
           }
         }
       }, error:(res)=>{
+        this.info.errorHandler(res);
         //this.designLoader = false;
       }
     });
@@ -1059,6 +1069,7 @@ export class SingleProductComponent implements OnInit {
         this.info.activity('Added new SKU to linked products', id);
         this.openSnackBar('Product added ' , 'Okay')
       }, error:(res)=>{
+        this.info.errorHandler(res);
         this.openSnackBar('😢 ' + res.message, 'Okay');
       }
     });
@@ -1123,7 +1134,7 @@ export class SingleProductComponent implements OnInit {
         this.info.activity('Removed product from linked products', 0);
         this.openSnackBar('Product removed ' , 'Okay')
       }, error:(res)=> {
-        console.log(res);
+        this.info.errorHandler(res);
       }
     });
   }
@@ -1150,7 +1161,7 @@ export class SingleProductComponent implements OnInit {
         console.log('audits', res);
         this.audits = res;
       }, error:(res)=> {
-        console.log(res);
+        this.info.errorHandler(res);
       }
     });
   }

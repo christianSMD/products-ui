@@ -94,6 +94,7 @@ import { CommonModuleModule } from './common-module/common-module.module';
     BlockUIModule.forRoot(),
     MatAutocompleteModule,
     CommonModuleModule
+
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true },
