@@ -264,7 +264,7 @@
                             </div>
                             <div class="flip-card-back">
                               <mat-chip-list aria-label="Fish selection">
-                                <mat-chip class="mat-chip-list" *ngFor="let type of typesList | typeGroup : 'Image Type'" (click)="downloadImageServer('https://images.smdtechnologies.co.za/uploads/' + image.filename, type.id, image.filename, image)">{{ type.name }}</mat-chip>
+                                <mat-chip class="mat-chip-list" *ngFor="let type of typesList | typeGroup : 'Image Type'" (click)="downloadImageServer('https://images.smdtechnologies.co.za/uploads/' + image, type.id, image.filename, image)">{{ type.name }}</mat-chip>
                               </mat-chip-list>
                             </div>
                           </div>

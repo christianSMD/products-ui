@@ -859,11 +859,11 @@ export class SingleProductComponent implements OnInit {
     });
   }
 
-  downloadURI(uri: any, id: number, name: string, file: File) { 
+  downloadURI(uri: any, id: number, name: string, file: File) {
     let path = file.path; 
     this.api.download('download-file-api', uri, this.product.id, this.product.sku, file.type_id, path.replace("public/", "storage/"), id).subscribe((res: BlobPart) => {
       const blob = new Blob([res], { type: 'application/octet-stream' });
-      FileSaver.saveAs(blob, name);
+      FileSaver.saveAs(blob, `${this.product.sku}${file.type_id}.jpg`);
     }, (err: any) => {
       console.log(err);
     });
@@ -873,7 +873,7 @@ export class SingleProductComponent implements OnInit {
     let path = file.path; 
     this.api.download('download-file-api', uri, this.product.id, this.product.sku, file.type_id, uri, id).subscribe((res: BlobPart) => {
       const blob = new Blob([res], { type: 'application/octet-stream' });
-      FileSaver.saveAs(blob, name);
+      FileSaver.saveAs(blob, `imageserver${this.product.sku}${file.type_id}.jpg`);
     }, (err: any) => {
       this.info.errorHandler(err);
     });
@@ -1123,7 +1123,6 @@ export class SingleProductComponent implements OnInit {
     return x;
   }
 
-  
   removeFromBundle (sku: string) {
     let child = this.productsList.find((p: any) => p.sku == sku);
     const relationship = this.linkedProducts.find((r: any) => r.child_id == child?.id && r.parent_id == this.id)
