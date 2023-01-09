@@ -447,7 +447,7 @@ export class SingleProductComponent implements OnInit {
               this.uploadProgressBar = `width:${this.uploadProgress}%;height:10px`;
             } else if (event instanceof HttpResponse) {
               const msg = this.files[x].name + ' ploaded the file successfully.';
-              this.info.activity('Added new product', this.product.id);
+              this.info.activity('Media file uploaded', this.product.id);
               this.messages.push(msg);
             } 
             this.media();
@@ -489,7 +489,7 @@ export class SingleProductComponent implements OnInit {
               this.uploadProgressBar = `width:${this.uploadProgress}%;height:10px`;
             } else if (event instanceof HttpResponse) {
               const msg = this.files[x].name + ' ploaded the file successfully.';
-              this.info.activity('Added new product', this.product.id);
+              this.info.activity(`${this.files[x].name} uploaded`, this.product.id);
               this.messages.push(msg);
             } 
             this.documents();
@@ -536,6 +536,7 @@ export class SingleProductComponent implements OnInit {
             // If file is an image:
             if (filename.endsWith(".png") || filename.endsWith(".jpg")) {
               this.imageServerFiles.push(filename);
+              console.log(this.imageServerFiles);
             } else {
               // Push to documents
               this.imageServerDocumentFiles.push(filename);
@@ -874,6 +875,7 @@ export class SingleProductComponent implements OnInit {
     this.api.download('download-file-api', uri, this.product.id, this.product.sku, file.type_id, uri, id).subscribe((res: BlobPart) => {
       const blob = new Blob([res], { type: 'application/octet-stream' });
       FileSaver.saveAs(blob, `imageserver${this.product.sku}${file.type_id}.jpg`);
+      console.log(`tesing image name ${this.product.sku}.jpg`);
     }, (err: any) => {
       this.info.errorHandler(err);
     });
@@ -1114,7 +1116,6 @@ export class SingleProductComponent implements OnInit {
   }
 
   private _filterSeries(value: string): string[] {
-    console.log("Series: ", value);
     let x: string[] = [];
     if(value.length > 4){
       const filterValue = value.toLowerCase();
@@ -1151,7 +1152,7 @@ export class SingleProductComponent implements OnInit {
   }
 
   ngOnChanges() {
-    console.log("On change ", this.newSeries);
+
   }
 
   audit(id: string) {
@@ -1160,6 +1161,20 @@ export class SingleProductComponent implements OnInit {
         console.log('audits', res);
         this.audits = res;
       }, error:(res)=> {
+        this.info.errorHandler(res);
+      }
+    });
+  }
+
+  presentation(): void {
+    this.api.POST('presentation', {
+      id: this.product.id
+    }).subscribe({
+      next:(res) => {
+        const id = parseInt(this.id);
+        this.info.activity('Presentation created', id);
+        this.openSnackBar('Presentation has been created ' , 'Okay')
+      }, error:(res)=>{
         this.info.errorHandler(res);
       }
     });
