@@ -7,25 +7,30 @@
   <p>Products</p>
 
   <div class="row">
-    <div class="col-xs-12 col-ms-12 col-md-4 col-lg-3">
-      <button *ngIf="addProductRole" mat-raised-button class="m-1" style="width: 100%;" [routerLink]="['add/new', 'product']" >
-        <mat-icon>add</mat-icon> Add New Product
+    <div class="col-xs-12 col-ms-12 col-md-3 col-lg-2">
+      <button *ngIf="addProductRole" mat-raised-button class="m-1" color="primary" style="width: 100%;" [routerLink]="['add/new', 'product']" >
+        Add New Product
       </button>
     </div>
-    <div class="col-xs-12 col-ms-12 col-md-4 col-lg-3">
+    <div class="col-xs-12 col-ms-12 col-md-3 col-lg-2">
       <!-- (click)="showPamphletCheckboxes()" -->
       <button *ngIf="addProductRole" mat-raised-button class="m-1" style="width: 100%; background-color: #f0f0f0;" [routerLink]="['add/new', 'linked-product']" >
-        <mat-icon>add</mat-icon> Create Pamphlet
+        Create Pamphlet
       </button>
     </div>
-    <div class="col-xs-12 col-ms-12 col-md-4 col-lg-3">
+    <div class="col-xs-12 col-ms-12 col-md-3 col-lg-2">
+      <button  mat-raised-button class="m-1" style="width: 100%; background-color: #f0f0f0;" [routerLink]="['add/new', 'presentation']" >
+        Create Presentation
+      </button>
+    </div>
+    <div class="col-xs-12 col-ms-12 col-md-2 col-lg-2">
       <button mat-raised-button class="m-1" style="width: 100%;"  (click)="exporter.exportTable('csv',{fileName:'products_system'})">
         <mat-icon>download_file</mat-icon> Quick Export
       </button>
     </div>
     <div class="col-xs-12 col-ms-12 col-md-4 col-lg-3">
       <button mat-raised-button class="m-1" style="width: 100%;"  routerLink="products/export">
-        <mat-icon>wordpress</mat-icon> Export For WordPress
+        <mat-icon>wordpress</mat-icon> WordPress Export
       </button>
     </div>
   </div>

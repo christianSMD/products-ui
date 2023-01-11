@@ -37,7 +37,7 @@
                 </div>
                 <div class="col-md-6">
 
-                  <div *ngIf="newProductType == 'linked-product'">
+                  <div *ngIf="newProductType == 'linked-product' || newProductType == 'presentation'">
                     <mat-form-field appearance="outline">
                       <mat-label>Search Product</mat-label>
                       <input type="text" placeholder="Enter SKU" aria-label="Number" matInput [formControl]="autocompleteControl" [matAutocomplete]="auto">
@@ -55,8 +55,8 @@
                       <mat-hint><a target="_blank" href="https://products.smdtechnologies.com/{{sku}}">View this product</a></mat-hint>
                     </mat-form-field>
   
-                    <button type="submit" style="float: right;" mat-raised-button type="submit" color="primary" (click)="saveBundleProduct('Pamphlet')">Save New {{ newProductType }}</button>
-  
+                    <button *ngIf="newProductType == 'linked-product'" type="submit" style="float: right;" mat-raised-button type="submit" color="primary" (click)="saveBundleProduct('Pamphlet')">Save New {{ newProductType }}</button>
+                    <button *ngIf="newProductType == 'presentation'"type="submit" style="float: right;" mat-raised-button type="submit" color="primary" (click)="saveBundleProduct('Presentation')">Create {{ newProductType }}</button>
                   </div>
 
                   
@@ -71,7 +71,6 @@
               </div>
             </div>
           </form>
-
         </mat-tab>
         <mat-tab label="2. Select Categories">
           <div class="mt-5 custom-tab" style="overflow: hidden !important;">

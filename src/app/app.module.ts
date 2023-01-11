@@ -44,6 +44,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MinisidenavComponent } from './view/minisidenav/minisidenav.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { CommonModuleModule } from './common-module/common-module.module';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -93,8 +94,8 @@ import { CommonModuleModule } from './common-module/common-module.module';
     MatTabsModule,
     BlockUIModule.forRoot(),
     MatAutocompleteModule,
-    CommonModuleModule
-
+    CommonModuleModule,
+    MatCheckboxModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true },

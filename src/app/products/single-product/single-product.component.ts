@@ -179,7 +179,8 @@ export class SingleProductComponent implements OnInit {
       width  : [''],
       height : [''],
       packaging_type_id : ['', Validators.required],
-      product_id: ['']
+      product_id: [''],
+      barcode: ['']
     });
     
     this.productFormAttributes = this.formBuilder.group({
@@ -254,14 +255,11 @@ export class SingleProductComponent implements OnInit {
   getAllCategories() {
     this.categoriesList = this.products.getCategories();
   }
-  
 
   getDetails(sku: string): void {
     this.productsLoader = true;
-    console.log("Types on details", this.typesList);
     this.api.GET(`products/${sku}`).subscribe({
       next:(res)=>{
-        console.log('details', res[0]);
         this.productsLoader = false;
         if (res.length > 0) {
           this.detailProgress++;
@@ -270,15 +268,14 @@ export class SingleProductComponent implements OnInit {
           this.id = this.product.id;
           const seriesType = this.typesList.find((x: Type) => x.id == this.product.family_grouping);
           this.productSeries = seriesType?.name;
-          console.log('Product Series: ', this.productSeries);
           if(res[0].verified == 1) {
             this.isVerified = true;
           }
-          if (res[0].type == 'Pamphlet') {
+          if (res[0].type != 'Simple') {
             this.isBundle = true;
             this.getLinkedProducts();
           }
-          console.log("Is vsrified: ", this.verified);
+          console.log('is bundle: ', res[0].type);
           this.media();
           this.documents();
           this.getProductCategories(this.id);
@@ -403,7 +400,8 @@ export class SingleProductComponent implements OnInit {
             height : [res[0].height],
             weight : [res[0].weight],
             packaging_type_id : [res[0].packaging_type_id],
-            product_id: [this.id]
+            product_id: [this.id],
+            barcode : [res[0].barcode]
           });
         }
         this.packagingLoading = false;
@@ -466,7 +464,6 @@ export class SingleProductComponent implements OnInit {
   }
 
   uploadDocument(fileTypeId: string, type: String): void {
-    console.log('exp: ' , this.expiry_date);
     this.loading = !this.loading;
     if (this.files.length > 0) {
       for(let x = 0; x < this.files.length; x ++) {
@@ -536,7 +533,6 @@ export class SingleProductComponent implements OnInit {
             // If file is an image:
             if (filename.endsWith(".png") || filename.endsWith(".jpg")) {
               this.imageServerFiles.push(filename);
-              console.log(this.imageServerFiles);
             } else {
               // Push to documents
               this.imageServerDocumentFiles.push(filename);
@@ -549,7 +545,6 @@ export class SingleProductComponent implements OnInit {
       }
     });   
   }
-
 
   documents(): void {
     this.api.GET(`product-document-files/${this.id}`).subscribe({
@@ -593,10 +588,8 @@ export class SingleProductComponent implements OnInit {
    * @todo Display Prodict regions.
    */
    getProductRegions(id: string): void {
-    console.log('getting regions');
     this.api.GET(`product-regions/${id}`).subscribe({
       next:(res)=>{
-        console.log(res);
         this.productRegionList = res;
         if (res !== null) {
           for (let index = 0; index < res.length; index++) {
@@ -665,7 +658,6 @@ export class SingleProductComponent implements OnInit {
         region_id: this.regionsForm.value.regions[index].designField 
       }).subscribe({
         next:(res)=>{
-          console.log(res);
           this.getProductRegions(this.id,);
           this.openSnackBar('Region Updated 😃', 'Okay');
         }, error:(res)=>{
@@ -698,7 +690,7 @@ export class SingleProductComponent implements OnInit {
     const data = JSON.stringify(arr);
     this.api.POST(`image-order/`, { product_id: this.id, order_list: data }).subscribe({
       next:(res)=>{
-        console.log(res);
+        //console.log(res);
       }, error:(res)=>{
         this.info.errorHandler(res);
       }
@@ -722,7 +714,6 @@ export class SingleProductComponent implements OnInit {
         key : formObj.attributes[index].attrValue
       }]).subscribe({
         next:(res)=> {
-          console.log(res);
           this.saveAttrBtnText = "Save Changes";
           this.openSnackBar('Attributes Saved', 'Okay');
           this.info.activity('Updated product attributes', this.product.id);
@@ -739,7 +730,7 @@ export class SingleProductComponent implements OnInit {
     this.api.GET(`delete-file/${id}`).subscribe({
       next:(res)=>{
         if(res.length > 0) {
-          console.log("delete: ", res);
+          //console.log("delete: ", res);
         }
       }, error:(res)=> {
         this.info.errorHandler(res);
@@ -751,8 +742,7 @@ export class SingleProductComponent implements OnInit {
     this.api.GET(`hide-file/${id}`).subscribe({
       next:(res)=>{
         if(res.length > 0) {
-          console.log("delete: ", res);
-          console.log('This is for hiding the file or image from the view on the ui');
+          //This is for hiding the file or image from the view on the ui
         }
       }, error:(res)=> {
         this.info.errorHandler(res);
@@ -818,7 +808,7 @@ export class SingleProductComponent implements OnInit {
     } else {
       this.selectedCategories.splice(i, 1);
     }
-    console.log(this.selectedCategories);
+    //console.log(this.selectedCategories);
   }
 
   saveCategories() {
@@ -843,14 +833,12 @@ export class SingleProductComponent implements OnInit {
   }
 
   setPermission(permissions: string[]) {
-    console.log(permissions);
     return true;
   }
 
   getPdsAttributes(sku: string): void {
     this.api.GET(`pds-attributes/${sku}`).subscribe({
       next:(res)=>{
-        console.log("PDS Attributes", res);
         this.pdsAttributes = res;
         this.loadingPdsAttributes = false;
       }, error:(res)=> {
@@ -874,8 +862,7 @@ export class SingleProductComponent implements OnInit {
     let path = file.path; 
     this.api.download('download-file-api', uri, this.product.id, this.product.sku, file.type_id, uri, id).subscribe((res: BlobPart) => {
       const blob = new Blob([res], { type: 'application/octet-stream' });
-      FileSaver.saveAs(blob, `imageserver${this.product.sku}${file.type_id}.jpg`);
-      console.log(`tesing image name ${this.product.sku}.jpg`);
+      FileSaver.saveAs(blob, `imageserver${this.product.sku}.jpg`);
     }, (err: any) => {
       this.info.errorHandler(err);
     });
@@ -965,8 +952,6 @@ export class SingleProductComponent implements OnInit {
         break;
     } 
 
-    console.log('Deleting ', deleteId);
-
     this.api.GET(`delete-design/${deleteId}`).subscribe({
       next:(res)=>{
         this.openSnackBar('Item removed', 'Okay');
@@ -1005,7 +990,6 @@ export class SingleProductComponent implements OnInit {
       const insertId = valueFound.designId;
       if (insertId == undefined) {
         this.designLoader = true;
-        console.log("inserting ", checkValue);
         this.api.POST(`design`, { 
           product_id: this.id,
           design_type_id: typeId,
@@ -1140,11 +1124,9 @@ export class SingleProductComponent implements OnInit {
   }
 
   addSeries(e: any){
-    console.log(e);
     this.newSeries = e.option.value;
     this.productForm.dirty;
     const lookupType  = this.typesList.find((x: Type) => x.name == this.newSeries);
-    console.log('found:', lookupType);
     this.productForm.patchValue({
       family_grouping: lookupType?.id
     });
@@ -1158,7 +1140,6 @@ export class SingleProductComponent implements OnInit {
   audit(id: string) {
     this.api.GET(`activity/${this.id}`).subscribe({
       next:(res)=>{
-        console.log('audits', res);
         this.audits = res;
       }, error:(res)=> {
         this.info.errorHandler(res);

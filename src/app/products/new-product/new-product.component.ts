@@ -124,7 +124,8 @@ export class NewProductComponent implements OnInit {
       parent_id : [0, Validators.required],
       is_eol : [0, Validators.required],
       is_in_development : [0, Validators.required],
-      is_active: [0, Validators.required]
+      is_active: [0, Validators.required],
+      type: [this.newProductType]
     });
 
     this.newProductFormPackaging = this.formBuilder.group({

@@ -1,5 +1,6 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, Sort } from '@angular/material/sort';
@@ -22,11 +23,14 @@ export class UsersComponent implements OnInit {
 
   users: User[] = [];
   activities: Activity[] = [];
-  displayedColumns: string [] = ['id', 'name', 'surname', 'email', 'is_active', 'view'];
-  displayedColumns2: string [] = ['user_id', 'activity', 'product_id', 'date','product', 'user'];
+  displayedColumns: string [] = ['name', 'surname', 'email', 'is_active', 'view'];
+  displayedColumns2: string [] = ['user_id', 'activity', 'date','product'];
   dataSource: MatTableDataSource<User>;
   dataSource2: MatTableDataSource<Activity>;
   usersLoader = false;
+  addingNewUser= false;
+  pageTitle = "Manage Users";
+  userForm !: FormGroup;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -42,7 +46,8 @@ export class UsersComponent implements OnInit {
     public treeNav: TreeService,
     private router: Router,
     private info: InfoService,
-    private _liveAnnouncer: LiveAnnouncer
+    private _liveAnnouncer: LiveAnnouncer,
+    private formBuilder : FormBuilder,
   ) { }
 
   ngOnInit(): void {
@@ -52,13 +57,19 @@ export class UsersComponent implements OnInit {
     this.treeNav.hide();
     this.getUsers();
     this.getUserActivities();
+    this.userForm = this.formBuilder.group({
+      name : ['', Validators.required],
+      surname : ['', Validators.required],
+      email : ['', [Validators.required, Validators.email]],
+      password : [(Math.random() + 1).toString(36).substring(7)],
+      nonSmdUser : [0],
+    })
   }
 
   getUsers(): void {
     this.usersLoader = true;
     this.api.GET('users').subscribe({
       next:(res)=>{
-        console.log('Users: ', res);
         this.usersLoader = false;
         this.users = res;
         this.dataSource = new MatTableDataSource(this.users);
@@ -138,6 +149,35 @@ export class UsersComponent implements OnInit {
   userName(id: number) {
     const users = this.users.find(x => x.id == id);
     return users!.name;
+  }
+
+  addNewUser() {
+    this.addingNewUser =! this.addingNewUser;
+  }
+
+  submit () {
+    console.log("Submitting...", this.userForm.value);
+    if(this.userForm.valid) {
+      this.api.POST('register', this.userForm.value).subscribe({
+        next:(res)=>{
+          this.api.POST('reset_password_without_token', this.userForm.value).subscribe({
+            next:(res)=>{
+              this.openSnackBar('User added', 'Okay');
+              this.addingNewUser =false;
+              this.getUsers();
+            },
+            error:(res)=>{
+              console.log(res);
+            }
+          });
+        },
+        error:(res)=>{
+          alert(res.message);
+        }
+      });
+    } else {
+      alert("Form input invalid.");
+    }
   }
 
 }

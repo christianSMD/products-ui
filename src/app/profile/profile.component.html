@@ -1,7 +1,7 @@
 <p>👤 Profile / <span> {{ (user) ? user.name + ' ' + user.surname : '...' }}</span></p>
 <p>{{ notFound }}</p>
 <div *ngIf="user" class="row">
-    <div class="col-md-9">
+    <div class="col-md-8">
         <mat-card>
             <h3>{{ (user) ? user.name +"'s": '...'}} Details
                 <span style="color: rgb(11, 235, 11); font-size: smaller;" *ngIf="isActive">
@@ -14,7 +14,7 @@
             <mat-divider></mat-divider>
             
             <form [formGroup]="userForm">           
-                <div class="row" style="margin-top: 2rem;">
+                <div class="row pt-3">
                     <div class="col-md-4">
                         <mat-form-field appearance="outline" style="width: 100%;">
                             <mat-label>Name</mat-label>
@@ -76,8 +76,9 @@
             </form>
         </mat-card>
     </div>
-    <div class="col-md-3">
-        <mat-card>
+    <div class="col-md-4">
+        
+        <!-- <mat-card>
             <h3>User Roles🎖</h3>
             <mat-divider></mat-divider>
             <div *ngIf="authRole" class="row" style="margin-top: 2rem;">
@@ -123,6 +124,18 @@
                     </div>
                 </div>
             </div>
+        </mat-card> -->
+        <mat-card>
+            <h3>User Role</h3>
+            <mat-divider></mat-divider>
+            <div class="pt-3">
+                <ul style="list-style:none;">
+                    <li *ngFor="let role of roles">
+                        <mat-checkbox [checked]="checkTheBox(role.name)" (change)="setRole(role.id)">{{ role.name }}</mat-checkbox>
+                    </li>
+                </ul>
+            </div>
         </mat-card>
+
     </div>
 </div>

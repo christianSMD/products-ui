@@ -49,7 +49,7 @@ export class RegisterComponent implements OnInit {
         }
       });
     } else {
-      console.log("Form input invalid.");
+      alert("Form input invalid.");
     }
   }
 }

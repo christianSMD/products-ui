@@ -30,6 +30,7 @@ export class ProfileComponent implements OnInit {
   isActive = false;
   authRole: boolean = false;
   notFound: string = '';
+  
 
   constructor(
     public navbar: NavbarService, 
@@ -110,43 +111,37 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  setRole(e: any):void {
-    console.log(e);
-    this.newRole = e.value;
+  checkTheBox(role: string) {
+    const typeId = this.typesList.findIndex((types: any) => types.name == role);
+    const roleFound = this.userRoles.findIndex((userRoles: any)=> userRoles.type_id == typeId);
+    console.log(role + " --> " + roleFound);
+    if (roleFound == -1) {
+      return false;
+    }
+    return true;
+  }
+
+  setRole(type_id: string):void {
+    console.log(type_id);
+    this.newRole = type_id;
+    this.addRole();
   }
 
   addRole():void {
-    if (this.newRole == '') {
-      this.openSnackBar('⛔ Please select a role from the dropdown.', 'Okay');
-    } else {
-      let roleExists = false;
-      for (let index = 0; index < this.userRoles.length; index++) {
-        if (this.userRoles[index].type_id == this.newRole) {
-          roleExists = true;
-          break;
-        }
+    this.api.POST(`roles`, {
+      user_id: this.id,
+      type_id: this.newRole
+    }).subscribe({
+      next:(res)=> {
+        console.log(res);
+        this.addBtnText = "Add Role";
+        this.openSnackBar('Role added', 'Okay');
+        this.info.activity(`Added new role to ${this.user.name}`, 0);
+        this.getUserRoles();
+      }, error:(res)=> {
+        this.openSnackBar(res.message, 'Okay');
       }
-  
-      if (!roleExists) {
-        this.addBtnText = "Adding Role...";
-        this.api.POST(`roles`, {
-          user_id: this.id,
-          type_id: this.newRole
-        }).subscribe({
-          next:(res)=> {
-            console.log(res);
-            this.addBtnText = "Add Role";
-            this.openSnackBar('Role added', 'Okay');
-            this.info.activity(`Added new role to ${this.user.name}`, 0);
-            this.getUserRoles();
-          }, error:(res)=> {
-            this.openSnackBar(res.message, 'Okay');
-          }
-        });
-      } else {
-        this.openSnackBar('🤷‍♂️ Role already added.', 'Okay');
-      }
-    }
+    });
   }
 
   removeRole(id: number): void {
@@ -158,6 +153,7 @@ export class ProfileComponent implements OnInit {
         this.roleName('');
         this.deleting = false;
         this.info.activity(`Removed role from ${this.user.name}`, 0);
+        console.log("Removing role: ", res);
       }, error:(res)=>{
         console.log(res);
       }
