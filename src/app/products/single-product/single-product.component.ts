@@ -20,6 +20,7 @@ import { Product } from 'src/app/interfaces/product';
 import { map, Observable, startWith } from 'rxjs';
 import { LookupService } from 'src/app/services/lookup/lookup.service';
 import { ProductsService } from 'src/app/services/products/products.service';
+import pptxgen from "pptxgenjs";
 
 @Component({
   selector: 'app-single-product',
@@ -118,6 +119,7 @@ export class SingleProductComponent implements OnInit {
   series: any[] = [];
   newSeries: string;
   productSeries: any;
+  productBrand: any;
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -268,6 +270,8 @@ export class SingleProductComponent implements OnInit {
           this.id = this.product.id;
           const seriesType = this.typesList.find((x: Type) => x.id == this.product.family_grouping);
           this.productSeries = seriesType?.name;
+          const productBrand = this.typesList.find((x: Type) => x.id == this.product.brand_type_id);
+          this.productBrand  = productBrand?.name;
           if(res[0].verified == 1) {
             this.isVerified = true;
           }
@@ -1148,16 +1152,50 @@ export class SingleProductComponent implements OnInit {
   }
 
   presentation(): void {
-    this.api.POST('presentation', {
-      id: this.product.id
-    }).subscribe({
-      next:(res) => {
-        const id = parseInt(this.id);
-        this.info.activity('Presentation created', id);
-        this.openSnackBar('Presentation has been created ' , 'Okay')
-      }, error:(res)=>{
-        this.info.errorHandler(res);
-      }
+    // Create a Presentation
+    let pres = new pptxgen();
+
+    // Add a Slide to the presentation
+    let coverSlide = pres.addSlide();
+
+    const brand = this.productBrand.toLowerCase();
+    coverSlide.addImage({
+      path: `../../../assets/logos/${brand}.png`,
+      x: '25%', y: '9%', w: '50%', h: '80%',
     });
+
+    // Add a Slide to the presentation
+    let slide = pres.addSlide();
+
+    slide.addShape(pres.ShapeType.rect, {
+      fill: { type: "solid", color: "669999" },
+      x:0.0, y:0.0, w:'40%', h:'100%'
+    });
+
+    slide.addImage({
+      path: `https://images.smdtechnologies.co.za/uploads/${this.imageServerFiles[0]}`,
+      x: '50%', y: '9%', w: '40%', h: '70%',
+    });
+
+    const panelText = `
+      ${this.product.name}\n 
+      ${this.product.sku} \n 
+      ${this.productBrand} \n 
+      ${this.productSeries} \n
+    `;
+    
+    slide.addText(panelText, {
+        x: '1%', y: '10%', w: '40%', h: '40%',
+        margin: 0.5,
+        fontFace: "Arial",
+        fontSize: 9,
+        color: "FFFFFF",
+        bold: false,
+        isTextBox: true,
+    });
+
+    // 4. Save the Presentation
+    pres.writeFile({ fileName: `${this.product.name}-presentation.pptx` });
+
   }
 }
