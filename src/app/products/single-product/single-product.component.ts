@@ -1152,50 +1152,7 @@ export class SingleProductComponent implements OnInit {
   }
 
   presentation(): void {
-    // Create a Presentation
-    let pres = new pptxgen();
-
-    // Add a Slide to the presentation
-    let coverSlide = pres.addSlide();
-
-    const brand = this.productBrand.toLowerCase();
-    coverSlide.addImage({
-      path: `../../../assets/logos/${brand}.png`,
-      x: '25%', y: '9%', w: '50%', h: '80%',
-    });
-
-    // Add a Slide to the presentation
-    let slide = pres.addSlide();
-
-    slide.addShape(pres.ShapeType.rect, {
-      fill: { type: "solid", color: "669999" },
-      x:0.0, y:0.0, w:'40%', h:'100%'
-    });
-
-    slide.addImage({
-      path: `https://images.smdtechnologies.co.za/uploads/${this.imageServerFiles[0]}`,
-      x: '50%', y: '9%', w: '40%', h: '70%',
-    });
-
-    const panelText = `
-      ${this.product.name}\n 
-      ${this.product.sku} \n 
-      ${this.productBrand} \n 
-      ${this.productSeries} \n
-    `;
-    
-    slide.addText(panelText, {
-        x: '1%', y: '10%', w: '40%', h: '40%',
-        margin: 0.5,
-        fontFace: "Arial",
-        fontSize: 9,
-        color: "FFFFFF",
-        bold: false,
-        isTextBox: true,
-    });
-
-    // 4. Save the Presentation
-    pres.writeFile({ fileName: `${this.product.name}-presentation.pptx` });
-
+    this.api.presentation(this.product.id, this.linkedProductsIDs, this.productSeries, this.productBrand, this.productsList);
+    this.openSnackBar('Generating Presentation...', '');
   }
 }

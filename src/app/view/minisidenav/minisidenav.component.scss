@@ -2,30 +2,25 @@
   background-color: #ffffff;
   min-height: 200px;
   margin-top: -20px;
-  margin-left: -18px;
+  margin-left: 0px;
   margin-right: -25px;
-  padding: 1rem;
 }
 
 .menu-item {
   color: #C20F2F;
   text-transform: uppercase;
-  font-size: 15px;
   padding-top: 1rem;
-  background-color: #fafafa;
   margin-bottom: 4px;
   transition: all 0.5s;
 }
 
 .menu-item:hover {
 color: #d3526a;
-background-color: #fff2f2;
 }
 
 .menu-item:focus {
-background-color: #ffffff;
-border: #ffe1e7 solid 1px;
-color: #cf6276;
+background-color: #fff1f4;
+color: #FAFAFA;
 }
 
 mat-label {

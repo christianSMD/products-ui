@@ -11,19 +11,19 @@
         </div>
         <mat-selection-list #sideMenus [multiple]="false">
             <mat-list-option class="menu-item" routerLink="products/dashboard">
-                <mat-icon matListIcon>leaderboard</mat-icon>
+                <img src="../../../assets/icons/dashboard.png" height="40" width="40">
             </mat-list-option>
             <mat-divider></mat-divider>
             <mat-list-option class="menu-item" routerLink="/">
-                <mat-icon matListIcon>inventory</mat-icon>
+                <img src="../../../assets/icons/products.png" height="40" width="40">
             </mat-list-option>
             <mat-divider></mat-divider>
             <mat-list-option class="menu-item" routerLink="categories/manage">
-                <mat-icon matListIcon>account_tree</mat-icon>
+                <img src="../../../assets/icons/categories.png" height="40" width="40">
             </mat-list-option>
             <mat-divider></mat-divider>
             <mat-list-option class="menu-item" [matMenuTriggerFor]="usersMenu" *ngIf="authRole">
-                <mat-icon matListIcon>groups</mat-icon>
+                <img src="../../../assets/icons/users.png" height="40" width="40">
             </mat-list-option>
             <mat-menu #usersMenu="matMenu">
                 <button mat-menu-item routerLink="users/manage">
@@ -33,7 +33,7 @@
             </mat-menu>
             <mat-divider></mat-divider>
             <mat-list-option class="menu-item" routerLink="admin/settings" *ngIf="settingsRole">
-                <mat-icon matListIcon>settings_suggest</mat-icon>
+                <img src="../../../assets/icons/settings.png" height="40" width="40">
             </mat-list-option>
         </mat-selection-list>
     </div>

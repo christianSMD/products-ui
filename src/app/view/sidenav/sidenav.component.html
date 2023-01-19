@@ -15,34 +15,42 @@
         </div>
         <mat-selection-list #sideMenus [multiple]="false">
             <mat-list-option class="menu-item" routerLink="products/dashboard">
-                <mat-icon matListIcon>leaderboard</mat-icon>
-                <h3>Dashboard</h3>
+                <h3><img src="../../../assets/icons/dashboard.png" height="30" class="mx-2">Dashboard</h3>
             </mat-list-option>
             <mat-divider></mat-divider>
             <mat-list-option class="menu-item" routerLink="/">
-                <mat-icon matListIcon>inventory</mat-icon>
-                <h3>Products</h3>
+                <h3><img src="../../../assets/icons/products.png" height="30" class="mx-2">Products</h3>
             </mat-list-option>
             <mat-divider></mat-divider>
             <mat-list-option class="menu-item" routerLink="categories/manage">
-                <mat-icon matListIcon>account_tree</mat-icon>
-                <h3>Categories</h3>
+                <h3><img src="../../../assets/icons/categories.png" height="30" class="mx-2">Categories</h3>
             </mat-list-option>
             <mat-divider></mat-divider>
             <mat-list-option class="menu-item" [matMenuTriggerFor]="usersMenu" *ngIf="authRole">
-                <mat-icon matListIcon>groups</mat-icon>
-                <h3>Users</h3>
+                <h3><img src="../../../assets/icons/users.png" height="30" class="mx-2">Users</h3>
             </mat-list-option>
             <mat-menu #usersMenu="matMenu">
                 <button mat-menu-item routerLink="users/manage">
-                    <mat-icon matListIcon>group</mat-icon>
+                    <mat-icon matListIcon>manage_accounts</mat-icon>
                     <span>Manage Users</span>
                 </button>
             </mat-menu>
             <mat-divider></mat-divider>
+
+            <mat-list-option class="menu-item" [matMenuTriggerFor]="brandsMenu">
+                <h3><img src="../../../assets/icons/brands.png" height="30" class="mx-2">Brands</h3>
+            </mat-list-option>
+            <mat-menu #brandsMenu="matMenu">
+                <button mat-menu-item routerLink="brands/manage">
+                    <mat-icon matListIcon>settings</mat-icon>
+                    <span>Manage Brands</span>
+                </button>
+            </mat-menu>
+            <mat-divider></mat-divider>
+
+
             <mat-list-option class="menu-item" routerLink="admin/settings" *ngIf="settingsRole">
-                <mat-icon matListIcon>settings_suggest</mat-icon>
-                <h3>Settings</h3>
+                <h3><img src="../../../assets/icons/settings.png" height="30" class="mx-2">Settings</h3>
             </mat-list-option>
         </mat-selection-list>
         

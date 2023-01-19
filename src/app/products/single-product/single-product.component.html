@@ -18,7 +18,7 @@
                 <div class="col-md-4">
                   <mat-card>
                     <form [formGroup]="productForm">
-                      <strong>General Details</strong><br><br>
+                      <img src="../../../assets/icons/details.png" height="30" class="mx-2"> <strong> General Details</strong><hr> 
                       <mat-form-field appearance="outline" style="width: 90%;">
                         <mat-label>SKU</mat-label>
                         <input #sku matInput formControlName="sku" placeholder="Enter Product SKU">
@@ -63,7 +63,7 @@
                   </mat-card>
                   <br>
                   <mat-card>
-                    <strong>Regions </strong>🌐<br><br>            
+                    <img src="../../../assets/icons/regions.png" height="25" class="mx-2"> <strong>Regions </strong><hr>            
                     <form [formGroup]="regionsForm">
                       <ng-container formArrayName="regions">
                         <ng-container *ngFor="let x of regions.controls; let index = index">
@@ -86,7 +86,7 @@
                   </mat-card>
 
                   <mat-card *ngFor="let type of typesList | typeGroup : 'Design'" style="margin-top: 1rem;">
-                    <strong>{{ type.name }}</strong><br><br>
+                    <img src="../../../assets/icons/{{type.name}}.png" height="30" class="mx-2"> <strong> {{type.name}} </strong><hr>  
                     
                     <form *ngIf="type.id == 80" [formGroup]="shoutoutsForm">
                       <ng-container formArrayName="shoutouts">
@@ -164,7 +164,7 @@
             
                 <div class="col-md-8">
                   <mat-card>
-                    <strong>PDS Attributes</strong>
+                    <img src="../../../assets/icons/attributes.png" height="30" class="mx-2"> <strong> PDS Attributes</strong><hr> 
                     <mat-progress-bar color="accent" *ngIf="loadingPdsAttributes" mode="indeterminate"></mat-progress-bar>
                     <br><br>
                     <div *ngIf="!loadingPdsAttributes">
@@ -175,7 +175,7 @@
                   </mat-card>
 
                   <mat-card *ngIf="isBundle" style="margin-top: 2rem;">
-                    <strong>Linked Products</strong>
+                    <img src="../../../assets/icons/linked.png" height="30" class="mx-2"> <strong> Linked Products</strong><hr> 
                     <mat-progress-bar color="accent" *ngIf="bundleLoader" mode="indeterminate"></mat-progress-bar>
                     <br><br>
                     <mat-form-field appearance="outline" *ngFor="let sku of linkedProductSKUs" style="margin-bottom: 1rem; width: 50%;">
@@ -209,7 +209,7 @@
                   </mat-card>
 
                   <mat-card style="margin-top: 30px !important; height: auto;">
-                    <strong>Images</strong>
+                    <img src="../../../assets/icons/gallery.png" height="30" class="mx-2"> <strong> Images</strong><hr> 
                     <mat-progress-bar color="accent" *ngIf="loadingPdsAttributes" mode="indeterminate"></mat-progress-bar>
                     <br><br>
                     <div class="row">
@@ -251,7 +251,7 @@
                   </mat-card>
 
                   <mat-card style="margin-top: 30px !important; height: auto;">
-                    <!-- <strong>Image Server</strong><br><br> -->
+                    <img src="../../../assets/icons/gallery.png" height="30" class="mx-2"> <strong>More Images</strong><hr> 
                     <div class="row">
                       <!-- image server -->
                       <div class="col-md-3  p-3" *ngFor="let image of imageServerFiles;">
@@ -724,10 +724,10 @@
             </mat-list>
           </mat-card-content>          
           <div style="text-align: center;">
-            <button mat-raised-button color="primary" (click)="presentation()">Create Presentation</button>
+            <button mat-raised-button color="primary" (click)="presentation()"><img src="../../../assets/icons/presentation.png" height="40" class="mx-2"> Create Presentation</button>
           </div>
      
-          <mat-card-content>
+          <mat-card-content style="margin-top: 2rem;">
             <hr>
             <h3 style="text-align: center;">Histroy</h3>
             <table>

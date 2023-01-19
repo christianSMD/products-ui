@@ -4,6 +4,9 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {saveAs} from 'file-saver';
 import * as FileSaver from 'file-saver';
+import { Product } from 'src/app/interfaces/product';
+import pptxgen from "pptxgenjs";
+import { Type } from '@angular/compiler';
 
 @Injectable({
   providedIn: 'root'
@@ -85,6 +88,116 @@ export class ApiService {
       development: development,
       eol: eol,
     }, { responseType:'arraybuffer' })
+    
+  }
+
+  presentation (productId: number, linkedProducts: any[], series: string, brand: string, allProducts: Product[]) {
+
+    let pres = new pptxgen(); 
+    let coverSlide = pres.addSlide();
+    let overviewSlide = pres.addSlide();
+    const mainProduct: any = allProducts.find((p: Product) => p.id == productId);
+
+    coverSlide.addImage({
+      path: `../../../assets/logos/${brand.toLocaleLowerCase()}.png`,
+      x: '25%', y: '9%', w: '50%', h: '80%',
+    });
+
+    overviewSlide.addText(`${mainProduct.name}\n${mainProduct.description}`, {
+      x: '1%', y: '10%', w: '40%', h: '40%',
+      margin: 0.5,
+      fontFace: "Arial",
+      fontSize: 9,
+      color: "000000",
+      bold: false,
+      isTextBox: true,
+  });
+    
+
+    if (linkedProducts.length < 1) {
+
+      const product: any = allProducts.find((p: Product) => p.id == productId);
+      let slide = pres.addSlide();
+  
+      slide.addShape(pres.ShapeType.rect, {
+        fill: { type: "solid", color: "669999" },
+        x:0.0, y:0.0, w:'40%', h:'100%'
+      });
+    
+      this.pptSlideImages(product.sku, slide);
+    
+      const panelText = `
+        ${product.name}\n 
+        ${product.sku} \n 
+        ${series}
+      `;
+      
+      slide.addText(panelText, {
+          x: '1%', y: '10%', w: '40%', h: '40%',
+          margin: 0.5,
+          fontFace: "Arial",
+          fontSize: 9,
+          color: "FFFFFF",
+          bold: false,
+          isTextBox: true,
+      });
+    } else {
+
+      for (let index = 0; index < linkedProducts.length; index++) {
+        const product: any = allProducts.find((p: Product) => p.id == linkedProducts[index]);
+        let slide = pres.addSlide();
+  
+        slide.addShape(pres.ShapeType.rect, {
+          fill: { type: "solid", color: "669999" },
+          x:0.0, y:0.0, w:'40%', h:'100%'
+        });
+            
+        this.pptSlideImages(product.sku, slide);
+
+        const panelText = `
+          ${product.name}\n 
+          ${product.sku} \n 
+        `;
+        
+        slide.addText(panelText, {
+            x: '1%', y: '10%', w: '40%', h: '40%',
+            margin: 0.5,
+            fontFace: "Arial",
+            fontSize: 9,
+            color: "FFFFFF",
+            bold: false,
+            isTextBox: true,
+        });
+  
+      }
+
+    }
+    setTimeout(() => {
+      pres.writeFile({ fileName: `presentation.pptx` });
+    }, 6000);
+  }
+
+  public pptSlideImages(productSku: string, slide: any) {
+    
+    this.IMAGESERVERHIRES(productSku).subscribe({  
+      next:(res)=>{   
+        if(res.length > 0) {
+          for (let index = 0; index < res.length; index++) {
+            setTimeout(() => {
+              if (filename.endsWith(".png") || filename.endsWith(".jpg")) {
+                slide.addImage({
+                  path: `https://images.smdtechnologies.co.za/uploads/${filename}`,
+                  x: `50%`, y: '9%', h: '50%',
+                });
+              } 
+            }, 1000);
+            const filename: string = res[index].filename;
+          }
+        }
+      }, error:(res)=> {
+        console.log(res);
+      }
+    }); 
     
   }
 }
