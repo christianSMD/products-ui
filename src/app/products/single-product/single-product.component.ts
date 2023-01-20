@@ -21,6 +21,7 @@ import { map, Observable, startWith } from 'rxjs';
 import { LookupService } from 'src/app/services/lookup/lookup.service';
 import { ProductsService } from 'src/app/services/products/products.service';
 import pptxgen from "pptxgenjs";
+import { User } from 'src/app/interfaces/user';
 
 @Component({
   selector: 'app-single-product',
@@ -120,6 +121,11 @@ export class SingleProductComponent implements OnInit {
   newSeries: string;
   productSeries: any;
   productBrand: any;
+  productManager: string = "";
+  productManagerId: any;
+  brandManager: string = "";
+  users: User[] = [];
+  loadpProductManager: boolean = true;
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -279,7 +285,6 @@ export class SingleProductComponent implements OnInit {
             this.isBundle = true;
             this.getLinkedProducts();
           }
-          console.log('is bundle: ', res[0].type);
           this.media();
           this.documents();
           this.getProductCategories(this.id);
@@ -288,8 +293,8 @@ export class SingleProductComponent implements OnInit {
           this.getProductRegions(this.id);
           this.imageserver(sku);
           this.getDesigns(this.id);
+          this.getUsers();
           this.audit(this.id);
-
           this.productForm = this.formBuilder.group({
             sku : [{value: this.product.sku, disabled: true}, Validators.required],
             name : [this.product.name, Validators.required],
@@ -1154,5 +1159,55 @@ export class SingleProductComponent implements OnInit {
   presentation(): void {
     this.api.presentation(this.product.id, this.linkedProductsIDs, this.productSeries, this.productBrand, this.productsList);
     this.openSnackBar('Generating Presentation...', '');
+  }
+
+  getUsers() {
+    try {
+      this.api.GET('users').subscribe({
+        next:(res)=>{
+          this.users = res;
+          this.api.GET(`roles`).subscribe({
+            next:(res)=>{
+              const roles = res;
+              const role = roles.find((r: any) => r.type_id == 86 && r.product_id == this.id);
+              if(role) {
+                const manager = this.users.find((u: any) => u.id == role.user_id);
+                this.productManager = manager?.name + " " + manager?.surname;
+                this.productManagerId = manager?.id;
+                console.log(this.productManagerId);
+                this.loadpProductManager = false;
+              }
+            }, error:(res)=>{
+              console.log(res);
+            }
+          })
+          
+          this.loadpProductManager = false;
+        }, error:(res)=>{
+          this.loadpProductManager = false;
+          this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
+        }
+      });
+    } catch (error) {
+      this.loadpProductManager = false;
+    }
+    
+  }
+
+  selectUser(e: any) {
+    console.log(e);
+    const userId = e.value;
+    this.api.POST(`roles`, {
+      user_id: userId,
+      type_id: 86,
+      product_id: this.id
+    }).subscribe({
+      next:(res)=> {
+        this.openSnackBar('Product Manager updated', 'Okay');
+        this.info.activity(`Updated Product Manager`, 0);
+      }, error:(res)=> {
+        this.openSnackBar(res.message, 'Okay');
+      }
+    });
   }
 }

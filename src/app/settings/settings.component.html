@@ -5,11 +5,11 @@
     <div style="margin-top: 1rem;">
       <form name="myForm">
         <mat-form-field appearance="legacy" style="margin-right: 9px;">
-          <mat-label>New</mat-label>
+          <mat-label>New {{ g }}</mat-label>
           <input matInput [(ngModel)]="newType" name="newType" placeholder="{{ g }} Name" required>
         </mat-form-field>
         <button mat-stroked-button class="m-1" (click)="addNewType(g)">
-           Save
+           Add {{ g }}
         </button>
       </form>
     </div>
@@ -23,7 +23,7 @@
       </div>
     </mat-tab>
 
-    <mat-tab>
+    <!-- <mat-tab>
       <ng-template mat-tab-label>
         <mat-icon>phone_android</mat-icon> Mobile
       </ng-template>
@@ -32,7 +32,7 @@
           <img src='https://products.smdtechnologies.com/public/storage/files/mobile.jpg' width="100" alt="Photo">
           <hr>
         </div>
-      </mat-tab>
+      </mat-tab> -->
   </mat-tab-group>
 
   <mat-form-field appearance="legacy" color="primary" style="float: right; margin-right: 1rem;">

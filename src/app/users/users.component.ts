@@ -156,7 +156,6 @@ export class UsersComponent implements OnInit {
   }
 
   submit () {
-    console.log("Submitting...", this.userForm.value);
     if(this.userForm.valid) {
       this.api.POST('register', this.userForm.value).subscribe({
         next:(res)=>{

@@ -26,7 +26,7 @@ export class SettingsComponent implements OnInit {
   dataSource: MatTableDataSource<Type>;
   newType: string = "";
   groups: string[] = [];
-  groupsTabs: string[] = ['Brand', 'Series'];
+  groupsTabs: string[] = ['Brand', 'Series', 'Role', 'Title'];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -130,6 +130,8 @@ export class SettingsComponent implements OnInit {
           this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
         }
       });
+    } else {
+      this.openSnackBar(`${this.newType} already added.`, 'OKay');
     }
   }
 }

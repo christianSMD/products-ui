@@ -684,6 +684,15 @@
       <div class="text-muted">
         <mat-card>
           <mat-card-content>
+            <div style="text-align: center;">
+              <mat-form-field appearance="outline" style="width: 90%;">
+                <mat-label><span *ngIf="loadpProductManager">Loading </span>Product Manager</mat-label>
+                <mat-select matInput [(value)]="productManagerId" name="productManager" (selectionChange)="selectUser($event)"  [disabled]="!editRole">
+                  <mat-option *ngFor="let user of users" [value]="user.id">{{ user.name + " " + user.surname }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
             <mat-grid-list cols="3" rowHeight="100px">
               <mat-grid-tile colspan="3">
                 <mat-progress-spinner
@@ -694,9 +703,10 @@
               </mat-grid-tile>
             </mat-grid-list>
             <br>
-          <h3 style="text-align: center;">{{ progressPercentage() }}% Complete</h3>
-          <!-- <span *ngIf="isVerified" style="text-align: center;"> Verified</span> -->
-          <hr>
+            <div style="text-align: center;">
+              <h3>{{ progressPercentage() }}% Complete</h3>
+            </div>
+            <hr>
             <mat-list role="list">
               <mat-list-item role="listitem">
                 <mat-icon>check_circle</mat-icon> General Details
