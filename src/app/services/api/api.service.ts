@@ -182,12 +182,13 @@ export class ApiService {
     this.IMAGESERVERHIRES(productSku).subscribe({  
       next:(res)=>{   
         if(res.length > 0) {
+          let pos = 50;
           for (let index = 0; index < res.length; index++) {
             setTimeout(() => {
               if (filename.endsWith(".png") || filename.endsWith(".jpg")) {
                 slide.addImage({
                   path: `https://images.smdtechnologies.co.za/uploads/${filename}`,
-                  x: `50%`, y: '9%', h: '50%',
+                  x: `${pos + index}%`, y: '9%', w: '40%', h: '70%',
                 });
               } 
             }, 1000);

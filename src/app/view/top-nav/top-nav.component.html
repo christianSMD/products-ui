@@ -3,19 +3,21 @@
         <img src="../../../assets/img/smd.jpg" height="40">
     </span>
     
-    <button mat-icon-button (click)="openProfile()" class="user-button">
+    <button mat-icon-button matTooltip="{{userName}}" (click)="openProfile()" class="user-button">
         <mat-icon>person_pin</mat-icon>
     </button>
     
     <span class="nav-spacer"></span>
 
     <!-- routerLink= -->
-    <mat-form-field appearance="legacy" color="primary" class="search">
-        <mat-label>Search</mat-label>
-        <input matInput placeholder="Search Product" [(ngModel)]="q">
-        <mat-icon matSuffix (click)="search()">search</mat-icon>
-    </mat-form-field>    
-
+    <form>
+        <mat-form-field appearance="legacy" color="primary" class="search">
+            <mat-label>Search</mat-label>
+            <input matInput placeholder="Search Product" [(ngModel)]="q">
+            <mat-icon type="submit" matSuffix (click)="search()">search</mat-icon>
+        </mat-form-field>   
+    </form>
+     
     <!-- <button mat-icon-button (click)="logout()" class="logout-button">
         <mat-icon>logout</mat-icon> Logout
     </button> -->

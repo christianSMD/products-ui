@@ -113,12 +113,12 @@ export class ProfileComponent implements OnInit {
 
   checkTheBox(role: string) {
     const typeId = this.typesList.findIndex((types: any) => types.name == role);
-    const roleFound = this.userRoles.findIndex((userRoles: any)=> userRoles.type_id == typeId);
-    console.log(role + " --> " + roleFound);
+    const roleFound = this.userRoles.findIndex((userRoles: any)=> userRoles.type_id == typeId + 1);
     if (roleFound == -1) {
       return false;
+    } else {
+      return true;
     }
-    return true;
   }
 
   setRole(type_id: string):void {

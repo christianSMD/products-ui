@@ -7,19 +7,19 @@
   <p>Products</p>
 
   <div class="row">
-    <div class="col-12 col-ms-12 col-md-5 col-lg-2">
-      <button *ngIf="addProductRole" mat-raised-button class="p-2" style="width: 100%;" [routerLink]="['add/new', 'product']" >
+    <div *ngIf="addProductRole" class="col-12 col-ms-12 col-md-5 col-lg-2">
+      <button mat-raised-button class="p-2" style="width: 100%;" [routerLink]="['add/new', 'product']" >
         <img src="../../../assets/icons/new-product.png" height="35"> New Product
       </button>
     </div>
-    <div class="col-12 col-ms-12 col-md-5 col-lg-2">
+    <div *ngIf="addProductRole" class="col-12 col-ms-12 col-md-5 col-lg-2">
       <!-- (click)="showPamphletCheckboxes()" -->
-      <button *ngIf="addProductRole" mat-raised-button class="p-2" style="width: 100%;" [routerLink]="['add/new', 'linked-product']" >
+      <button mat-raised-button class="p-2" style="width: 100%;" [routerLink]="['add/new', 'linked-product']" >
         <img src="../../../assets/icons/linked-products.png" height="35"> Create Bundle
       </button>
     </div>
     <div class="col-12 col-ms-12 col-md-5 col-lg-2">
-      <button  mat-raised-button class="p-2" style="width: 100%;" [routerLink]="['add/new', 'presentation']" >
+      <button mat-raised-button class="p-2" style="width: 100%;" [routerLink]="['add/new', 'presentation']" >
         <img src="../../../assets/icons/presentation.png" height="35"> Create Presentation
       </button>
     </div>
