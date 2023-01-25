@@ -1,4 +1,5 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -14,6 +15,7 @@ import { NavbarService } from 'src/app/services/navbar/navbar.service';
 import { ProductsService } from 'src/app/services/products/products.service';
 import { SidenavService } from 'src/app/services/sidenav/sidenav.service';
 import { TreeService } from 'src/app/services/tree/tree.service';
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-brands',
@@ -36,7 +38,22 @@ export class BrandsComponent implements OnInit {
   productsList: Product[] = [];
   adminRole: boolean = false;
   brandManagerRole: boolean = false;
-
+  singleBrand: boolean = false;
+  currentBrand: string = "";
+  currentId: number;
+  focusType: string = '47';
+  files: any[] = []
+  mediaFiles: any[] = [];
+  imageServerFiles: any[] = [];
+  documentFiles: any[] = [];
+  messages: string[] = [];
+  uploadProgress = 0;
+  uploadProgressBar = 'width:0%;height:20px';
+  loading: boolean = false;
+  uploadRole: boolean = false;
+  detailProgress: number = 0;
+  today = new Date();
+  
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -63,6 +80,7 @@ export class BrandsComponent implements OnInit {
     this.getRoles();
     this.brandManagerRole = this.info.role(87);
     this.adminRole = this.info.role(90);
+    this.uploadRole = this.info.role(57);
   }
 
   getAllTypes(): void {
@@ -223,6 +241,80 @@ export class BrandsComponent implements OnInit {
 
   selectBrand(brand: String): void {
     this.router.navigate(['/brand', brand.toLowerCase()]);
+  }
+
+  editSingleBrand (brand_type_id: number, brandName: string) {
+    this.currentBrand = brandName;
+    this.currentId = brand_type_id;
+    this.singleBrand = !this.singleBrand;
+  }
+
+  setFocusType(event: any): void {
+    this.focusType = event.target.value;
+  }
+
+  onChange(event: any): void {
+    this.files = event.target.files;
+    for(let x = 0; x < this.files.length; x ++) {
+      if(this.files[x].size > 2000000) {
+        const msg = "🚫 " + this.files[x].name + " is too large!";
+        this.messages.push(msg);
+      }
+    }
+  }
+
+  uploadDocument(fileTypeId: string, type: String): void {
+    this.loading = !this.loading;
+    if (this.files.length > 0) {
+      for(let x = 0; x < this.files.length; x ++) {
+        this.api.upload('upload-document', {
+          file: this.files[x],
+          name: this.files[x].name,
+          product_id: this.currentId,
+          product_sku: "",
+          type_id: fileTypeId,
+          type: type,
+          permissions: "",
+          expiry_date: ""
+        }).subscribe(
+          (event: any) => {
+            if (typeof (event) === 'object') {
+              this.loading = false; 
+            }
+            if (event.type === HttpEventType.UploadProgress) {
+              this.uploadProgress = Math.round(100 * event.loaded / event.total);
+              this.uploadProgressBar = `width:${this.uploadProgress}%;height:10px`;
+            } else if (event instanceof HttpResponse) {
+              const msg = this.files[x].name + ' ploaded the file successfully.';
+              this.info.activity(`${this.files[x].name} uploaded`, this.currentId);
+              this.messages.push(msg);
+            } 
+            this.documents();
+          }, (err: any) => {
+            this.info.errorHandler(err);
+            this.uploadProgress = 0;
+            const msg = '' + this.files[x].name + ' could not upload the file: ';
+            this.messages.push(msg);
+          }
+        );
+      } 
+    } else {
+      this.openSnackBar('Please select files', 'Okay')
+      this.loading = false;
+    }
+  }
+
+  documents(): void {
+    this.api.GET(`product-document-files/${this.currentId}`).subscribe({
+      next:(res)=>{
+        if(res.length > 0) {
+          this.detailProgress++;
+          this.documentFiles = res;
+        }
+      }, error:(res)=> {
+        console.log(res);
+      }
+    });
   }
 
 }
