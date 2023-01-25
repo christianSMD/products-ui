@@ -20,8 +20,18 @@
   left: 118px;
 }
 
+#menu-button {
+  color: #ffffff;
+}
+
 .sidebar-toggler{
   margin-bottom: -85px;
+}
+
+mat-drawer {
+  -webkit-box-shadow: 3px -2px 17px -1px rgba(0,0,0,0.75);
+  -moz-box-shadow: 3px -2px 17px -1px rgba(0,0,0,0.75);
+  box-shadow: 3px -2px 17px -1px rgba(0,0,0,0.75);
 }
 
 .sidenav {

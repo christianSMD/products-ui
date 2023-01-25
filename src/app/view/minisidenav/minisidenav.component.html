@@ -10,20 +10,20 @@
             <!-- <img src="./../../../assets/img/user.png" routerLink="users/manage" height="35"> -->
         </div>
         <mat-selection-list #sideMenus [multiple]="false">
-            <mat-list-option class="menu-item" routerLink="products/dashboard">
+            <!-- <mat-list-option class="menu-item" routerLink="products/dashboard">
                 <img matTooltip="Dashboard" src="../../../assets/icons/dashboard.png" height="40" width="40">
-            </mat-list-option>
+            </mat-list-option> -->
             
             <mat-list-option class="menu-item" routerLink="/">
-                <img matTooltip="Products" src="../../../assets/icons/products.png" height="40" width="40">
+                <img matTooltip="Products" src="../../../assets/icons/box.png" height="33" width="33">
             </mat-list-option>
             
             <mat-list-option class="menu-item" routerLink="categories/manage">
-                <img matTooltip="Categories" src="../../../assets/icons/categories.png" height="40" width="40">
+                <img matTooltip="Categories" src="../../../assets/icons/categories.png" height="33" width="33">
             </mat-list-option>
             
             <mat-list-option class="menu-item" [matMenuTriggerFor]="usersMenu" *ngIf="authRole">
-                <img matTooltip="Users" src="../../../assets/icons/users.png" height="40" width="40">
+                <img matTooltip="Users" src="../../../assets/icons/users.png" height="33" width="33">
             </mat-list-option>
             <mat-menu #usersMenu="matMenu">
                 <button mat-menu-item routerLink="users/manage">
@@ -33,11 +33,11 @@
             </mat-menu>
 
             <mat-list-option class="menu-item" routerLink="brands/manage-brands">
-                <img matTooltip="Brands" src="../../../assets/icons/brands.png" height="40" width="40">
+                <img matTooltip="Brands" src="../../../assets/icons/brands.png" height="33" width="33">
             </mat-list-option>
             
             <mat-list-option class="menu-item" routerLink="admin/settings" *ngIf="settingsRole">
-                <img matTooltip="Settings" src="../../../assets/icons/settings.png" height="40" width="40">
+                <img matTooltip="Settings" src="../../../assets/icons/settings.png" height="33" width="33">
             </mat-list-option>
         </mat-selection-list>
     </div>
