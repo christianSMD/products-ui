@@ -13,15 +13,15 @@
             <mat-list-option class="menu-item" routerLink="products/dashboard">
                 <img matTooltip="Dashboard" src="../../../assets/icons/dashboard.png" height="40" width="40">
             </mat-list-option>
-            <mat-divider></mat-divider>
+            
             <mat-list-option class="menu-item" routerLink="/">
                 <img matTooltip="Products" src="../../../assets/icons/products.png" height="40" width="40">
             </mat-list-option>
-            <mat-divider></mat-divider>
+            
             <mat-list-option class="menu-item" routerLink="categories/manage">
                 <img matTooltip="Categories" src="../../../assets/icons/categories.png" height="40" width="40">
             </mat-list-option>
-            <mat-divider></mat-divider>
+            
             <mat-list-option class="menu-item" [matMenuTriggerFor]="usersMenu" *ngIf="authRole">
                 <img matTooltip="Users" src="../../../assets/icons/users.png" height="40" width="40">
             </mat-list-option>
@@ -31,7 +31,11 @@
                     <span>Manage Users</span>
                 </button>
             </mat-menu>
-            <mat-divider></mat-divider>
+
+            <mat-list-option class="menu-item" routerLink="brands/manage-brands">
+                <img matTooltip="Brands" src="../../../assets/icons/brands.png" height="40" width="40">
+            </mat-list-option>
+            
             <mat-list-option class="menu-item" routerLink="admin/settings" *ngIf="settingsRole">
                 <img matTooltip="Settings" src="../../../assets/icons/settings.png" height="40" width="40">
             </mat-list-option>

@@ -22,6 +22,7 @@ import { LookupService } from 'src/app/services/lookup/lookup.service';
 import { ProductsService } from 'src/app/services/products/products.service';
 import pptxgen from "pptxgenjs";
 import { User } from 'src/app/interfaces/user';
+import { MatGridTileHeaderCssMatStyler } from '@angular/material/grid-list';
 
 @Component({
   selector: 'app-single-product',
@@ -126,6 +127,7 @@ export class SingleProductComponent implements OnInit {
   brandManager: string = "";
   users: User[] = [];
   loadpProductManager: boolean = true;
+  adminRole: boolean = false;
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -155,6 +157,7 @@ export class SingleProductComponent implements OnInit {
     this.detailProgress = 0;
     this.editRole = this.info.role(56);
     this.uploadRole = this.info.role(57);
+    this.adminRole = this.info.role(90);
     this.viewAllProductsRole = this.info.role(68);
     this.storageUrl = this.api.getStorageUrl();
     this.navbar.show();
@@ -1200,7 +1203,8 @@ export class SingleProductComponent implements OnInit {
     this.api.POST(`roles`, {
       user_id: userId,
       type_id: 86,
-      product_id: this.id
+      product_id: this.id,
+      brand_id: 0
     }).subscribe({
       next:(res)=> {
         this.openSnackBar('Product Manager updated', 'Okay');

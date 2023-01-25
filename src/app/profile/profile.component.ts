@@ -103,7 +103,7 @@ export class ProfileComponent implements OnInit {
     this.api.GET('types').subscribe({
       next:(res)=>{
         this.typesList = res;
-        this.roles = res.filter(item => item.grouping == 'Role');
+        this.roles = res.filter(item => item.grouping == 'Role' || item.grouping == 'Title');
         console.log('Roles', this.roles);
       }, error:(res)=>{
         console.log(res);
@@ -112,25 +112,36 @@ export class ProfileComponent implements OnInit {
   }
 
   checkTheBox(role: string) {
-    const typeId = this.typesList.findIndex((types: any) => types.name == role);
-    const roleFound = this.userRoles.findIndex((userRoles: any)=> userRoles.type_id == typeId + 1);
-    if (roleFound == -1) {
+    try {
+      const typeId = this.typesList.findIndex((types: any) => types.name == role);
+      const roleFound = this.userRoles.findIndex((userRoles: any)=> userRoles.type_id == typeId + 1);
+      if (roleFound == -1) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch (error) {
       return false;
-    } else {
-      return true;
     }
+    
   }
 
-  setRole(type_id: string):void {
-    console.log(type_id);
+  setRole(e: any, type_id: string):void {
+    console.log(e);
     this.newRole = type_id;
-    this.addRole();
+    if(e.checked) {
+      this.addRole();
+    } else {
+      this.removeRole(this.id, type_id);
+    }
   }
 
   addRole():void {
     this.api.POST(`roles`, {
       user_id: this.id,
-      type_id: this.newRole
+      type_id: this.newRole,
+      product_id: 0,
+      brand_id: 0
     }).subscribe({
       next:(res)=> {
         console.log(res);
@@ -144,9 +155,11 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  removeRole(id: number): void {
+  removeRole(userId: string, type_id: string): void {
     this.deleting = true;
-    this.api.GET(`roles/delete/${id}`).subscribe({
+    const findRole = this.userRoles.find((r: any) => r.type_id == type_id && r.user_id == userId);
+    const roleId = findRole.id;
+    this.api.GET(`roles/delete/${roleId}`).subscribe({
       next:(res)=>{
         this.typesList = res;
         this.getUserRoles();

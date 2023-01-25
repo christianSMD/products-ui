@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { BrandsComponent } from './brands/brands.component';
 import { CategoriesComponent } from './categories/categories.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ExportCSVComponent } from './export/export-csv/export-csv.component';
@@ -19,7 +20,8 @@ const routes: Routes = [
   { path: 'products/export', component: ExportComponent },
   { path: 'products/export-csv', component: ExportCSVComponent },
   { path: 'products/dashboard', component: DashboardComponent },
-  { path: 'series/:series', component:  SeriesComponent}
+  { path: 'series/:series', component:  SeriesComponent},
+  { path: 'brands/manage-brands', component:  BrandsComponent}
 ];
 
 @NgModule({

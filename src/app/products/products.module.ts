@@ -40,6 +40,7 @@ import { ExportCSVComponent } from './export/export-csv/export-csv.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SeriesComponent } from './series/series.component';
 import { CommonModuleModule } from '../common-module/common-module.module';
+import { BrandsComponent } from './brands/brands.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,8 @@ import { CommonModuleModule } from '../common-module/common-module.module';
     ExportComponent,
     ExportCSVComponent,
     DashboardComponent,
-    SeriesComponent
+    SeriesComponent,
+    BrandsComponent
   ],
   imports: [
     CommonModule,

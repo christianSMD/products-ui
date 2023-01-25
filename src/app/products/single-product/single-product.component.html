@@ -687,7 +687,7 @@
             <div style="text-align: center;">
               <mat-form-field appearance="outline" style="width: 90%;">
                 <mat-label><span *ngIf="loadpProductManager">Loading </span>Product Manager</mat-label>
-                <mat-select matInput [(value)]="productManagerId" name="productManager" (selectionChange)="selectUser($event)"  [disabled]="!editRole">
+                <mat-select matInput [(value)]="productManagerId" name="productManager" (selectionChange)="selectUser($event)"  [disabled]="!adminRole">
                   <mat-option *ngFor="let user of users" [value]="user.id">{{ user.name + " " + user.surname }}</mat-option>
                 </mat-select>
               </mat-form-field>

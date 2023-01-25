@@ -37,19 +37,12 @@
             </mat-menu>
             <mat-divider></mat-divider>
 
-            <mat-list-option class="menu-item" [matMenuTriggerFor]="brandsMenu">
+            <mat-list-option class="menu-item" routerLink="brands/manage-brands">
                 <h3><img src="../../../assets/icons/brands.png" height="30" class="mx-2">Brands</h3>
             </mat-list-option>
-            <mat-menu #brandsMenu="matMenu">
-                <button mat-menu-item routerLink="brands/manage">
-                    <mat-icon matListIcon>settings</mat-icon>
-                    <span>Manage Brands</span>
-                </button>
-            </mat-menu>
             <mat-divider></mat-divider>
 
-
-            <mat-list-option class="menu-item" routerLink="admin/settings" *ngIf="settingsRole">
+            <mat-list-option class="menu-item" routerLink="admin/settings" *ngIf="settingsRole || adminRole">
                 <h3><img src="../../../assets/icons/settings.png" height="30" class="mx-2">Settings</h3>
             </mat-list-option>
         </mat-selection-list>

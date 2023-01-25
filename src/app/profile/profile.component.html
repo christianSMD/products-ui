@@ -83,7 +83,7 @@
             <div class="pt-3">
                 <ul style="list-style:none;">
                     <li *ngFor="let role of roles">
-                        <mat-checkbox [checked]="checkTheBox(role.name)" (change)="setRole(role.id)">{{ role.name }}</mat-checkbox>
+                        <mat-checkbox [checked]="checkTheBox(role.name)" (change)="setRole($event, role.id)">{{ role.name }}</mat-checkbox>
                     </li>
                 </ul>
             </div>
