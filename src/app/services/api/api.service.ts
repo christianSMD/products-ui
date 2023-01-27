@@ -98,10 +98,13 @@ export class ApiService {
     let overviewSlide = pres.addSlide();
     const mainProduct: any = allProducts.find((p: Product) => p.id == productId);
 
-    coverSlide.addImage({
-      path: `../../../assets/logos/${brand.toLocaleLowerCase()}.png`,
-      x: '25%', y: '9%', w: '50%', h: '80%',
-    });
+    if(brand) {
+      coverSlide.addImage({
+        path: `../../../assets/logos/${brand.toLocaleLowerCase()}.png`,
+        x: '25%', y: '9%', w: '50%', h: '80%',
+      });
+    }
+    
 
     overviewSlide.addText(`${mainProduct.name}\n${mainProduct.description}`, {
       x: '1%', y: '10%', w: '40%', h: '40%',
@@ -199,6 +202,6 @@ export class ApiService {
         console.log(res);
       }
     }); 
-    
   }
+
 }

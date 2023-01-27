@@ -25,38 +25,41 @@
                       </mat-form-field>
                       <mat-form-field appearance="outline" style="width: 90%;">
                         <mat-label>Product Name</mat-label>
-                        <input #name matInput formControlName="name" placeholder="Enter Product Name">
+                        <input #name matInput formControlName="name" placeholder="Enter Product Name" [readonly]="!editRole">
                       </mat-form-field>
                       <mat-form-field appearance="outline" style="width: 90%;">
                         <mat-label>Product Brand</mat-label>
                         <mat-select #brand matInput formControlName="brand_type_id">
-                          <mat-option *ngFor="let type of typesList | typeGroup : 'Brand'" value="{{ type.id }}">{{ type.name }}</mat-option>
+                          <mat-option *ngFor="let type of typesList | typeGroup : 'Brand'" value="{{ type.id }}" [disabled]="!editRole">{{ type.name }}</mat-option>
                         </mat-select>
                       </mat-form-field>
                       <mat-form-field appearance="outline" style="width: 90%;">
                         <mat-label>Series</mat-label>
-                        <input #family_grouping matInput [formControl]="autocompleteControl1" [matAutocomplete]="auto" placeholder="Enter Series" value="{{ productSeries }}">
+                        <input #family_grouping matInput [formControl]="autocompleteControl1" [matAutocomplete]="auto" placeholder="Enter Series" value="{{ productSeries }}" [(ngModel)]="newSeriesType" [readonly]="!editRole">
                         <mat-autocomplete (optionSelected)="addSeries($event)" #auto="matAutocomplete">
                           <mat-option *ngFor="let option of filteredSeries | async" [value]="option">
                             {{option}}
                           </mat-option>
                         </mat-autocomplete>
+                        <mat-icon class="save-icon" matSuffix matTooltip="Save series" (click)="addNonExistingType()">check_circle_outline</mat-icon>
                       </mat-form-field>
                       <strong>Description</strong><br><br>
                       <mat-form-field style="width: 90%;" appearance="outline">
                         <mat-label>Short Description</mat-label>
-                        <textarea #short_description rows="7" matInput formControlName="short_description" placeholder="Enter short product description"></textarea>
+                        <textarea #short_description rows="7" matInput formControlName="short_description" placeholder="Enter short product description" [readonly]="!editRole"></textarea>
                       </mat-form-field>
                       <mat-form-field style="width: 90%;" appearance="outline">
                         <mat-label>Description</mat-label>
-                        <textarea #description rows="15" matInput formControlName="description" placeholder="Enter product description..."></textarea>
+                        <textarea #description rows="15" matInput formControlName="description" placeholder="Enter product description..." [readonly]="!editRole"></textarea>
                       </mat-form-field>
                       <br>
                       <div style="padding-left: 1rem;">
-                        <mat-checkbox #is_in_development formControlName="is_in_development">Is In Development</mat-checkbox><br>
-                        <mat-checkbox #is_eol formControlName="is_eol">Is EOL</mat-checkbox><br>
-                        <mat-checkbox #is_active formControlName="is_active">Is Active</mat-checkbox><hr>
-                        <mat-checkbox #verified formControlName="verified">Verified</mat-checkbox><hr>
+                        <mat-checkbox #is_in_development formControlName="is_in_development" [disabled]="!editRole">Is In Development</mat-checkbox><br>
+                        <mat-checkbox #is_eol formControlName="is_eol" [disabled]="!editRole">Is EOL</mat-checkbox><br>
+                        <mat-checkbox #is_active formControlName="is_active" [disabled]="!editRole">Is Active</mat-checkbox><hr>
+                        <mat-checkbox [disabled]="productManagerId == 0" #verified formControlName="verified">Verified</mat-checkbox><br>
+                        <span *ngIf="productManagerId == 0"><i class="text-muted">Product Manager is needed to verify this product</i></span>
+                        <hr>
                         <button mat-raised-button [disabled]="!productForm.dirty" *ngIf="editRole" type="submit" color="primary" (click)="updateProduct()">Save Changes</button>
                       </div>
                     </form>
@@ -70,15 +73,14 @@
                             <div [formGroupName]="index">
                               <mat-form-field appearance="outline" style="width: 90%;">
                                 <mat-label>Product Region</mat-label>
-                                
                                 <mat-select #regionField matInput formControlName="regionField">
-                                  <mat-option *ngFor="let type of typesList | typeGroup : 'Region'" value="{{ type.id }}">{{ type.name }}</mat-option>
+                                  <mat-option *ngFor="let type of typesList | typeGroup : 'Region'" value="{{ type.id }}" [disabled]="!editRole">{{ type.name }}</mat-option>
                                 </mat-select>
                               </mat-form-field>            
                             </div>
                         </ng-container>
                       </ng-container>
-                      <button mat-raised-button type="button" (click)="addRegion()" style="margin-left: 1rem;">
+                      <button mat-raised-button type="button" (click)="addRegion()" style="margin-left: 1rem;" *ngIf="editRole">
                         Add Region
                       </button>
                       <button mat-raised-button type="submit" *ngIf="editRole" [disabled]="!regionsForm.dirty" color="primary" (click)="updateRegion()" style="margin-left: 1rem;">Save Region</button>
@@ -87,20 +89,19 @@
 
                   <mat-card *ngFor="let type of typesList | typeGroup : 'Design'" style="margin-top: 1rem;">
                     <img src="../../../assets/icons/{{type.name}}.png" height="30" class="mx-2"> <strong> {{type.name}} </strong><hr>  
-                    
                     <form *ngIf="type.id == 80" [formGroup]="shoutoutsForm">
                       <ng-container formArrayName="shoutouts">
                         <ng-container *ngFor="let x of shoutouts.controls; let index = index">
                             <div [formGroupName]="index">
                               <mat-form-field appearance="outline" style="width: 90%;">
                                 <mat-label>{{ type.name }}:</mat-label>
-                                <input matInput #designField type="text" formControlName="designField" placeholder="" required>
-                                <mat-icon matSuffix (click)="removeDesign(index, type.id)">delete</mat-icon>
+                                <input matInput #designField type="text" formControlName="designField" placeholder="" [readonly]="!editRole" required>
+                                <mat-icon *ngIf="editRole" matSuffix (click)="removeDesign(index, type.id)">delete</mat-icon>
                               </mat-form-field>              
                             </div>
                         </ng-container>
                       </ng-container>
-                      <button mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
+                      <button *ngIf="editRole" mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
                         Add New
                       </button>
                       <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;">Save</button>
@@ -112,13 +113,13 @@
                             <div [formGroupName]="index">
                               <mat-form-field appearance="outline" style="width: 90%;">
                                 <mat-label>{{ type.name }}:</mat-label>
-                                <input matInput type="text" formControlName="designField" placeholder="" required>
-                                <mat-icon matSuffix (click)="removeDesign(index, type.id)">delete</mat-icon>
+                                <input matInput type="text" formControlName="designField" placeholder="" [readonly]="!editRole" required>
+                                <mat-icon matSuffix *ngIf="editRole" (click)="removeDesign(index, type.id)">delete</mat-icon>
                               </mat-form-field>              
                             </div>
                         </ng-container>
                       </ng-container>
-                      <button mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
+                      <button *ngIf="editRole" mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
                         Add New
                       </button>
                       <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;">Save</button>
@@ -130,13 +131,13 @@
                             <div [formGroupName]="index">
                               <mat-form-field appearance="outline" style="width: 90%;">
                                 <mat-label>{{ type.name }}:</mat-label>
-                                <input matInput type="text" formControlName="designField" placeholder="" required>
-                                <mat-icon matSuffix (click)="removeDesign(index, type.id)">delete</mat-icon>
+                                <input matInput type="text" formControlName="designField" placeholder="" [readonly]="!editRole" required>
+                                <mat-icon *ngIf="editRole" matSuffix (click)="removeDesign(index, type.id)">delete</mat-icon>
                               </mat-form-field>              
                             </div>
                         </ng-container>
                       </ng-container>
-                      <button mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
+                      <button *ngIf="editRole" mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
                         Add New
                       </button>
                       <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;">Save</button>
@@ -148,13 +149,13 @@
                             <div [formGroupName]="index">
                               <mat-form-field appearance="outline" style="width: 90%;">
                                 <mat-label>{{ type.name }}:</mat-label>
-                                <input matInput type="text" formControlName="designField" placeholder="" required>
-                                <mat-icon matSuffix (click)="removeDesign(index, type.id)">delete</mat-icon>
+                                <input matInput type="text" formControlName="designField" placeholder="" [readonly]="!editRole" required>
+                                <mat-icon *ngIf="editRole" matSuffix (click)="removeDesign(index, type.id)">delete</mat-icon>
                               </mat-form-field>              
                             </div>
                         </ng-container>
                       </ng-container>
-                      <button mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
+                      <button *ngIf="editRole" mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
                         Add New
                       </button>
                       <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;">Save</button>
@@ -180,7 +181,7 @@
                     <br><br>
                     <mat-form-field appearance="outline" *ngFor="let sku of linkedProductSKUs" style="margin-bottom: 1rem; width: 50%;">
                       <input type="text" placeholder="Search SKU" aria-label="Number" matInput value="{{sku}}" readonly>
-                      <mat-icon matSuffix (click)="removeFromBundle(sku)" style="color:#545454;">delete</mat-icon>
+                      <mat-icon *ngIf="editRole" matSuffix (click)="removeFromBundle(sku)" style="color:#545454;">delete</mat-icon>
                       <mat-hint><a target="_blank" href="https://products.smdtechnologies.com/{{sku}}">View this product</a></mat-hint>
                     </mat-form-field>
 
@@ -277,13 +278,12 @@
             </div>
             
           </mat-tab>
-          <mat-tab label="Categories">
+          <mat-tab label="Additional Categories">
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <mat-card style="background-color: rgb(255, 255, 255);">
                 <form>
                   <div class="row form-border">
                     <div class="col-md-6">
-  
                       <section class="categories-section">
                         <ul>
                           <li class="categories-list" *ngFor="let category of categoriesList | parent: '0'" >
@@ -328,7 +328,7 @@
     
                     </div>
                     <div class="col-md-6">
-                      <button mat-raised-button type="submit" color="primary" (click)="saveCategories()">Save Categories</button>
+                      <button mat-raised-button type="submit" color="primary" (click)="saveCategories()" [disabled]="editRole">Save Changes</button>
                     </div>
                   </div>
                 </form>
@@ -345,14 +345,12 @@
                             <mat-grid-list cols="3" rowHeight="80px">
                                 <mat-grid-tile>
                                     <mat-form-field appearance="outline" style="width: 100%;">
-                                        <!-- <mat-label>Attribute Name</mat-label> -->
-                                        <input matInput id="attrName" type="text" formControlName="attrName" placeholder="Enter Value" required>
+                                        <input matInput id="attrName" type="text" formControlName="attrName" placeholder="Enter Value" [readonly]="!editRole" required>
                                     </mat-form-field>
                                 </mat-grid-tile>
                                 <mat-grid-tile>
                                     <mat-form-field appearance="outline" style="width: 100%;">
-                                        <!-- <mat-label>Attribute Value</mat-label> -->
-                                        <input matInput id="attrValue" type="text" formControlName="attrValue" placeholder="Enter Value" required>
+                                        <input matInput id="attrValue" type="text" formControlName="attrValue" placeholder="Enter Value" [readonly]="!editRole" required>
                                     </mat-form-field>
                                 </mat-grid-tile>
                                 <mat-grid-tile>
@@ -362,7 +360,7 @@
                         </div>
                     </ng-container>
                   </ng-container>
-                  <button mat-raised-button type="button" color="accent" (click)="addNewAttribute()" style="margin-left: 1rem;">
+                  <button mat-raised-button type="button" *ngIf="editRole" color="accent" (click)="addNewAttribute()" style="margin-left: 1rem;">
                     <mat-icon>add_circle_outline</mat-icon>
                     Add Attribute
                   </button>
@@ -379,7 +377,7 @@
                     <div class="col-md-6">
                       <mat-form-field appearance="outline">
                         <mat-label>Choose Packaging Type:</mat-label>
-                        <mat-select name="packaging_type_id" formControlName="packaging_type_id">
+                        <mat-select name="packaging_type_id" formControlName="packaging_type_id" [disabled]="!editRole">
                             <mat-option [value]="type.id" *ngFor="let type of typesList | typeGroup : 'Packaging'">
                                 {{ type.name }}
                             </mat-option>
@@ -387,29 +385,29 @@
                       </mat-form-field>
                       <mat-form-field appearance="outline">
                         <mat-label>Weight (KG)</mat-label>
-                        <input matInput formControlName="weight" placeholder="Enter Product Weight">
+                        <input matInput formControlName="weight" placeholder="Enter Product Weight" [readonly]="!editRole">
                         <mat-icon matSuffix>fitness_center</mat-icon>
                       </mat-form-field>
                       <mat-form-field appearance="outline">
                         <mat-label>Dimensions(cm): Length</mat-label>
-                        <input matInput formControlName="length" placeholder="Enter Product Length">
+                        <input matInput formControlName="length" placeholder="Enter Product Length" [readonly]="!editRole">
                         <mat-icon matSuffix>design_services</mat-icon>
                       </mat-form-field>
                       <mat-form-field appearance="outline">
                         <mat-label>Dimensions(cm): Width</mat-label>
-                        <input matInput formControlName="width" placeholder="Enter Product Width">
+                        <input matInput formControlName="width" placeholder="Enter Product Width" [readonly]="!editRole">
                         <mat-icon matSuffix>design_services</mat-icon>
                       </mat-form-field>
                       <mat-form-field appearance="outline">
                         <mat-label>Dimensions(cm): Height</mat-label>
-                        <input matInput formControlName="height" placeholder="Enter Product Height">
+                        <input matInput formControlName="height" placeholder="Enter Product Height" [readonly]="!editRole">
                         <mat-icon matSuffix>design_services</mat-icon>
                       </mat-form-field>
                     </div>
                     <div class="col-md-6">
                       <mat-form-field appearance="outline">
                         <mat-label>Barcode</mat-label>
-                        <input matInput formControlName="barcode" placeholder="barcode">
+                        <input matInput formControlName="barcode" placeholder="barcode" [readonly]="!editRole">
                         <mat-icon matSuffix>qr_code</mat-icon>
                       </mat-form-field>
 
@@ -557,10 +555,10 @@
               </div>
             </div>
           </mat-tab>
-          <mat-tab label="Media">
+          <mat-tab label="Media" *ngIf="uploadRole">
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <mat-tab-group>
-                <mat-tab label="Images">
+                <!-- <mat-tab label="Images">
                   <div class="mt-5 custom-tab" style="overflow: hidden !important;">
                     <div class="row">
                       <div class="col-md-3" *ngFor="let image of imageServerFiles; let index = index">
@@ -580,7 +578,7 @@
                       
                     </div>
                   </div>
-                </mat-tab>
+                </mat-tab> -->
                 <mat-tab label="Manage Images">
                   <div class="row">   
                     <div class="col-md-3">
@@ -691,7 +689,7 @@
                   <mat-option *ngFor="let user of users" [value]="user.id">{{ user.name + " " + user.surname }}</mat-option>
                 </mat-select>
               </mat-form-field>
-            </div>
+            </div> 
 
             <mat-grid-list cols="3" rowHeight="100px">
               <mat-grid-tile colspan="3">
@@ -707,7 +705,7 @@
               <h3>{{ progressPercentage() }}% Complete</h3>
             </div>
             <hr>
-            <mat-list role="list">
+            <mat-list role="list" (click)="autoInfo()">
               <mat-list-item role="listitem">
                 <mat-icon>check_circle</mat-icon> General Details
               </mat-list-item>

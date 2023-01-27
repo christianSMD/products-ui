@@ -20,7 +20,7 @@
                     <input #name matInput formControlName="name" placeholder="Enter Product Name" (keyup)="checkProductName($event)">
                     <mat-hint *ngIf="similarProduct">⚠ There is already a product with this name.</mat-hint>
                   </mat-form-field>
-                  <mat-form-field *ngIf="newProductType == 'product'" appearance="outline" style="width: 90%;">
+                  <mat-form-field appearance="outline" style="width: 90%;">
                     <mat-label>Product Brand</mat-label>
                     <mat-select #brand matInput formControlName="brand_type_id">
                       <mat-option *ngFor="let type of typesList | typeGroup : 'Brand'" value="{{ type.id }}">{{ type.name }}</mat-option>

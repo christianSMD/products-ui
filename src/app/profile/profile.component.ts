@@ -30,6 +30,7 @@ export class ProfileComponent implements OnInit {
   isActive = false;
   authRole: boolean = false;
   notFound: string = '';
+  adminRole: boolean = false;
   
 
   constructor(
@@ -45,6 +46,7 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.authRole = this.info.role(58);
+    this.adminRole = this.info.role(90);
     this.info.auth();
     this.navbar.show();
     this.treeNav.hide();

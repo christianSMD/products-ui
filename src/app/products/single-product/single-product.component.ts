@@ -123,11 +123,14 @@ export class SingleProductComponent implements OnInit {
   productSeries: any;
   productBrand: any;
   productManager: string = "";
-  productManagerId: any;
+  productManagerId: any = 0;
   brandManager: string = "";
   users: User[] = [];
   loadpProductManager: boolean = true;
   adminRole: boolean = false;
+  productManagerRole: boolean = false;
+
+  newSeriesType: string = "";
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -157,6 +160,7 @@ export class SingleProductComponent implements OnInit {
     this.detailProgress = 0;
     this.editRole = this.info.role(56);
     this.uploadRole = this.info.role(57);
+    this.productManagerRole = this.info.role(88); // Or product developer
     this.adminRole = this.info.role(90);
     this.viewAllProductsRole = this.info.role(68);
     this.storageUrl = this.api.getStorageUrl();
@@ -237,6 +241,10 @@ export class SingleProductComponent implements OnInit {
       startWith(''),
       map(value => this._filterSeries(value || '')),
     );
+
+    if (this.productManagerRole) {
+      this.editRole = true;
+    }
   }
 
   get attributes() {
@@ -279,6 +287,7 @@ export class SingleProductComponent implements OnInit {
           this.id = this.product.id;
           const seriesType = this.typesList.find((x: Type) => x.id == this.product.family_grouping);
           this.productSeries = seriesType?.name;
+          console.log("productSeries",this.productSeries);
           const productBrand = this.typesList.find((x: Type) => x.id == this.product.brand_type_id);
           this.productBrand  = productBrand?.name;
           if(res[0].verified == 1) {
@@ -1145,6 +1154,29 @@ export class SingleProductComponent implements OnInit {
     this.updateProduct();
   }
 
+  addNonExistingType () {
+    console.log(this.newSeriesType);
+    const typeExists = this.typesList.find((x: Type) => x.name.toLowerCase() == this.newSeriesType.toLowerCase());
+    if(!typeExists) {
+      this.api.POST('types', {
+        name: this.newSeriesType,
+        grouping: "Series"
+      }).subscribe({
+        next:(res) => {
+          this.productForm.patchValue({
+            family_grouping: res.id
+          });
+          this.updateProduct();
+        }, error:(res) => {
+          this.typesLoader = false;
+          this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
+        }
+      });
+    } else {
+      this.openSnackBar(`${this.newSeriesType} already added.`, 'OKay');
+    }
+  }
+
   ngOnChanges() {
 
   }
@@ -1177,8 +1209,9 @@ export class SingleProductComponent implements OnInit {
                 const manager = this.users.find((u: any) => u.id == role.user_id);
                 this.productManager = manager?.name + " " + manager?.surname;
                 this.productManagerId = manager?.id;
-                console.log(this.productManagerId);
                 this.loadpProductManager = false;
+                //If Product manager is logged in, then allow editRole
+                this.editRole = true;
               }
             }, error:(res)=>{
               console.log(res);
@@ -1213,5 +1246,9 @@ export class SingleProductComponent implements OnInit {
         this.openSnackBar(res.message, 'Okay');
       }
     });
+  }
+
+  public autoInfo() {
+    this.openSnackBar("This will update automatically", 'Okay');
   }
 }

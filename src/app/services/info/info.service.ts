@@ -14,7 +14,7 @@ interface Role {
 })
 export class InfoService {
 
-  public title = "SMD Technologies";
+  public title = "SMD";
   public userValue: User;
   public isUserLoggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
@@ -154,4 +154,5 @@ export class InfoService {
   public errorHandler(error: any) {
     console.log("Error handled: ", error);
   }
+
 }

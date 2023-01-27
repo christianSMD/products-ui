@@ -77,7 +77,7 @@
         </mat-card>
     </div>
     <div class="col-md-4">
-        <mat-card>
+        <mat-card *ngIf="adminRole">
             <h3>User Role</h3>
             <mat-divider></mat-divider>
             <div class="pt-3">
@@ -89,5 +89,16 @@
             </div>
         </mat-card>
 
+        <mat-card *ngIf="!adminRole">
+            <h3>User Role</h3>
+            <mat-divider></mat-divider>
+            <div class="pt-3">
+                <ul style="list-style:none;">
+                    <li *ngFor="let role of roles">
+                        <mat-checkbox [checked]="checkTheBox(role.name)" *ngIf="checkTheBox(role.name)" [disabled]="checkTheBox(role.name)" (change)="setRole($event, role.id)">{{ role.name }}</mat-checkbox>
+                    </li>
+                </ul>
+            </div>
+        </mat-card>
     </div>
 </div>
