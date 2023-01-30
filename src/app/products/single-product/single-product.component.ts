@@ -1,5 +1,5 @@
 import { HttpEventType, HttpResponse } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ɵɵsetComponentScope } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params, Router } from '@angular/router';
@@ -437,7 +437,7 @@ export class SingleProductComponent implements OnInit {
   onChange(event: any): void {
     this.files = event.target.files;
     for(let x = 0; x < this.files.length; x ++) {
-      if(this.files[x].size > 2000000) {
+      if(this.files[x].size > 9000000) {
         const msg = "🚫 " + this.files[x].name + " is too large!";
         this.messages.push(msg);
       }

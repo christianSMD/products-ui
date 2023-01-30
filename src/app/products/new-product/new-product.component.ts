@@ -328,7 +328,7 @@ export class NewProductComponent implements OnInit {
     console.log(this.files);
     
     for(let x = 0; x < this.files.length; x ++) {
-      if(this.files[x].size > 2000000) {
+      if(this.files[x].size > 9000000) {
         const msg = "🚫 " + this.files[x].name + " is too large!";
         this.messages.push(msg);
       }
