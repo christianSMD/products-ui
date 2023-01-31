@@ -23,6 +23,8 @@ export class TopNavComponent implements OnInit {
   sideBtnIcn = 'arrow_right_alt';
   showIcons = false;
   q: string = "";
+  networkSlow: boolean = false;
+  networkUnavailable: boolean = false;
 
   constructor(
     public nav: NavbarService, 
@@ -30,13 +32,20 @@ export class TopNavComponent implements OnInit {
     private router: Router,
     private api: ApiService,
     private _snackBar: MatSnackBar,
-    private sideNav: SidenavService
-  ) { }
+    private sideNav: SidenavService,
+  ) {}
+
+  ngOnChanges(): void {
+    this.info.network();
+  }
 
   ngOnInit(): void {
     this.title = this.info.getTitle();
     this.userEmail = <string>this.info.getUserEmail();
     this.userName = <string>this.info.getUserName();
+    setInterval(() => {
+      this.info.network();
+    }, 10000);
   }
 
   logout() {
@@ -47,7 +56,6 @@ export class TopNavComponent implements OnInit {
       next:(res)=> {
         this.openSnackBar('Logged out', 'Okay');
         this.router.navigate(['/login']);
-        
       }, error:(res)=> {
         console.log(res);
       }
@@ -58,7 +66,6 @@ export class TopNavComponent implements OnInit {
     this.userEmail =<string>this.info.getUserEmail();
   }
   
-
   openSnackBar(message: string, action: string) {
     this._snackBar.open(message, action);
   }

@@ -709,7 +709,7 @@ export class SingleProductComponent implements OnInit {
       arr.push(this.mediaFiles[index].id);
     }
     const data = JSON.stringify(arr);
-    this.api.POST(`image-order/`, { product_id: this.id, order_list: data }).subscribe({
+    this.api.POST(`image-order`, { product_id: this.id, order_list: data }).subscribe({
       next:(res)=>{
         //console.log(res);
       }, error:(res)=>{

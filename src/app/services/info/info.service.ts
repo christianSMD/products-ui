@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { User } from 'src/app/interfaces/user';
 import { ApiService } from '../api/api.service';
 import { BehaviorSubject } from 'rxjs';
+import { SpeedTestService } from 'ng-speed-test';
 
 interface Role {
   id: string;
@@ -19,7 +20,7 @@ export class InfoService {
   public isUserLoggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
 
-  constructor(public api: ApiService) { }
+  constructor(public api: ApiService, private speedTestService:SpeedTestService) { }
 
   /**
    * 
@@ -151,6 +152,29 @@ export class InfoService {
     }
   }
 
+  network(): void {
+    this.speedTestService.getMbps().subscribe(
+      (speed) => {
+        const s = Math.round(speed);
+        console.log('Your speed is ' + s);
+        let poorConnection = document.getElementById("slow-connection");
+        let noConnection = document.getElementById("no-connection");
+        if (s == 0) {
+          noConnection!.style.display = "block";
+          poorConnection!.style.display = "none";
+        } else {
+          if (s < 12) {
+            noConnection!.style.display = "none";
+            poorConnection!.style.display = "block";
+          } else {
+            noConnection!.style.display = "none";
+            poorConnection!.style.display = "none";
+          }
+        }
+      }
+    );
+  }
+  
   public errorHandler(error: any) {
     console.log("Error handled: ", error);
   }

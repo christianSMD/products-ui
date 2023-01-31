@@ -500,7 +500,7 @@ export class NewProductComponent implements OnInit {
       arr.push(this.savedFiles[index].id);
     }
     const data = JSON.stringify(arr);
-    this.api.POST(`image-order/`, { product_id: this.newProductId, order_list: data }).subscribe({
+    this.api.POST(`image-order`, { product_id: this.newProductId, order_list: data }).subscribe({
       next:(res)=>{
         console.log(res);
         this.info.activity('Rearranged images', this.newProductId);

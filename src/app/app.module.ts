@@ -45,6 +45,8 @@ import { MinisidenavComponent } from './view/minisidenav/minisidenav.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { CommonModuleModule } from './common-module/common-module.module';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { SpeedTestModule } from 'ng-speed-test';
+
 
 @NgModule({
   declarations: [
@@ -95,7 +97,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     BlockUIModule.forRoot(),
     MatAutocompleteModule,
     CommonModuleModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    SpeedTestModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true },

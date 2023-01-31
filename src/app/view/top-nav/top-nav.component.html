@@ -8,7 +8,7 @@
     </button>
     
     <span class="nav-spacer"></span>
-
+    
     <!-- routerLink= -->
     <form>
         <mat-form-field appearance="legacy" color="primary" class="search">
@@ -17,10 +17,7 @@
             <mat-icon type="submit" matSuffix (click)="search()">search</mat-icon>
         </mat-form-field>   
     </form>
-     
-    <!-- <button mat-icon-button (click)="logout()" class="logout-button">
-        <mat-icon>logout</mat-icon> Logout
-    </button> -->
-
+    <i class="material-icons" id="slow-connection" style="color: orange; display: none;" matTooltip="Poor internet connection">signal_wifi_statusbar_connected_no_internet_4</i>
+    <i class="material-icons" id="no-connection" style="color: red; display: none;" matTooltip="No internet connection">signal_wifi_statusbar_connected_no_internet_4</i>
 </mat-toolbar>
   
