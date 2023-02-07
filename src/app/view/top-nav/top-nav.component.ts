@@ -25,6 +25,7 @@ export class TopNavComponent implements OnInit {
   q: string = "";
   networkSlow: boolean = false;
   networkUnavailable: boolean = false;
+  adminRole: boolean = false;
 
   constructor(
     public nav: NavbarService, 
@@ -40,12 +41,21 @@ export class TopNavComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    
     this.title = this.info.getTitle();
     this.userEmail = <string>this.info.getUserEmail();
     this.userName = <string>this.info.getUserName();
+    this.adminRole = this.info.role(90);
+    
     setInterval(() => {
       this.info.network();
     }, 10000);
+
+    //user nav icons:
+    setTimeout(() => { 
+      console.log("testing icons timer...");
+      this.showIcons = true;
+    }, 10000)
   }
 
   logout() {
@@ -76,7 +86,7 @@ export class TopNavComponent implements OnInit {
   }
 
   search(): void {
-    console.log(this.q);
+    console.log('searching ', this.q);
     this.router.navigateByUrl('/', {skipLocationChange: true}).then(()=>
     this.router.navigate([this.q]));
   }

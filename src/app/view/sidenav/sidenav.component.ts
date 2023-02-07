@@ -25,6 +25,7 @@ export class SidenavComponent {
   rolesRole: boolean = false;
   settingsRole: boolean = false;
   adminRole: boolean = false;
+  addCatRole: boolean = false;
   typesList: Type[] = [];
 
   constructor(
@@ -51,6 +52,7 @@ export class SidenavComponent {
     this.rolesRole = this.info.role(70);
     this.settingsRole = this.info.role(71);
     this.adminRole = this.info.role(90);
+    this.addCatRole = this.info.role(60);
     
     if(!this.loggedIn) {
       if (localStorage.getItem('logged_in_user_email')) {

@@ -9,16 +9,51 @@
   </p>
 
   <div class="row" id="pdfContent">
-    <div class="col-md-9">
+    <div class="col-md-11 col-lg-9">
       <mat-card style="background: #EFEFEF;">
+        
         <mat-tab-group>
           <mat-tab label="Product Details">
-            <div class="mt-5" style="overflow: hidden !important;">
+
+            <!-- <div class="row py-3">
+              <div class="col-md-6">
+                <div class="row">
+                  <div class="col-md-3">
+                    <div class="row">
+                      <div class="col-md-12" *ngFor="let image of mediaFiles; let index = index">
+                        <div class=" image-box">
+                          <img src="{{ storageUrl + filePath(image.path) }}" (click)="changeFocus(storageUrl + filePath(image.path))" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" height="100" width="100">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-9">
+                    <img [src]="focusImg">
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                
+              </div>
+            </div> -->
+
+            <div class="mt-3" style="overflow: hidden !important;">
+              <div style="margin-bottom: 1rem; padding-left: 10px; color: #545454;">
+                <span *ngFor="let cat of productCategories">
+                  {{ cat.name }} <span *ngIf="cat.name != ''"> / </span>
+                </span>
+              </div>
+               
               <div class="row">
                 <div class="col-md-4">
                   <mat-card>
                     <form [formGroup]="productForm">
+
                       <img src="../../../assets/icons/details.png" height="30" class="mx-2"> <strong> General Details</strong><hr> 
+                      <mat-form-field *ngIf="adminRole" appearance="outline" style="width: 90%;">
+                        <mat-label>ID</mat-label>
+                        <input #id matInput formControlName="id">
+                      </mat-form-field>
                       <mat-form-field appearance="outline" style="width: 90%;">
                         <mat-label>SKU</mat-label>
                         <input #sku matInput formControlName="sku" placeholder="Enter Product SKU">
@@ -57,7 +92,7 @@
                         <mat-checkbox #is_in_development formControlName="is_in_development" [disabled]="!editRole">Is In Development</mat-checkbox><br>
                         <mat-checkbox #is_eol formControlName="is_eol" [disabled]="!editRole">Is EOL</mat-checkbox><br>
                         <mat-checkbox #is_active formControlName="is_active" [disabled]="!editRole">Is Active</mat-checkbox><hr>
-                        <mat-checkbox [disabled]="productManagerId == 0" #verified formControlName="verified">Verified</mat-checkbox><br>
+                        <mat-checkbox [disabled]="productManagerId == 0 || !canVerify" #verified formControlName="verified">Verified</mat-checkbox><br>
                         <span *ngIf="productManagerId == 0"><i class="text-muted">Product Manager is needed to verify this product</i></span>
                         <hr>
                         <button mat-raised-button [disabled]="!productForm.dirty" *ngIf="editRole" type="submit" color="primary" (click)="updateProduct()">Save Changes</button>
@@ -164,17 +199,6 @@
                 </div>
             
                 <div class="col-md-8">
-                  <mat-card>
-                    <img src="../../../assets/icons/attributes.png" height="30" class="mx-2"> <strong> PDS Attributes</strong><hr> 
-                    <mat-progress-bar color="accent" *ngIf="loadingPdsAttributes" mode="indeterminate"></mat-progress-bar>
-                    <br><br>
-                    <div *ngIf="!loadingPdsAttributes">
-                      <ul>
-                        <li *ngFor="let i of pdsAttributes"><span>{{ i.attribute_key }} </span>: {{ i.attribute_value }}</li>
-                      </ul>
-                    </div>
-                  </mat-card>
-
                   <mat-card *ngIf="isBundle" style="margin-top: 2rem;">
                     <img src="../../../assets/icons/linked.png" height="30" class="mx-2"> <strong> Linked Products</strong><hr> 
                     <mat-progress-bar color="accent" *ngIf="bundleLoader" mode="indeterminate"></mat-progress-bar>
@@ -202,14 +226,12 @@
                           </mat-option>
                         </mat-autocomplete>
                       </mat-form-field>
-
                       <!-- <button type="submit" style="float: right;" mat-raised-button type="submit" color="primary" (click)="saveBundleProduct('Pamphlet')">Save Changes</button> -->
-    
                     </form>
 
                   </mat-card>
 
-                  <mat-card style="margin-top: 30px !important; height: auto;">
+                  <mat-card style="height: auto;">
                     <img src="../../../assets/icons/gallery.png" height="30" class="mx-2"> <strong> Images</strong><hr> 
                     <mat-progress-bar color="accent" *ngIf="loadingPdsAttributes" mode="indeterminate"></mat-progress-bar>
                     <br><br>
@@ -272,23 +294,45 @@
                       </div>
                     </div>
                   </mat-card>
+
+                  <mat-card style="margin-top: 30px !important; height: auto;">
+                    <img src="../../../assets/icons/attributes.png" height="30" class="mx-2"> <strong>Attributes</strong><hr> 
+                    <mat-progress-bar color="accent" *ngIf="loadingPdsAttributes" mode="indeterminate"></mat-progress-bar>
+                    <br><br>
+                    <div *ngIf="!loadingPdsAttributes">
+                      <ul>
+                        <li *ngFor="let i of pdsAttributes"><span>{{ i.attribute_key }} </span>: {{ i.attribute_value }}</li>
+                      </ul>
+                    </div>
+                  </mat-card>
+
+                  <mat-card style="margin-top: 30px !important; height: auto;">
+                    <img src="../../../assets/icons/attributes.png" height="30" class="mx-2"> <strong> PDS Attributes</strong><hr> 
+                    <mat-progress-bar color="accent" *ngIf="loadingPdsAttributes" mode="indeterminate"></mat-progress-bar>
+                    <br><br>
+                    <div *ngIf="!loadingPdsAttributes">
+                      <ul>
+                        <li *ngFor="let i of pdsAttributes"><span>{{ i.attribute_key }} </span>: {{ i.attribute_value }}</li>
+                      </ul>
+                    </div>
+                  </mat-card>
                                         
                 </div>
               </div>
             </div>
             
           </mat-tab>
-          <mat-tab label="Additional Categories">
+          <mat-tab *ngIf="editRole" label="Manage Categories">
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <mat-card style="background-color: rgb(255, 255, 255);">
                 <form>
                   <div class="row form-border">
                     <div class="col-md-6">
-                      <section class="categories-section">
+                      <!-- <section class="categories-section">
                         <ul>
                           <li class="categories-list" *ngFor="let category of categoriesList | parent: '0'" >
                             <span>
-                              <mat-checkbox (click)="checkedItem(category.id)" [checked]="checkCategories(category.name)">{{ category.name }}</mat-checkbox>
+                              <mat-checkbox (click)="checkedItem(category.id)" [checked]="checkCategories(category.category)">{{ category.name }}</mat-checkbox>
                             </span>
                             <span>
                               <ul>
@@ -324,18 +368,49 @@
                             </span>
                           </li>
                         </ul>   
-                      </section>
-    
+                      </section> -->
+
+                      <span *ngFor="let cat of productCategories">
+                        {{ cat.name }} <span *ngIf="cat.name != ''"> / </span>
+                      </span>
+                      <hr>
+                      <mat-form-field appearance="outline" style="width: 90%;">
+                        <mat-label>Primary Category</mat-label>
+                        <mat-select [(value)]="tier1" (selectionChange)="chosenItem($event, 1)">
+                          <mat-option *ngFor="let category of primaryCategoriesList" [value]="category.id">{{ category.name }}</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+
+                      <mat-form-field *ngIf="tier1" appearance="outline" style="width: 90%;">
+                        <mat-label>{{ tierLabels[1] }}</mat-label>
+                        <mat-select [(value)]="tier2" (selectionChange)="chosenItem($event, 2)">
+                          <mat-option *ngFor="let category of descedantsCategories" [value]="category.id">{{ category.name }}</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+
+                      <mat-form-field *ngIf="tier2" appearance="outline" style="width: 90%;">
+                        <mat-label>{{ tierLabels[2] }}</mat-label>
+                        <mat-select [(value)]="tier3" (selectionChange)="chosenItem($event,3)">
+                          <mat-option *ngFor="let category of descedantsCategories" [value]="category.id">{{ category.name }}</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+
+                      <mat-form-field *ngIf="tier3" appearance="outline" style="width: 90%;">
+                        <mat-label>{{ tierLabels[3] }}</mat-label>
+                        <mat-select [(value)]="tier4" (selectionChange)="chosenItem($event,4)">
+                          <mat-option *ngFor="let category of descedantsCategories" [value]="category.id">{{ category.name }}</mat-option>
+                        </mat-select>
+                      </mat-form-field>
                     </div>
                     <div class="col-md-6">
-                      <button mat-raised-button type="submit" color="primary" (click)="saveCategories()" [disabled]="editRole">Save Changes</button>
+                      <button mat-raised-button type="submit" color="primary" (click)="saveCategories()" >Save Changes</button>
                     </div>
                   </div>
                 </form>
               </mat-card>
             </div>
           </mat-tab>
-          <mat-tab label="Attributes">
+          <mat-tab *ngIf="editRole" label="Attributes">
             <div class="mt-5 custom-tab form-border" style="overflow: hidden !important;">
               <mat-card style="background-color: rgb(255, 255, 255);">
                 <form [formGroup]="productFormAttributes">
@@ -354,7 +429,7 @@
                                     </mat-form-field>
                                 </mat-grid-tile>
                                 <mat-grid-tile>
-                                    <!-- <button class="mb-3" mat-raised-button type="button" (click)="removeNewAttribute(index)" color="warn"><mat-icon>delete</mat-icon> Remove This Field</button> -->
+                                    <button class="mb-3" mat-raised-button type="button" (click)="removeNewAttribute(index)" color="warn"><mat-icon>delete</mat-icon> Remove This Field</button>
                                 </mat-grid-tile>
                             </mat-grid-list>                
                         </div>
@@ -421,7 +496,7 @@
             </mat-card>
             
           </mat-tab>
-          <mat-tab  label="Files">
+          <mat-tab label="Files">
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <div class="row">
                 <div class="col-md-4">
@@ -580,8 +655,8 @@
                   </div>
                 </mat-tab> -->
                 <mat-tab label="Manage Images">
-                  <div class="row">   
-                    <div class="col-md-3">
+                  <div class="row py-3">   
+                    <div class="col-md-4">
                       <div cdkDropList class="file-list" (cdkDropListDropped)="drop($event)" *ngIf="mediaFiles.length > 0">
                         <div class="file-box" *ngFor="let file of mediaFiles; let i = index">
                           <div class="row" cdkDrag>
@@ -599,34 +674,22 @@
                                   <mat-option (onSelectionChange)="updateFileType(file.id, type.id)" *ngFor="let type of typesList | typeGroup : 'Image'" value="{{ type.id }}">{{ type.name }}</mat-option>
                                 </mat-select>
                               </mat-form-field>
+                              <mat-checkbox>E-commerce</mat-checkbox>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div class="col-md-9">
+                    <div class="col-md-8">
                       <div class="row">
+
                         <div class="col-md-3" *ngFor="let file of mediaFiles">
-    
-                          <mat-card style="max-width: 280px; margin-bottom: 2rem; background-color: rgb(254, 254, 254);">
-                            <mat-card-header>
-                              <mat-card-subtitle>{{ returnTypeName(file.type_id) }}</mat-card-subtitle>
-                            </mat-card-header>
-                            <div style="height: 120px; width: 130px; overflow: hidden;">
-                              <img mat-card-image src="{{ storageUrl + filePath(file.path) }}" alt="Photo">
-                            </div>
-                            
-                            <mat-card-content>
-                              <mat-chip-list aria-label="Fish selection">
-                                <mat-chip *ngFor="let type of typesList | typeGroup : 'Image Type'"  (click)="downloadURI('storage/' + filePath(file.path), type.id, file.name, file)">{{ type.name }}</mat-chip>
-                              </mat-chip-list>
-                            </mat-card-content>
-                            <mat-card-actions class="img-action" *ngIf="uploadRole">
-                              <button mat-mini-fab color="basic" (click)="hideFile(file.id)"><mat-icon>hide_image</mat-icon></button>&nbsp;
-                              <button mat-mini-fab color="basic" (click)="deleteFile(file.id)"><mat-icon>delete</mat-icon></button>
-                            </mat-card-actions>
-                          </mat-card>
-    
+                          <img mat-card-image src="{{ storageUrl + filePath(file.path) }}" alt="Photo">
+                          <div class="" *ngIf="uploadRole">
+                            <button mat-mini-fab color="basic" (click)="hideFile(file.id)"><mat-icon>hide_image</mat-icon></button>&nbsp;
+                            <button mat-mini-fab color="basic" (click)="deleteFile(file.id)"><mat-icon>delete</mat-icon></button>
+                            {{ returnTypeName(file.type_id) }}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -677,7 +740,7 @@
         </mat-tab-group>
       </mat-card>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-1 col-lg-3">
 
       <div class="text-muted">
         <mat-card>

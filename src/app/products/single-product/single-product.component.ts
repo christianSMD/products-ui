@@ -23,6 +23,7 @@ import { ProductsService } from 'src/app/services/products/products.service';
 import pptxgen from "pptxgenjs";
 import { User } from 'src/app/interfaces/user';
 import { MatGridTileHeaderCssMatStyler } from '@angular/material/grid-list';
+import { CategoriesComponent } from '../categories/categories.component';
 
 @Component({
   selector: 'app-single-product',
@@ -79,6 +80,7 @@ export class SingleProductComponent implements OnInit {
   verified: boolean = false;
   isVerified: boolean = false;
   categoriesList: Category[] = [];
+  primaryCategoriesList: Category[] = [];
   selectedCategories: any[] = [];
   categoriesLoader = false;
   catFromProductTbl: any[] = [];
@@ -131,6 +133,17 @@ export class SingleProductComponent implements OnInit {
   productManagerRole: boolean = false;
 
   newSeriesType: string = "";
+  focusImg: string;
+  descedantsCategories: Category[] = [];
+
+  tier1: number;
+  tier2: number;
+  tier3: number;
+  tier4: number;
+  tierLabels: any = [];
+  tierLength: number;
+
+  canVerify: boolean = false;
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -175,6 +188,7 @@ export class SingleProductComponent implements OnInit {
     this.entireProducts();
 
     this.productForm = this.formBuilder.group({
+      id: [''],
       sku : ['0', Validators.required],
       name : ['0', Validators.required],
       brand_type_id : ['0', Validators.required],
@@ -272,7 +286,15 @@ export class SingleProductComponent implements OnInit {
   }
 
   getAllCategories() {
-    this.categoriesList = this.products.getCategories();
+    this.api.GET('categories').subscribe({
+      next:(res)=>{
+        this.products.setCategories(res);
+        this.categoriesList = this.products.getCategories();
+        this.primaryCategoriesList = res.filter((c: Category) => c.parent == '0');
+      }, error:(res)=>{
+        console.log(res);
+      }
+    });
   }
 
   getDetails(sku: string): void {
@@ -308,6 +330,7 @@ export class SingleProductComponent implements OnInit {
           this.getUsers();
           this.audit(this.id);
           this.productForm = this.formBuilder.group({
+            id: [{value: this.product.id, disabled: true}],
             sku : [{value: this.product.sku, disabled: true}, Validators.required],
             name : [this.product.name, Validators.required],
             brand_type_id : [this.product.brand_type_id, Validators.required],
@@ -356,46 +379,24 @@ export class SingleProductComponent implements OnInit {
     this.api.GET(`product-categories/search/${id}`).subscribe({
       next:(res)=>{
         this.productCategories = res;
-        this.parentChildCategories.push(res); // test
-        if (res.length > 0) {
-          this.detailProgress++;
-          // Loop Categories linked to product
-          for (let x = 0; x < res.length; x++) {
-            let attributes = JSON.parse(res[x].attributes);
-            if(res[x].parent != 0) {
-              //Attributes from parent categpory
-              let parent = this.categoriesList.find(i => i.id == res[x].parent);
-              let parentAttributes: string[] = []; 
-              try {
-                parentAttributes = JSON.parse(parent?.attributes);
-                for (let index = 0; index < parentAttributes.length; index++) {
-                  const parentAttrs = this.formBuilder.group({
-                    attrName: [parentAttributes[index], Validators.required],
-                    attrValue: ['0', Validators.required]
-                  })
-                  this.attributes.push(parentAttrs);
-                  this.attrCount = this.attrCount + 1;
-                }
-              } catch (error) {
-                this.info.errorHandler(error);
-              }
-            }
-            // Loop attributes on each category
-            if (attributes !== null) {
-              for (let y = 0; y < attributes.length; y++) {
-                const i = this.attributes.value.findIndex((object: any) => object.attrName === attributes[y]);
-                if (i === -1) {
-                  const attrs = this.formBuilder.group({
-                    attrName: [attributes[y], Validators.required],
-                    attrValue: ['0', Validators.required]
-                  })
-                  this.attributes.push(attrs);
-                  this.attrCount = this.attrCount + 1;
-                }
-              }
-            }
-          } 
+        let allAttr: any[] = [];
+        let attrs: any[] =[];
+        for (let index = 0; index < res.length; index++) {
+          attrs = JSON.parse(res[index].attributes);
+          for (let x = 0; x < attrs.length; x++) {
+            allAttr.push(attrs[x])
+
+            const parentAttrs = this.formBuilder.group({
+              attrName: [attrs[x], Validators.required],
+              attrValue: [0, Validators.required]
+            })
+            this.attributes.push(parentAttrs);
+            this.attrCount = this.attrCount + 1;
+
+          }
         }
+        console.log('All Attributes: ', allAttr);
+        
       }, error:(res)=> {
         console.log(res);
       }
@@ -620,7 +621,6 @@ export class SingleProductComponent implements OnInit {
             this.regions.push(regs);
           }
         }
-
       }, error:(res)=> {
         this.info.errorHandler(res);
       }
@@ -723,28 +723,53 @@ export class SingleProductComponent implements OnInit {
    * @param action - Can be 'New' or 'Update' 
    */
    updateAttributes(): void {
-    this.disableSaveAttrBtn = true;
-    this.saveAttrBtnText = "Saving...";
-    let formObj = this.productFormAttributes.getRawValue();
-    let finalObj: any[] = [];
-    let finalArray: any[] = [];
-    for (let index = 0; index < formObj.attributes.length; index++) {
-      this.attrKey = finalObj[formObj.attributes[index].attrName];
-      finalObj[formObj.attributes[index].attrName] = formObj.attributes[index].attrValue;
-      this.api.POST(`products/update-attributes/${this.id}`, [{
-        key : formObj.attributes[index].attrValue
-      }]).subscribe({
-        next:(res)=> {
-          this.saveAttrBtnText = "Save Changes";
-          this.openSnackBar('Attributes Saved', 'Okay');
-          this.info.activity('Updated product attributes', this.product.id);
-        }, error:(res)=> {
-          this.info.errorHandler(res);
-          this.saveAttrBtnText = "Failed, try again.";
-          this.openSnackBar(res.message, 'Okay');
-        }
-      });
+
+    console.log(this.productFormAttributes.value);
+
+    let temp: any[] = this.productFormAttributes.value.attributes;
+
+    for (let index = 0; index < temp.length; index++) {
+      if (temp[index].attrValue !== 0) {
+        this.api.POST(`attributes`, [{
+          product_id: this.id,
+          key : temp[index].attrName,
+          value: temp[index].attrValue,
+        }]).subscribe({
+          next:(res)=> {
+            this.saveAttrBtnText = "Save Changes";
+            this.openSnackBar('Attributes Saved', 'Okay');
+            this.info.activity('Updated product attributes', this.product.id);
+          }, error:(res)=> {
+            this.info.errorHandler(res);
+            this.saveAttrBtnText = "Failed, try again.";
+            this.openSnackBar(res.message, 'Okay');
+          }
+        });
+      }
     }
+
+    // this.disableSaveAttrBtn = true;
+    // this.saveAttrBtnText = "Saving...";
+    // let formObj = this.productFormAttributes.getRawValue();
+    // let finalObj: any[] = [];
+    // let finalArray: any[] = [];
+    // for (let index = 0; index < formObj.attributes.length; index++) {
+    //   this.attrKey = finalObj[formObj.attributes[index].attrName];
+    //   finalObj[formObj.attributes[index].attrName] = formObj.attributes[index].attrValue;
+    //   this.api.POST(`products/update-attributes/${this.id}`, [{
+    //     key : formObj.attributes[index].attrValue
+    //   }]).subscribe({
+    //     next:(res)=> {
+    //       this.saveAttrBtnText = "Save Changes";
+    //       this.openSnackBar('Attributes Saved', 'Okay');
+    //       this.info.activity('Updated product attributes', this.product.id);
+    //     }, error:(res)=> {
+    //       this.info.errorHandler(res);
+    //       this.saveAttrBtnText = "Failed, try again.";
+    //       this.openSnackBar(res.message, 'Okay');
+    //     }
+    //   });
+    // }
   }
 
   deleteFile(id: number): void {
@@ -822,6 +847,7 @@ export class SingleProductComponent implements OnInit {
     return false;
   }
 
+  // If using checkboxes
   checkedItem (v: any) {
     const i = this.selectedCategories.indexOf(v);
     if(i < 0) {
@@ -829,11 +855,40 @@ export class SingleProductComponent implements OnInit {
     } else {
       this.selectedCategories.splice(i, 1);
     }
-    //console.log(this.selectedCategories);
+    console.log(this.selectedCategories);
+  }
+
+  // if using dropdown
+  chosenItem (e: any, t: number) {
+    const v = e.value;
+
+    switch (t) {
+      case 1:
+        this.tier1 = v;
+        break;
+      case 2:
+        this.tier2 = v;
+        break;
+      case 3:
+        this.tier3 = v;
+        break;
+      case 4:
+        this.tier4 = v;
+        break;
+      default:
+        break;
+    }
+    
+    const cat = this.categoriesList.find((n: any) => n.id == v);
+    this.tierLabels.push(cat?.name);
+    this.descedantsCategories = this.categoriesList.filter((c: any) => c.parent == v);
+    this.tierLength = this.descedantsCategories.length;
+    this.selectedCategories.push(v);
   }
 
   saveCategories() {
     const vals = this.selectedCategories;
+    this.removePrevCatsFromDb();
     if (vals.length > 0) {
       for(let i=0; i < vals.length; i++) {
         this.api.POST('product-categories', {
@@ -847,10 +902,22 @@ export class SingleProductComponent implements OnInit {
             this.info.errorHandler(res);
             this.openSnackBar('😢 ' + res.message, 'Okay');
           }
-        })
+        });
       }
     }
     this.openSnackBar('Please choose categories', 'Okay');
+  }
+
+  removePrevCatsFromDb() {
+    this.api.POST('product-categories/clean', {
+      product_id: this.id,
+    }).subscribe({
+      next:(res)=>{
+        console.log(res);
+      }, error:(res)=>{
+        this.info.errorHandler(res);
+      }
+    });
   }
 
   setPermission(permissions: string[]) {
@@ -1246,6 +1313,10 @@ export class SingleProductComponent implements OnInit {
         this.openSnackBar(res.message, 'Okay');
       }
     });
+  }
+
+  changeFocus(p: string) {
+    this.focusImg = p;
   }
 
   public autoInfo() {

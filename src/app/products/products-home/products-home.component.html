@@ -86,8 +86,8 @@
       <mat-form-field appearance="legacy" class="table-category">
         <mat-label>Categories</mat-label>
         <mat-select (selectionChange)="filterByCategory($event)">
-            <mat-option [value]="category.id" *ngFor="let category of categoriesList">
-                {{ category.name }}
+            <mat-option [value]="category.id" *ngFor="let category of primaryCategoriesList">
+              {{ category.name }}
             </mat-option>
         </mat-select>
       </mat-form-field> 

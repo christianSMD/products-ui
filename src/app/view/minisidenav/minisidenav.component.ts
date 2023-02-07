@@ -20,6 +20,7 @@ export class MinisidenavComponent implements OnInit {
   authRole: boolean = false;
   rolesRole: boolean = false;
   settingsRole: boolean = false;
+  addCatRole: boolean = false;
 
   constructor(
     public sideNav: SidenavService, 
@@ -40,6 +41,7 @@ export class MinisidenavComponent implements OnInit {
     this.authRole = this.info.role(58);
     this.rolesRole = this.info.role(70);
     this.settingsRole = this.info.role(71);
+    this.addCatRole = this.info.role(60);
 
     if(!this.loggedIn) {
       if (localStorage.getItem('logged_in_user_email')) {

@@ -28,6 +28,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
 
   productsList: Product[] = [];
   categoriesList: Category[] = [];
+  primaryCategoriesList: Category[] = [];
   typesList: Type[] = [];
   packagingList: any[] = [];
   displayedColumns: string[] = ['thumbnail', 'sku', 'name', 'brand', 'description', 'view'];
@@ -304,6 +305,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
       next:(res)=>{
         this.products.setCategories(res);
         this.categoriesList = this.products.getCategories();
+        this.primaryCategoriesList = res.filter((c: Category) => c.parent == '0');
       }, error:(res)=>{
         console.log(res);
       }

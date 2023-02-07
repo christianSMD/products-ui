@@ -18,7 +18,7 @@
                 <img matTooltip="Products" src="../../../assets/icons/box.png" height="33" width="33">
             </mat-list-option>
             
-            <mat-list-option class="menu-item" routerLink="categories/manage">
+            <mat-list-option *ngIf="addCatRole" class="menu-item" routerLink="categories/manage">
                 <img matTooltip="Categories" src="../../../assets/icons/categories.png" height="33" width="33">
             </mat-list-option>
             

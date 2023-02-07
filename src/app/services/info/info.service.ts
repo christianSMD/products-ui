@@ -156,7 +156,7 @@ export class InfoService {
     this.speedTestService.getMbps().subscribe(
       (speed) => {
         const s = Math.round(speed);
-        console.log('Your speed is ' + s);
+        // console.log(`Internet connection speed: ${s}Mbps`);
         let poorConnection = document.getElementById("slow-connection");
         let noConnection = document.getElementById("no-connection");
         if (s == 0) {

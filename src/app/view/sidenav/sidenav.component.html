@@ -22,7 +22,7 @@
                 <h3><img src="../../../assets/icons/box.gif" height="30" class="mx-2">Products</h3>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option class="menu-item" routerLink="categories/manage">
+            <mat-list-option *ngIf="addCatRole" class="menu-item" routerLink="categories/manage">
                 <h3><img src="../../../assets/icons/categories.png" height="30" class="mx-2">Categories</h3>
             </mat-list-option>
             <mat-divider></mat-divider>

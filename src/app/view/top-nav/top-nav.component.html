@@ -3,8 +3,9 @@
         <img src="../../../assets/img/smd.png" height="80">
     </span>
     
-    <button mat-icon-button matTooltip="{{userName}}" (click)="openProfile()" class="user-button">
-        <mat-icon>person_pin</mat-icon>
+    <button *ngIf="showIcons" id="user" mat-icon-button (click)="openProfile()" class="user-button">
+        <mat-icon matTooltip="{{userName}}" *ngIf="!adminRole">person_pin</mat-icon>
+        <mat-icon matTooltip="{{userName}} as Admin" *ngIf="adminRole">admin_panel_settings</mat-icon>
     </button>
     
     <span class="nav-spacer"></span>
@@ -18,6 +19,6 @@
         </mat-form-field>   
     </form>
     <i class="material-icons" id="slow-connection" style="color: orange; display: none;" matTooltip="Poor internet connection">signal_wifi_statusbar_connected_no_internet_4</i>
-    <i class="material-icons" id="no-connection" style="color: red; display: none;" matTooltip="No internet connection">signal_wifi_statusbar_connected_no_internet_4</i>
+    <i class="material-icons" id="no-connection" style="color: red; display: none;" matTooltip="No signal">signal_wifi_connected_no_internet_4</i>
 </mat-toolbar>
   
