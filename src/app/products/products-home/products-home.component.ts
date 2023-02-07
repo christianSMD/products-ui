@@ -49,6 +49,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   newPamphletSKUs: any[] = [];
   showNewPamphletPanel: boolean = false;
   newProductForm !: FormGroup;
+  productManagerProducts: Product[] = [];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;

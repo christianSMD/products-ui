@@ -674,7 +674,7 @@
                                   <mat-option (onSelectionChange)="updateFileType(file.id, type.id)" *ngFor="let type of typesList | typeGroup : 'Image'" value="{{ type.id }}">{{ type.name }}</mat-option>
                                 </mat-select>
                               </mat-form-field>
-                              <mat-checkbox>E-commerce</mat-checkbox>
+                              <mat-checkbox (click)="ecommerceImage(file.ecommerce, file.id)" [checked]="file.ecommerce == 1">E-commerce {{file.ecommerce}}</mat-checkbox>
                             </div>
                           </div>
                         </div>
@@ -800,7 +800,7 @@
      
           <mat-card-content style="margin-top: 2rem;">
             <hr>
-            <h3 style="text-align: center;">Histroy</h3>
+            <h3 style="text-align: center;">History</h3>
             <table>
               <tr>
                 <th>Action</th>

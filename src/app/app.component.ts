@@ -20,7 +20,6 @@ export class AppComponent {
     if(!this.info.getUserEmail()){
       this.info.isUserLoggedIn.next(false);
       let sidenav = document.getElementById("sidenav");
-
     } else {
       this.info.isUserLoggedIn.next(true);
     }
@@ -28,6 +27,5 @@ export class AppComponent {
 
   test() {
     this.minimized = !this.minimized;
-    console.log(this.minimized); 
   }
 }

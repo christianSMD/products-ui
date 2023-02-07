@@ -131,19 +131,17 @@ export class SingleProductComponent implements OnInit {
   loadpProductManager: boolean = true;
   adminRole: boolean = false;
   productManagerRole: boolean = false;
-
   newSeriesType: string = "";
   focusImg: string;
   descedantsCategories: Category[] = [];
-
   tier1: number;
   tier2: number;
   tier3: number;
   tier4: number;
   tierLabels: any = [];
   tierLength: number;
-
   canVerify: boolean = false;
+  isEcommerceFile: boolean = false;
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -1321,5 +1319,25 @@ export class SingleProductComponent implements OnInit {
 
   public autoInfo() {
     this.openSnackBar("This will update automatically", 'Okay');
+  }
+
+  ecommerceImage(e: any, id: number) {
+    if(e == 1) {
+      this.isEcommerceFile = false; // change to false
+    } else {
+      this.isEcommerceFile = true;
+    }
+
+    this.api.POST(`images/ecommerce/${id}`, {
+      ecommerce: this.isEcommerceFile
+    }).subscribe({
+      next:(res)=> {
+        console.log(res);
+        this.openSnackBar('Changes saved', 'Okay');
+        this.info.activity(`E-commerce image`, 0);
+      }, error:(res)=> {
+        this.openSnackBar(res.message, 'Okay');
+      }
+    });
   }
 }
