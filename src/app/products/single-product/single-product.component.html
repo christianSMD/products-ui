@@ -1,3 +1,9 @@
+<p>
+  <a routerLink="../products/product-manager" *ngIf="productManagerId !== 0">
+    < Back to My products
+  </a>
+</p>
+
 <div *ngIf="productsLoader == true">
   <p>Fetching details for {{ sku }}...</p>
   <mat-progress-bar color="accent" mode="indeterminate"></mat-progress-bar>
@@ -748,7 +754,7 @@
             <div style="text-align: center;">
               <mat-form-field appearance="outline" style="width: 90%;">
                 <mat-label><span *ngIf="loadpProductManager">Loading </span>Product Manager</mat-label>
-                <mat-select matInput [(value)]="productManagerId" name="productManager" (selectionChange)="selectUser($event)"  [disabled]="!adminRole">
+                <mat-select matInput [(value)]="productManagerId" name="productManager" (selectionChange)="selectManager($event)"  [disabled]="!adminRole">
                   <mat-option *ngFor="let user of users" [value]="user.id">{{ user.name + " " + user.surname }}</mat-option>
                 </mat-select>
               </mat-form-field>

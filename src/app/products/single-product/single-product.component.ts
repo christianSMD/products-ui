@@ -310,6 +310,7 @@ export class SingleProductComponent implements OnInit {
           console.log("productSeries",this.productSeries);
           const productBrand = this.typesList.find((x: Type) => x.id == this.product.brand_type_id);
           this.productBrand  = productBrand?.name;
+          this.productManagerId = this.product.product_manager;
           if(res[0].verified == 1) {
             this.isVerified = true;
           }
@@ -1273,7 +1274,7 @@ export class SingleProductComponent implements OnInit {
               if(role) {
                 const manager = this.users.find((u: any) => u.id == role.user_id);
                 this.productManager = manager?.name + " " + manager?.surname;
-                this.productManagerId = manager?.id;
+                //this.productManagerId = manager?.id;
                 this.loadpProductManager = false;
                 //If Product manager is logged in, then allow editRole
                 this.editRole = true;
@@ -1295,20 +1296,20 @@ export class SingleProductComponent implements OnInit {
     
   }
 
-  selectUser(e: any) {
+  selectManager(e: any) {
     console.log(e);
     const userId = e.value;
-    this.api.POST(`roles`, {
-      user_id: userId,
-      type_id: 86,
-      product_id: this.id,
-      brand_id: 0
+    this.api.POST(`products/update/${this.id}`, {
+      product_manager: userId,
     }).subscribe({
-      next:(res)=> {
+      next:(res)=>{
+        this.progressPercentage();
+        this.getDetails(this.sku);
         this.openSnackBar('Product Manager updated', 'Okay');
         this.info.activity(`Updated Product Manager`, 0);
-      }, error:(res)=> {
-        this.openSnackBar(res.message, 'Okay');
+      }, error:(res)=>{
+        this.info.errorHandler(res);
+        this.openSnackBar('😢 ' + res.message, 'Okay');
       }
     });
   }

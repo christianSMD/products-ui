@@ -7,6 +7,7 @@ import { ExportCSVComponent } from './export/export-csv/export-csv.component';
 import { ExportComponent } from './export/export.component';
 import { ListProductsComponent } from './list-products/list-products.component';
 import { NewProductComponent } from './new-product/new-product.component';
+import { ProductManagerComponent } from './product-manager/product-manager.component';
 import { ProductsHomeComponent } from './products-home/products-home.component';
 import { SeriesComponent } from './series/series.component';
 import { SingleProductComponent } from './single-product/single-product.component';
@@ -21,7 +22,8 @@ const routes: Routes = [
   { path: 'products/export-csv', component: ExportCSVComponent },
   { path: 'products/dashboard', component: DashboardComponent },
   { path: 'series/:series', component:  SeriesComponent},
-  { path: 'brands/manage-brands', component:  BrandsComponent}
+  { path: 'brands/manage-brands', component:  BrandsComponent},
+  { path: 'products/product-manager', component:  ProductManagerComponent}
 ];
 
 @NgModule({

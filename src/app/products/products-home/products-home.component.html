@@ -7,11 +7,18 @@
   <p>Products</p>
 
   <div class="row">
-    <div *ngIf="addProductRole" class="col-12 col-ms-12 col-md-5 col-lg-2">
+
+    <div *ngIf="productManagerRole" class="col-12 col-ms-12 col-md-5 col-lg-2">
+      <button mat-raised-button class="p-2" style="width: 100%;" routerLink="products/product-manager">
+        <img src="../../../assets/icons/products.png" height="35"> My Products
+      </button>
+    </div>
+
+    <!-- <div *ngIf="addProductRole" class="col-12 col-ms-12 col-md-5 col-lg-2">
       <button mat-raised-button class="p-2" style="width: 100%;" [routerLink]="['add/new', 'product']" >
         <img src="../../../assets/icons/new-product.png" height="35"> New Product
       </button>
-    </div>
+    </div> -->
     <div *ngIf="addProductRole" class="col-12 col-ms-12 col-md-5 col-lg-2">
       <!-- (click)="showPamphletCheckboxes()" -->
       <button mat-raised-button class="p-2" style="width: 100%;" [routerLink]="['add/new', 'linked-product']" >

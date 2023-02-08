@@ -41,6 +41,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { SeriesComponent } from './series/series.component';
 import { CommonModuleModule } from '../common-module/common-module.module';
 import { BrandsComponent } from './brands/brands.component';
+import { ProductManagerComponent } from './product-manager/product-manager.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +55,8 @@ import { BrandsComponent } from './brands/brands.component';
     ExportCSVComponent,
     DashboardComponent,
     SeriesComponent,
-    BrandsComponent
+    BrandsComponent,
+    ProductManagerComponent
   ],
   imports: [
     CommonModule,

@@ -20,11 +20,11 @@ import { LookupService } from 'src/app/services/lookup/lookup.service';
 import { ProductsService } from 'src/app/services/products/products.service';
 
 @Component({
-  selector: 'app-products-home',
-  templateUrl: './products-home.component.html',
-  styleUrls: ['./products-home.component.scss']
+  selector: 'app-product-manager',
+  templateUrl: './product-manager.component.html',
+  styleUrls: ['./product-manager.component.scss']
 })
-export class ProductsHomeComponent extends CdkTableExporterModule implements OnInit {
+export class ProductManagerComponent extends CdkTableExporterModule implements OnInit {
 
   productsList: Product[] = [];
   categoriesList: Category[] = [];
@@ -78,6 +78,8 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
  
   ngOnInit(): void {
 
+    this.productManagerRole = this.info.role(88);
+
     window.scroll({ 
       top: 0, 
       left: 0, 
@@ -98,7 +100,6 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
         this.getAllCategories();
         this.addProductRole = this.info.role(61);
         this.addCategoryRole = this.info.role(60);
-        this.productManagerRole = this.info.role(86);
         this.storageUrl = this.api.getStorageUrl();
       } else {
         if (localStorage.getItem('logged_in_user_email')) {
@@ -112,7 +113,6 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
           this.getAllCategories();
           this.addProductRole = this.info.role(61);
           this.addCategoryRole = this.info.role(60);
-          this.productManagerRole = this.info.role(86);
         } else {
           this.router.navigate(['login']);
         }
@@ -135,7 +135,6 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     if(this.loggedIn) {
       this.addProductRole = this.info.role(61);
       this.addCategoryRole = this.info.role(60);
-      this.productManagerRole = this.info.role(86);
     } else {
       this.router.navigate(['login']);
     }
@@ -154,12 +153,8 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   }
 
   getAllProducts() {
-    let url: string = 'products-verified';
-    if (this.viewAllProductsRole) {
-      url = 'products';
-    }
     this.productsLoader = true;
-    this.api.GET(url).subscribe({
+    this.api.GET(`product-manager/products/${this.info.getUserId()}`).subscribe({
       next:(res)=>{
         this.productsList = res;
         this.dataSource = new MatTableDataSource(this.productsList);
@@ -167,28 +162,8 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
         this.dataSource.sort = this.sort;
         this.productsLoader = false;
         this.blockUI.stop();
-        this.entireProducts();
       }, error:(res)=>{
         this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
-      }
-    });
-  }
-
-  /**
-   * @todo Gets all the products from the API
-   * @todo Populates the Products Service with dataa from the API
-   */
-  entireProducts() {
-    let url: string = 'products-all';
-    this.api.GET(url).subscribe({
-      next:(res)=>{
-        this.productsList = res;
-        this.dataSource = new MatTableDataSource(this.productsList);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-        this.products.setProducts(res);
-      }, error:(res)=>{
-        console.log(res);
       }
     });
   }
