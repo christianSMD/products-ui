@@ -31,7 +31,7 @@ export class ProductManagerComponent extends CdkTableExporterModule implements O
   primaryCategoriesList: Category[] = [];
   typesList: Type[] = [];
   packagingList: any[] = [];
-  displayedColumns: string[] = ['thumbnail', 'sku', 'name', 'brand', 'description', 'view'];
+  displayedColumns: string[] = ['thumbnail', 'sku', 'name', 'brand', 'description', 'verified', 'view'];
   //displayedColumns: string[] = ['id', 'thumbnail', 'sku', 'name', 'brand', 'description', 'is_active', 'is_in_development', 'is_eol', 'updated_at', 'created_at', 'view'];
   dataSource: MatTableDataSource<Product>;
   productsLoader = false;
@@ -221,14 +221,14 @@ export class ProductManagerComponent extends CdkTableExporterModule implements O
 
   showDates(e: any) {
     if (this.displayDates) {
-      this.displayedColumns = ['thumbnail', 'sku', 'name', 'brand', 'description', 'is_active', 'is_in_development', 'is_eol', 'updated_at', 'created_at', 'view'];
+      this.displayedColumns = ['thumbnail', 'sku', 'name', 'brand', 'description', 'is_active', 'is_in_development', 'is_eol', 'updated_at', 'created_at', 'verified', 'view'];
     } else {
       this.resetTableView();
     }
   }
 
   resetTableView () {
-    this.displayedColumns = ['thumbnail', 'sku', 'name', 'brand', 'description', 'view'];
+    this.displayedColumns = ['thumbnail', 'sku', 'name', 'brand', 'description', 'verified', 'view'];
   }
 
   selectBrand(brand: String): void {
@@ -301,9 +301,9 @@ export class ProductManagerComponent extends CdkTableExporterModule implements O
   showPamphletCheckboxes () {
     this.showNewPamphletPanel = !this.showNewPamphletPanel;
     if (this.showNewPamphletPanel) {
-      this.displayedColumns = ['pamphlet', 'thumbnail', 'sku', 'name', 'brand', 'description', 'view'];
+      this.displayedColumns = ['pamphlet', 'thumbnail', 'sku', 'name', 'brand', 'description', 'verified', 'view'];
     } else {
-      this.displayedColumns = ['thumbnail', 'sku', 'name', 'brand', 'description', 'view'];
+      this.displayedColumns = ['thumbnail', 'sku', 'name', 'brand', 'description', 'verified', 'view'];
     }
   }
 

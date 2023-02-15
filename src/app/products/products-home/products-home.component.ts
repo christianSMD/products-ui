@@ -31,7 +31,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   primaryCategoriesList: Category[] = [];
   typesList: Type[] = [];
   packagingList: any[] = [];
-  displayedColumns: string[] = ['thumbnail', 'sku', 'name', 'brand', 'description', 'view'];
+  displayedColumns: string[] = ['thumbnail', 'sku', 'name', 'brand', 'description', 'view', 'add'];
   //displayedColumns: string[] = ['id', 'thumbnail', 'sku', 'name', 'brand', 'description', 'is_active', 'is_in_development', 'is_eol', 'updated_at', 'created_at', 'view'];
   dataSource: MatTableDataSource<Product>;
   productsLoader = false;
@@ -51,6 +51,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   newProductForm !: FormGroup;
   productManagerProducts: Product[] = [];
   productManagerRole: boolean = false;
+  loggedInUser: any;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -77,6 +78,8 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   }
  
   ngOnInit(): void {
+
+    this.loggedInUser = this.info.getUserId();
 
     window.scroll({ 
       top: 0, 
@@ -246,14 +249,14 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
 
   showDates(e: any) {
     if (this.displayDates) {
-      this.displayedColumns = ['thumbnail', 'sku', 'name', 'brand', 'description', 'is_active', 'is_in_development', 'is_eol', 'updated_at', 'created_at', 'view'];
+      this.displayedColumns = ['thumbnail', 'sku', 'name', 'brand', 'description', 'is_active', 'is_in_development', 'is_eol', 'updated_at', 'created_at', 'view', 'add'];
     } else {
       this.resetTableView();
     }
   }
 
   resetTableView () {
-    this.displayedColumns = ['thumbnail', 'sku', 'name', 'brand', 'description', 'view'];
+    this.displayedColumns = ['thumbnail', 'sku', 'name', 'brand', 'description', 'view', 'add'];
   }
 
   selectBrand(brand: String): void {
@@ -326,14 +329,28 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   showPamphletCheckboxes () {
     this.showNewPamphletPanel = !this.showNewPamphletPanel;
     if (this.showNewPamphletPanel) {
-      this.displayedColumns = ['pamphlet', 'thumbnail', 'sku', 'name', 'brand', 'description', 'view'];
+      this.displayedColumns = ['pamphlet', 'thumbnail', 'sku', 'name', 'brand', 'description', 'view', 'add'];
     } else {
-      this.displayedColumns = ['thumbnail', 'sku', 'name', 'brand', 'description', 'view'];
+      this.displayedColumns = ['thumbnail', 'sku', 'name', 'brand', 'description', 'view', 'add'];
     }
   }
 
   openSnackBar(message: string, action: string) {
     this._snackBar.open(message, action, { duration: 2000 });
+  }
+
+  addToMyProducts(id: number): void {
+    this.api.POST(`products/update/${id}`, {
+      product_manager: this.info.getUserId()
+    }).subscribe({
+      next:(res)=>{
+        this.entireProducts();
+        this.openSnackBar("Added to 'My Products'", 'Okay');
+      }, error:(res)=>{
+        this.info.errorHandler(res);
+        this.openSnackBar('😢 ' + res.message, 'Okay');
+      }
+    });
   }
 
   addToPamphlet (productId: string, sku: string, e: any) {

@@ -328,6 +328,7 @@ export class SingleProductComponent implements OnInit {
           this.getDesigns(this.id);
           this.getUsers();
           this.audit(this.id);
+          this.getProductAttributes(this.id);
           this.productForm = this.formBuilder.group({
             id: [{value: this.product.id, disabled: true}],
             sku : [{value: this.product.sku, disabled: true}, Validators.required],
@@ -430,6 +431,17 @@ export class SingleProductComponent implements OnInit {
         this.info.errorHandler(res);
         this.typesLoader = false;
         this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
+      }
+    });
+  }
+
+  getProductAttributes(id: string) {
+    this.api.GET(`attributes/search-by-id/${id}`).subscribe({
+      next:(res)=>{
+        this.productAttributes = res;
+        console.log(res);
+      }, error:(res)=>{
+        console.log(res);
       }
     });
   }
@@ -722,8 +734,6 @@ export class SingleProductComponent implements OnInit {
    * @param action - Can be 'New' or 'Update' 
    */
    updateAttributes(): void {
-
-    console.log(this.productFormAttributes.value);
 
     let temp: any[] = this.productFormAttributes.value.attributes;
 

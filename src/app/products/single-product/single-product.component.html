@@ -304,22 +304,28 @@
                   <mat-card style="margin-top: 30px !important; height: auto;">
                     <img src="../../../assets/icons/attributes.png" height="30" class="mx-2"> <strong>Attributes</strong><hr> 
                     <mat-progress-bar color="accent" *ngIf="loadingPdsAttributes" mode="indeterminate"></mat-progress-bar>
-                    <br><br>
+                    <br>
                     <div *ngIf="!loadingPdsAttributes">
-                      <ul>
-                        <li *ngFor="let i of pdsAttributes"><span>{{ i.attribute_key }} </span>: {{ i.attribute_value }}</li>
-                      </ul>
+                      <table class="table table-bordered">
+                        <tr *ngFor="let i of productAttributes">
+                          <td>{{ i.key }}</td>
+                          <td>{{ i.value }}</td>
+                        </tr>
+                      </table>
                     </div>
                   </mat-card>
 
                   <mat-card style="margin-top: 30px !important; height: auto;">
                     <img src="../../../assets/icons/attributes.png" height="30" class="mx-2"> <strong> PDS Attributes</strong><hr> 
                     <mat-progress-bar color="accent" *ngIf="loadingPdsAttributes" mode="indeterminate"></mat-progress-bar>
-                    <br><br>
+                    <br>
                     <div *ngIf="!loadingPdsAttributes">
-                      <ul>
-                        <li *ngFor="let i of pdsAttributes"><span>{{ i.attribute_key }} </span>: {{ i.attribute_value }}</li>
-                      </ul>
+                      <table class="table table-bordered">
+                        <tr *ngFor="let i of pdsAttributes">
+                          <td>{{ i.attribute_key }}</td>
+                          <td>{{ i.attribute_value }}</td>
+                        </tr>
+                      </table>
                     </div>
                   </mat-card>
                                         
@@ -416,7 +422,7 @@
               </mat-card>
             </div>
           </mat-tab>
-          <mat-tab *ngIf="editRole" label="Attributes">
+          <mat-tab *ngIf="editRole" label="Edit Attributes">
             <div class="mt-5 custom-tab form-border" style="overflow: hidden !important;">
               <mat-card style="background-color: rgb(255, 255, 255);">
                 <form [formGroup]="productFormAttributes">

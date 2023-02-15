@@ -1,0 +1,273 @@
+table {
+    width: 100%;
+    overflow-x: scroll;
+}
+
+.mat-row:hover {
+    background-color: rgb(243, 243, 243);
+}
+
+.mat-column-id {
+    width: 25px;
+    border-right: 1px solid rgba(255, 134, 53, 0.76);
+    margin-right: 12px;
+}
+
+.mat-column-thumbnail {
+    width: 26px;
+    padding-right: 12px;
+    padding-left: 12px;
+}
+
+.mat-column-sku {
+    width: 10rem;
+    padding-left: 3px;
+}
+
+.mat-column-parent {
+    width: 8rem;
+    padding-left: 10px;
+}
+
+.mat-column-name {
+    width: 30rem;
+}
+
+.mat-column-type {
+    width: 5rem;
+}
+
+.mat-column-brand {
+    width: 8rem;
+}
+
+.mat-column-description {
+    width: 40rem;
+}
+
+.mat-column-is_in_development {
+    width: 7rem;
+}
+
+.mat-column-is_active {
+    width: 7rem;
+}
+
+.mat-column-is_eol {
+    width: 7rem;
+}
+
+.mat-column-created_at {
+    width: 9rem;
+}
+
+.mat-column-updated_at {
+    width: 9rem;
+}
+
+.inactive {
+    color: rgb(206, 206, 206);
+}
+
+.table-setting {
+    margin-right: 2rem;
+}
+
+.table-setting-span {
+    float: right;
+    padding: 13px;
+}
+
+.mat-column-view {
+    padding-left: 1rem;
+}
+
+.table-search {
+    width: 20%;
+}
+
+.table-category {
+    width: 20%;
+    float: right;
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+
+    .table-search {
+        width: 100%;
+    }
+    
+    .table-category {
+        width: 100%;
+        float: none;
+    }
+    
+    .mat-column-id {
+        display: none;
+    }
+
+    .sku-title {
+        display: none;
+    }
+
+    .mat-column-name {
+        display: none;
+    }
+    
+    .mat-column-brand {
+        display: none;
+    }
+
+    .mat-column-view {
+        display: none;
+    }
+
+    .mat-column-description {
+        display: none;
+    }
+
+    .table-setting-span {
+        display: none;
+    }
+    
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+
+    .table-search {
+        width: 60%;
+    }
+
+    .table-category {
+        width: 30%;
+    }
+        
+    .mat-column-id {
+        display: none;
+    }
+
+    .mat-column-name {
+        display: none;
+    }
+    
+    .mat-column-brand {
+        display: revert;
+    }
+
+    .mat-column-view {
+        display: none;
+    }
+    
+    .mat-column-description {
+        display: none;
+    }
+
+    .table-setting-span {
+        display: none;
+    }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+    .table-search {
+        width: 50%;
+    }
+    .table-category {
+        width: 30%;
+    }
+        
+    .mat-column-id {
+        display: none;
+    }
+
+    .mat-column-name {
+        display: revert;
+    }
+    
+    .mat-column-brand {
+        display: revert;
+    }
+
+    .mat-column-view {
+        display: none;
+    }
+    
+    .mat-column-description {
+        display: none;
+    }
+
+    .table-setting-span {
+        display: none;
+    }
+
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+    .table-search {
+        width: 30%;
+    }
+    .table-category {
+        width: 20%;
+    }
+    .mat-column-id {
+        display: revert;
+    }
+
+    .mat-column-name {
+        display: revert;
+    }
+    
+    .mat-column-brand {
+        display: revert;
+    }
+
+    .mat-column-view {
+        display: revert;
+    }
+    
+    .mat-column-description {
+        display: none;
+    }
+
+    .table-setting-span {
+        display: revert;
+        padding: 13px;
+    }
+
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+    .table-search {
+        width: 30%;
+    }
+    .table-category {
+        width: 20%;
+    }
+    .mat-column-id {
+        display: revert;
+    }
+
+    .mat-column-name {
+        display: revert;
+    }
+    
+    .mat-column-brand {
+        display: revert;
+    }
+
+    .mat-column-view {
+        display: revert;
+    }
+    
+    .mat-column-description {
+        display: revert;
+    }
+
+    .table-setting-span {
+        display: revert;
+    }
+}
