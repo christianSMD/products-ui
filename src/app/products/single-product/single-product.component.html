@@ -383,36 +383,40 @@
                       </section> -->
 
                       <span *ngFor="let cat of productCategories">
-                        {{ cat.name }} <span *ngIf="cat.name != ''"> / </span>
+                        {{ cat.name }} <span *ngIf="cat.name != ''"> / 
                       </span>
+                      </span> <a href="#" (click)="modifyCats()" style="font-size: smaller;"><i>edit</i></a>
                       <hr>
-                      <mat-form-field appearance="outline" style="width: 90%;">
-                        <mat-label>Primary Category</mat-label>
-                        <mat-select [(value)]="tier1" (selectionChange)="chosenItem($event, 1)">
-                          <mat-option *ngFor="let category of primaryCategoriesList" [value]="category.id">{{ category.name }}</mat-option>
-                        </mat-select>
-                      </mat-form-field>
 
-                      <mat-form-field *ngIf="tier1" appearance="outline" style="width: 90%;">
-                        <mat-label>{{ tierLabels[1] }}</mat-label>
-                        <mat-select [(value)]="tier2" (selectionChange)="chosenItem($event, 2)">
-                          <mat-option *ngFor="let category of descedantsCategories" [value]="category.id">{{ category.name }}</mat-option>
-                        </mat-select>
-                      </mat-form-field>
-
-                      <mat-form-field *ngIf="tier2" appearance="outline" style="width: 90%;">
-                        <mat-label>{{ tierLabels[2] }}</mat-label>
-                        <mat-select [(value)]="tier3" (selectionChange)="chosenItem($event,3)">
-                          <mat-option *ngFor="let category of descedantsCategories" [value]="category.id">{{ category.name }}</mat-option>
-                        </mat-select>
-                      </mat-form-field>
-
-                      <mat-form-field *ngIf="tier3" appearance="outline" style="width: 90%;">
-                        <mat-label>{{ tierLabels[3] }}</mat-label>
-                        <mat-select [(value)]="tier4" (selectionChange)="chosenItem($event,4)">
-                          <mat-option *ngFor="let category of descedantsCategories" [value]="category.id">{{ category.name }}</mat-option>
-                        </mat-select>
-                      </mat-form-field>
+                      <div *ngIf="modifyingCategories">
+                        <mat-form-field appearance="outline" style="width: 90%;">
+                          <mat-label>Primary Category</mat-label>
+                          <mat-select [(value)]="tier1" (selectionChange)="chosenItem($event, 1)">
+                            <mat-option *ngFor="let category of primaryCategoriesList" [value]="category.id">{{ category.name }}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+  
+                        <mat-form-field *ngIf="tier1" appearance="outline" style="width: 90%;">
+                          <mat-label>{{ tierLabels[1] }}</mat-label>
+                          <mat-select [(value)]="tier2" (selectionChange)="chosenItem($event, 2)">
+                            <mat-option *ngFor="let category of descedantsCategories" [value]="category.id">{{ category.name }}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+  
+                        <mat-form-field *ngIf="tier2" appearance="outline" style="width: 90%;">
+                          <mat-label>{{ tierLabels[2] }}</mat-label>
+                          <mat-select [(value)]="tier3" (selectionChange)="chosenItem($event,3)">
+                            <mat-option *ngFor="let category of descedantsCategories" [value]="category.id">{{ category.name }}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+  
+                        <mat-form-field *ngIf="tier3" appearance="outline" style="width: 90%;">
+                          <mat-label>{{ tierLabels[3] }}</mat-label>
+                          <mat-select [(value)]="tier4" (selectionChange)="chosenItem($event,4)">
+                            <mat-option *ngFor="let category of descedantsCategories" [value]="category.id">{{ category.name }}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
                     </div>
                     <div class="col-md-6">
                       <button mat-raised-button type="submit" color="primary" (click)="saveCategories()" >Save Changes</button>
@@ -422,7 +426,7 @@
               </mat-card>
             </div>
           </mat-tab>
-          <mat-tab *ngIf="editRole" label="Edit Attributes">
+          <mat-tab *ngIf="editRole" label="Manage Attributes">
             <div class="mt-5 custom-tab form-border" style="overflow: hidden !important;">
               <mat-card style="background-color: rgb(255, 255, 255);">
                 <form [formGroup]="productFormAttributes">
@@ -747,6 +751,30 @@
               
             </div>
             
+          </mat-tab>
+
+          <mat-tab label="E-commerce View">
+            <div class="mt-5 custom-tab card" style="overflow: hidden !important;">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="row">
+                    <!-- Side images row -->
+                    <div class="col-md-1">
+                      <div class="row">
+                        <div class="col-md-12">
+
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Main image -->
+                    <div class="col-md-9">
+                      <img src="https://products.smdtechnologies.com/public/api/images/KS3003W/2">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6"></div>
+              </div>
+            </div>
           </mat-tab>
 
         </mat-tab-group>

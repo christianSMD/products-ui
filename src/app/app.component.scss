@@ -83,6 +83,21 @@ mat-drawer {
   background-color: #FAFAFA;
 }
 
+.bottom-menu {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 70px;
+  background: #000000;
+  color: #FFFFFF;
+  z-index: 1000;
+}
+
+.bottom-menu {
+  visibility: hidden;
+}
+
 
 @keyframes animate-pop {
   0% {
@@ -101,7 +116,12 @@ mat-drawer {
 
 .menu-button {
   top: -47px;
-  left: 83%;
+  left: -10%;
+  
+}
+
+.bottom-menu {
+  visibility: visible;
 }
 
 .minisidenav {
@@ -123,8 +143,6 @@ mat-drawer {
 .content-area {
   padding: 1rem;
 }
-
-
 }
 
 /* Medium devices (landscape tablets, 768px and up) */

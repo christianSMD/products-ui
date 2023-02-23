@@ -142,6 +142,7 @@ export class SingleProductComponent implements OnInit {
   tierLength: number;
   canVerify: boolean = false;
   isEcommerceFile: boolean = false;
+  modifyingCategories: boolean = false;
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -286,6 +287,7 @@ export class SingleProductComponent implements OnInit {
   getAllCategories() {
     this.api.GET('categories').subscribe({
       next:(res)=>{
+        console.log('Categories: ' + res);
         this.products.setCategories(res);
         this.categoriesList = this.products.getCategories();
         this.primaryCategoriesList = res.filter((c: Category) => c.parent == '0');
@@ -549,6 +551,7 @@ export class SingleProductComponent implements OnInit {
         if(res.length > 0) {
           this.detailProgress++;
           this.mediaFiles = res;
+          console.log('Media ', this.mediaFiles);
           this.getProductImageOrder();
         }
       }, error:(res)=> {
@@ -571,7 +574,6 @@ export class SingleProductComponent implements OnInit {
               this.imageServerDocumentFiles.push(filename);
             }
           }
-          
         }
       }, error:(res)=> {
         console.log(res);
@@ -808,7 +810,7 @@ export class SingleProductComponent implements OnInit {
   progressPercentage() { 
     const verified = (this.product.verified) ? 1 : 0;
     const status = (this.product.is_in_development > 0 || this.product.is_eol > 0 || this.product.is_active > 0) ? 1 : 0;
-    const categories = (this.categoriesList.length > 0) ? 1 : 0;
+    const categories = (this.productCategories.length > 0) ? 1 : 0;
     const attributes = (this.attributes.length > 0) ? 1 : 0;
     const packaging = (this.packagingCount > 0) ? 1 : 0;
     const documents = (this.documentFiles.length > 0) ? 1 : 0;
@@ -816,6 +818,9 @@ export class SingleProductComponent implements OnInit {
     const brand = (this.productForm.value.brand_type_id) ? 1 : 0;
     const total = categories + attributes + packaging + documents + media + brand + status + verified;
     const p = (total / 8) * 100;
+    if(this.mediaFiles.length > 0 && this.productCategories.length > 0){
+      this.canVerify = true;
+    }
     return Math.round(p);
   }
 
@@ -1348,6 +1353,20 @@ export class SingleProductComponent implements OnInit {
         this.info.activity(`E-commerce image`, 0);
       }, error:(res)=> {
         this.openSnackBar(res.message, 'Okay');
+      }
+    });
+  }
+
+  modifyCats() {
+    this.modifyingCategories = !this.modifyingCategories;
+  }
+
+  test() {
+    this.api.test(`test-private`).subscribe({
+      next:(res)=>{
+        console.log(res);
+      }, error:(res)=> {
+        this.info.errorHandler(res);
       }
     });
   }

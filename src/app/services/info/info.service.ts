@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, isDevMode } from '@angular/core';
 import { User } from 'src/app/interfaces/user';
 import { ApiService } from '../api/api.service';
 import { BehaviorSubject } from 'rxjs';
@@ -19,8 +19,14 @@ export class InfoService {
   public userValue: User;
   public isUserLoggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-
-  constructor(public api: ApiService, private speedTestService:SpeedTestService) { }
+  constructor(public api: ApiService, private speedTestService:SpeedTestService) {
+   
+    if (isDevMode()) {
+      console.log("Development Mode");
+    } else {
+      console.log("Production Mode");
+    }
+  }
 
   /**
    * 

@@ -15,9 +15,13 @@
 }
 
 .search {
-  margin-right: 3rem;
+  margin-right: 1rem;
   font-size: small;
   margin-top: 11px;
+}
+
+.back {
+margin-right: 2rem;
 }
 
 @media only screen and (max-width: 600px) {
@@ -25,11 +29,16 @@
   .search {
     display: none;
   }
+  
   .sidenav {
     display: none;
   }
 
   .user-button {
+    display: none;
+  }
+
+  .back {
     display: none;
   }
   

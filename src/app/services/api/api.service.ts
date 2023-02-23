@@ -1,6 +1,6 @@
 
-import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { HttpClient, HttpEvent, HttpRequest, HttpHeaders } from '@angular/common/http';
+import { Injectable, isDevMode } from '@angular/core';
 import { Observable } from 'rxjs';
 import {saveAs} from 'file-saver';
 import * as FileSaver from 'file-saver';
@@ -12,30 +12,46 @@ import { Type } from '@angular/compiler';
   providedIn: 'root'
 })
 export class ApiService {
-
-  // private baseUrl = 'http://127.0.0.1:8000/api/';
-  // private storageUrl = 'http://127.0.0.1:8000/storage/';
-  // public domainUrl = 'http://localhost:4200/login';
-
+  
   private baseUrl = 'https://products.smdtechnologies.com/public/api/';
   private storageUrl = 'https://products.smdtechnologies.com/public/storage/';
   public domainUrl = 'https://products.smdtechnologies.com/login';
 
   constructor(private http : HttpClient) {}
 
+  public test(endpoint: string) {
+    const headers = new HttpHeaders({
+      'Content-Type':'application/json; charset=utf-8',
+      'Token':'301|HRnSLV2db1tg0vCVXpfQbGfKeH8iTHNA415hQIZk'
+    });
+    return this.http.get<any[]>('https://products.smdtechnologies.com/public/api/' + endpoint);
+  }
+
+  private endpoints(): void {  
+    if(isDevMode()){
+      this.baseUrl = 'http://127.0.0.1:8000/api/';
+      this.storageUrl = 'http://127.0.0.1:8000/storage/';
+      this.domainUrl = 'http://localhost:4200/login';
+    } 
+  }
+
   public getBaseUrl() {
+    this.endpoints();
     return this.baseUrl;
   }
 
   public getStorageUrl () {
+    this.endpoints();
     return this.storageUrl;
   }
 
   public POST (endpoint: string, data : any){
+    this.endpoints();
     return this.http.post<any>(this.baseUrl + endpoint, data);
   }
 
   public GET (endpoint: string): Observable<any[]>{
+    this.endpoints();
     return this.http.get<any[]>(this.baseUrl + endpoint);
   }
 
@@ -48,6 +64,7 @@ export class ApiService {
   }
 
   public upload(endpoint: string, data: any): Observable<HttpEvent<any>> {
+    this.endpoints();
     const formData: FormData = new FormData();
     formData.append('file', data.file);
     formData.append('name', data.name);
@@ -65,11 +82,12 @@ export class ApiService {
   }
 
   public getFiles(endpoint: string): Observable<any> {
+    this.endpoints();
     return this.http.get(this.baseUrl + endpoint);
   }
 
   public download(endpoint: string, uri: string, product_id: string, product_sku: string, old_type_id: number, path: string, new_type_id: number) {
-   
+    this.endpoints();
     return this.http.post(this.baseUrl + endpoint, {
       original_path: uri,
       product_id: product_id,
@@ -81,7 +99,7 @@ export class ApiService {
   }
 
   public downloadCSV(endpoint: string, brand: string, active: boolean, development: boolean, eol: boolean) {
-   
+    this.endpoints();
     return this.http.post(this.baseUrl + endpoint, {
       brand: brand,
       active: active,
@@ -92,7 +110,6 @@ export class ApiService {
   }
 
   presentation (productId: number, linkedProducts: any[], series: string, brand: string, allProducts: Product[]) {
-
     let pres = new pptxgen(); 
     let coverSlide = pres.addSlide();
     let overviewSlide = pres.addSlide();

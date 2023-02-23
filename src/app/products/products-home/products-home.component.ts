@@ -35,6 +35,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   //displayedColumns: string[] = ['id', 'thumbnail', 'sku', 'name', 'brand', 'description', 'is_active', 'is_in_development', 'is_eol', 'updated_at', 'created_at', 'view'];
   dataSource: MatTableDataSource<Product>;
   productsLoader = false;
+  entireProductsLoader = false;
   loggedIn = false;
   addProductRole = false;
   addCategoryRole = false;
@@ -52,6 +53,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   productManagerProducts: Product[] = [];
   productManagerRole: boolean = false;
   loggedInUser: any;
+  addingToMyProducts: boolean = false;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -182,6 +184,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
    * @todo Populates the Products Service with dataa from the API
    */
   entireProducts() {
+    this.entireProductsLoader = true;
     let url: string = 'products-all';
     this.api.GET(url).subscribe({
       next:(res)=>{
@@ -190,8 +193,10 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         this.products.setProducts(res);
+        this.entireProductsLoader = false;
       }, error:(res)=>{
         console.log(res);
+        this.entireProductsLoader = false;
       }
     });
   }
@@ -265,7 +270,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
 
   filterStatuses(e: any): void { 
     let results: Product[] = [];
-    this.allProducts = (this.activeProducts ||  this.developmentProducts || this.eolProducts) ? false : true;
+    this.allProducts = (this.activeProducts || this.developmentProducts || this.eolProducts) ? false : true;
     if (this.allProducts) {
       results = this.productsList;
     } else {
@@ -340,13 +345,16 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   }
 
   addToMyProducts(id: number): void {
+    this.addingToMyProducts = true;
     this.api.POST(`products/update/${id}`, {
       product_manager: this.info.getUserId()
     }).subscribe({
       next:(res)=>{
         this.entireProducts();
         this.openSnackBar("Added to 'My Products'", 'Okay');
+        this.addingToMyProducts = false;
       }, error:(res)=>{
+        this.addingToMyProducts = false;
         this.info.errorHandler(res);
         this.openSnackBar('😢 ' + res.message, 'Okay');
       }

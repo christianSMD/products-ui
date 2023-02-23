@@ -8,8 +8,9 @@
                     <!-- (click)="drawer.toggle()"  -->
                 </button>
             </div>
+            
             <mat-drawer-container class="main-container" autosize>
-                <mat-drawer #drawer class="sidenav" [style.width]="(minimized) ? '109px' : '260px'" mode="side" opened="true" id="sidenav">
+                <mat-drawer #drawer class="sidenav" [style.width]="(minimized) ? width : '260px'" mode="side" opened="true" id="sidenav">
                     <div class="overlay">
                         <app-minisidenav *ngIf="minimized"></app-minisidenav>
                         <app-sidenav *ngIf="!minimized"></app-sidenav>
@@ -20,9 +21,30 @@
                         <router-outlet></router-outlet> 
                     </div>
                     <br>
-                    <p style="font-size: small; color:darkgray; text-align: center;">SMD Products System<br>Version 1.0</p>
+                    <!-- <p style="font-size: small; color:darkgray; text-align: center;">SMD Products System <span *ngIf="devMode">Development mode</span><br>Version 1.0</p> -->
                 </div>
             </mat-drawer-container>
+
+            <div class="bottom-menu">
+                <div class="row py-2 px-2" style="text-align: center;">
+                    <div class="col-4">
+                        <button mat-icon-button (click)="test()">
+                            <mat-icon>menu</mat-icon>
+                        </button>
+                    </div>
+                    <div class="col-4" style="text-align: center; padding-bottom: 20px;">
+                        <button mat-fab routerLink="/">
+                            <mat-icon>home</mat-icon>
+                        </button>
+                    </div>
+                    <div class="col-4">
+                        <button mat-icon-button>
+                            <mat-icon>undo</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </block-ui>

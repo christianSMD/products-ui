@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, isDevMode } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { InfoService } from 'src/app/services/info/info.service';
 import { NavbarService } from 'src/app/services/navbar/navbar.service';
@@ -26,6 +26,7 @@ export class TopNavComponent implements OnInit {
   networkSlow: boolean = false;
   networkUnavailable: boolean = false;
   adminRole: boolean = false;
+  devMode: boolean = true;
 
   constructor(
     public nav: NavbarService, 
@@ -41,7 +42,7 @@ export class TopNavComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    
+    this.devMode = isDevMode();
     this.title = this.info.getTitle();
     this.userEmail = <string>this.info.getUserEmail();
     this.userName = <string>this.info.getUserName();
