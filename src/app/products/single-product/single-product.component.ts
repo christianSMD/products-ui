@@ -143,6 +143,10 @@ export class SingleProductComponent implements OnInit {
   canVerify: boolean = false;
   isEcommerceFile: boolean = false;
   modifyingCategories: boolean = false;
+  switchImageMain = 0;
+  inTheBox: any[] = [];
+  featuresAndBenefits: any[] = [];
+  productBarcode: string;
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -418,6 +422,7 @@ export class SingleProductComponent implements OnInit {
           this.detailProgress++;
           this.packaging = res;
           this.packagingCount = this.packaging.length;
+          this.productBarcode = res[0].barcode;
           this.productFormPackaging = this.formBuilder.group({   
             length : [res[0].height],
             width : [res[0].width],
@@ -643,6 +648,7 @@ export class SingleProductComponent implements OnInit {
   updateFileType(fileId: number, fileTypeId: number): void {
     this.api.POST(`product-files/update-fileType/${fileId}`, { type_id: fileTypeId }).subscribe({
       next:(res)=>{
+        console.log(res);
         this.info.activity('Updated file type', this.product.id);
         this.media();
         this.documents();
@@ -912,6 +918,7 @@ export class SingleProductComponent implements OnInit {
           next:(res)=>{
             this.getProductCategories(this.id);
             this.openSnackBar('Category Added 😃', 'Okay');
+            this.clearTempTiers();
           }, error:(res)=>{
             this.info.errorHandler(res);
             this.openSnackBar('😢 ' + res.message, 'Okay');
@@ -919,7 +926,7 @@ export class SingleProductComponent implements OnInit {
         });
       }
     }
-    this.openSnackBar('Please choose categories', 'Okay');
+    //this.openSnackBar('Please choose categories', 'Okay');
   }
 
   removePrevCatsFromDb() {
@@ -1110,6 +1117,7 @@ export class SingleProductComponent implements OnInit {
     this.designLoader = true;
     this.api.GET(`design/${id}`).subscribe({
       next:(res)=>{
+        console.log("Designs: ", res);
         this.designLoader = false;
         if (res !== null) {
           for (let index = 0; index < res.length; index++) {
@@ -1123,18 +1131,22 @@ export class SingleProductComponent implements OnInit {
                 break;
               case 81:
                 this.features.push(designs);
+                this.featuresAndBenefits.push(res[index]);
                 break;
               case 82:
                 this.fabs.push(designs);
                 break;
               case 83:
                 this.contents.push(designs);
+                this.inTheBox.push(res[index]);
                 break;
               default:
                 break;
             }
           }
         }
+
+        console.log("Contents: ", this.inTheBox);
       }, error:(res)=>{
         this.info.errorHandler(res);
         //this.designLoader = false;
@@ -1361,6 +1373,13 @@ export class SingleProductComponent implements OnInit {
     this.modifyingCategories = !this.modifyingCategories;
   }
 
+  clearTempTiers () {
+    this.tier1 = 0;
+    this.tier2 = 0;
+    this.tier3 = 0;
+    this.tier4 = 0;
+  }
+
   test() {
     this.api.test(`test-private`).subscribe({
       next:(res)=>{
@@ -1369,5 +1388,9 @@ export class SingleProductComponent implements OnInit {
         this.info.errorHandler(res);
       }
     });
+  }
+
+  switchImage(i: number) {
+    this.switchImageMain = i;
   }
 }

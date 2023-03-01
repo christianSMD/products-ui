@@ -339,7 +339,7 @@
               <mat-card style="background-color: rgb(255, 255, 255);">
                 <form>
                   <div class="row form-border">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                       <!-- <section class="categories-section">
                         <ul>
                           <li class="categories-list" *ngFor="let category of categoriesList | parent: '0'" >
@@ -383,9 +383,11 @@
                       </section> -->
 
                       <span *ngFor="let cat of productCategories">
-                        {{ cat.name }} <span *ngIf="cat.name != ''"> / 
+                        {{ cat.name }} <span *ngIf="cat.name != ''"> / </span>
                       </span>
-                      </span> <a href="#" (click)="modifyCats()" style="font-size: smaller;"><i>edit</i></a>
+                      <hr>
+                      <button mat-stroked-button (click)="modifyCats()" style="font-size: smaller;">Edit Categories</button>
+                      
                       <hr>
 
                       <div *ngIf="modifyingCategories">
@@ -396,21 +398,21 @@
                           </mat-select>
                         </mat-form-field>
   
-                        <mat-form-field *ngIf="tier1" appearance="outline" style="width: 90%;">
+                        <mat-form-field *ngIf="tier1 > 0" appearance="outline" style="width: 90%;">
                           <mat-label>{{ tierLabels[1] }}</mat-label>
                           <mat-select [(value)]="tier2" (selectionChange)="chosenItem($event, 2)">
                             <mat-option *ngFor="let category of descedantsCategories" [value]="category.id">{{ category.name }}</mat-option>
                           </mat-select>
                         </mat-form-field>
   
-                        <mat-form-field *ngIf="tier2" appearance="outline" style="width: 90%;">
+                        <mat-form-field *ngIf="tier2 > 0" appearance="outline" style="width: 90%;">
                           <mat-label>{{ tierLabels[2] }}</mat-label>
                           <mat-select [(value)]="tier3" (selectionChange)="chosenItem($event,3)">
                             <mat-option *ngFor="let category of descedantsCategories" [value]="category.id">{{ category.name }}</mat-option>
                           </mat-select>
                         </mat-form-field>
   
-                        <mat-form-field *ngIf="tier3" appearance="outline" style="width: 90%;">
+                        <mat-form-field *ngIf="tier3 > 0" appearance="outline" style="width: 90%;">
                           <mat-label>{{ tierLabels[3] }}</mat-label>
                           <mat-select [(value)]="tier4" (selectionChange)="chosenItem($event,4)">
                             <mat-option *ngFor="let category of descedantsCategories" [value]="category.id">{{ category.name }}</mat-option>
@@ -418,7 +420,11 @@
                         </mat-form-field>
                       </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-12" *ngIf="tier1 > 0">
+                      <button mat-raised-button type="submit" color="default" (click)="clearTempTiers()" >Clear</button>
+                    </div>
+                    <div class="col-md-12" *ngIf="tier2 > 0">
+                      <hr>
                       <button mat-raised-button type="submit" color="primary" (click)="saveCategories()" >Save Changes</button>
                     </div>
                   </div>
@@ -702,9 +708,9 @@
                         <div class="col-md-3" *ngFor="let file of mediaFiles">
                           <img mat-card-image src="{{ storageUrl + filePath(file.path) }}" alt="Photo">
                           <div class="" *ngIf="uploadRole">
-                            <button mat-mini-fab color="basic" (click)="hideFile(file.id)"><mat-icon>hide_image</mat-icon></button>&nbsp;
-                            <button mat-mini-fab color="basic" (click)="deleteFile(file.id)"><mat-icon>delete</mat-icon></button>
-                            {{ returnTypeName(file.type_id) }}
+                            <!-- <button mat-mini-fab color="basic" (click)="hideFile(file.id)"><mat-icon>hide_image</mat-icon></button>&nbsp;
+                            <button mat-mini-fab color="basic" (click)="deleteFile(file.id)"><mat-icon>delete</mat-icon></button> -->
+                            <!-- {{ returnTypeName(file.type_id) }} -->
                           </div>
                         </div>
                       </div>
@@ -754,27 +760,90 @@
           </mat-tab>
 
           <mat-tab label="E-commerce View">
-            <div class="mt-5 custom-tab card" style="overflow: hidden !important;">
+            <div class="mt-5 py-3 custom-tab card" style="overflow: hidden !important;">
               <div class="row">
-                <div class="col-md-6">
-                  <div class="row">
-                    <!-- Side images row -->
-                    <div class="col-md-1">
-                      <div class="row">
-                        <div class="col-md-12">
-
-                        </div>
-                      </div>
-                    </div>
-                    <!-- Main image -->
-                    <div class="col-md-9">
-                      <img src="https://products.smdtechnologies.com/public/api/images/KS3003W/2">
-                    </div>
-                  </div>
+                <div class="col-sm-12 col-md-9 col-lg-7">
+                  <table>
+                    <tr>
+                      <td class="img-cell"><img *ngIf="mediaFiles[0] && mediaFiles[0].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[0].path) }}" height="66" width="66" (click)="switchImage(0)"></td>
+                      <td rowspan="4">
+                        <img *ngIf="mediaFiles[0] && mediaFiles[0].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[switchImageMain].path) }}" height="350" width="350">
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="img-cell" (click)="switchImage(1)">
+                        <img *ngIf="mediaFiles[1] && mediaFiles[1].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[1].path) }}" height="66" width="66">
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="img-cell" (click)="switchImage(2)">
+                        <img *ngIf="mediaFiles[2] && mediaFiles[2].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[2].path) }}" height="66" width="66">
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="img-cell" (click)="switchImage(3)">
+                        <img *ngIf="mediaFiles[3] && mediaFiles[3].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[3].path) }}" height="66" width="66">
+                      </td>
+                    </tr>
+                  </table>
                 </div>
-                <div class="col-md-6"></div>
+                <div class="col-sm-12 col-md-3 col-lg-5">
+                  <h2>{{ product.name }}</h2>
+                  <p>{{ productBrand }}</p>
+                  <p></p>
+                </div>
               </div>
             </div>
+
+            <div class="mt-2 py-3 custom-tab card">
+              <h2>Description</h2>
+              <p>{{ product.description }}</p>
+            </div>
+
+            <div class="mt-2 py-3 custom-tab card">
+              <h2>Product Information</h2>
+              <table>
+                <tr>
+                  <td class="table-label-cell">Categories</td>
+                  <td>
+                      <span *ngFor="let cat of productCategories">{{ cat.name }} <span *ngIf="cat.name != ''"> / </span> </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-label-cell">Brand</td>
+                  <td>{{ productBrand }}</td>
+                </tr>
+                <tr>
+                  <td class="table-label-cell">SKU</td>
+                  <td>{{ product.sku }}</td>
+                </tr>
+                <tr>
+                  <td class="table-label-cell">Barcode</td>
+                  <td>{{ productBarcode }}</td>
+                </tr>
+                <tr>
+                  <td class="table-label-cell">What's in the box</td>
+                  <td>
+                    <ul>
+                      <li *ngFor="let i of inTheBox">{{ i.value }}</li>
+                    </ul>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-label-cell">Features and Benefits</td>
+                  <td>
+                    <ul>
+                      <li *ngFor="let i of featuresAndBenefits">{{ i.value }}</li>
+                    </ul>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-label-cell">Is Portable</td>
+                  <td> </td>
+                </tr>
+              </table>
+            </div>
+
           </mat-tab>
 
         </mat-tab-group>
