@@ -1,167 +1,242 @@
-<p *ngIf="!addingNewUser"><mat-icon>manage_accounts</mat-icon> Manage Users</p>
-<p *ngIf="addingNewUser"><mat-icon>person_add</mat-icon> Add User</p>
-<button mat-raised-button [color]="(addingNewUser) ? 'accent' : 'primary'" class="m-1" (click)="addNewUser()">
-  <span *ngIf="!addingNewUser">
-    Add User
-  </span>
-  <span *ngIf="addingNewUser">
-    Cancel
-  </span>
-</button>
-<!-- <button *ngIf="!addingNewUser" mat-raised-button class="m-1" (click)="exporter.exportTable('csv',{fileName:'products_system'})">
-  <mat-icon>download</mat-icon> Export Users
-</button> -->
-<br>
 
-<div class="row" *ngIf="!addingNewUser">
-  <div class="col-sm-12">
-    <mat-form-field appearance="legacy" color="primary">
-      <mat-label>Search</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="Search for mame, surname, email etc" #input>
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
-    <div class="mat-elevation-z8">
-      <mat-progress-bar color="accent" *ngIf="usersLoader == true" mode="indeterminate"></mat-progress-bar>
-      <table matTableExporter mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)" #exporter="matTableExporter">
-        <!-- ID Column -->
-        <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-          <td mat-cell *matCellDef="let row"> 🔑 {{row.id}} </td>
-        </ng-container>
-        <!-- Name Column -->
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
-          <td mat-cell *matCellDef="let row">
-            <!-- <mat-icon *ngIf="row.is_active == 1" color="primary" style=" font-size: 18px;">circle</mat-icon>
-            <mat-icon *ngIf="row.is_active == 0" color="accent" style=" font-size: 18px;">circle</mat-icon> -->
-            <i [class]="(row.is_active == 1) ? 'material-icons small text-success' : 'material-icons small text-warning'">circle</i>
-             {{row.name}}
-          </td>
-        </ng-container>
-        <!-- Surname Column -->
-        <ng-container matColumnDef="surname">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Surname </th>
-          <td mat-cell *matCellDef="let row"> {{ row.surname }} </td>
-        </ng-container>
-        <!-- Email Column -->
-        <ng-container matColumnDef="email">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
-          <td mat-cell *matCellDef="let row"> {{ row.email }} </td>
-        </ng-container>
-        <ng-container matColumnDef="is_active">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Account Status </th>
-          <td mat-cell *matCellDef="let row">
-            <span *ngIf="row.is_active == 1">Active</span>
-            <span *ngIf="row.is_active == 0">Inactive</span>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="view">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> User </th>
-          <td mat-cell *matCellDef="let row">
-            <a matTooltip="More about {{row.name}}" color="basic" routerLink="/profile/{{row.id}}">Edit</a>
-          </td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        <!-- Row shown when there is no matching data. -->
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
-        </tr>
-      </table>
-      <mat-paginator [pageSizeOptions]="[10, 25, 100]" aria-label="Select page of users"></mat-paginator>
-    </div>
-  </div>
-
-  <div class="col-sm-12 mt-5">
-    <mat-form-field appearance="legacy" color="primary">
-      <mat-label>User Activity History</mat-label>
-      <input matInput (keyup)="applyFilter2($event)" placeholder="Search for mame, product etc" #input>
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
-    
-    <div class="mat-elevation-z8">
-      <mat-progress-bar color="accent" *ngIf="usersLoader == true" mode="indeterminate"></mat-progress-bar>
-      <table matTableExporter mat-table [dataSource]="dataSource2" matSort (matSortChange)="announceSortChange($event)" #exporter="matTableExporter" style="background-color: rgb(255, 255, 239);">
-        <ng-container matColumnDef="user_id">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> User </th>
-          <td mat-cell *matCellDef="let row">
-            <span matTooltip="Info about {{userName(row.user_id)}}" color="basic" routerLink="/profile/{{row.user_id}}">{{ userName(row.user_id) }}</span>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="activity">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
-          <td mat-cell *matCellDef="let row"> 📝 {{row.activity}} </td>
-        </ng-container>
-        <ng-container matColumnDef="product_id">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> ProductID </th>
-          <td mat-cell *matCellDef="let row">
-            <span *ngIf="row.product_id == 0">-</span> 
-            <span *ngIf="row.product_id != 0">{{ row.product_id }}</span> 
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="date">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Date </th>
-          <td mat-cell *matCellDef="let row"> 🕔 {{ row.created_at | date:'short' }} </td>
-        </ng-container>
-        <ng-container matColumnDef="product">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> View Details</th>
-          <td mat-cell *matCellDef="let row">
-            <button *ngIf="row.product_id > 0" mat-stroked-button (click)="goToProduct(row.product_id)" style="background-color: rgb(245, 245, 245); font-size: smaller;color: rgb(155, 155, 155);">
-              📦 Product
-            </button>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="user">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> User </th>
-          <td mat-cell *matCellDef="let row">
-            <button mat-mini-fab matTooltip="Info about {{userName(row.user_id)}}" color="basic" routerLink="/profile/{{row.user_id}}" aria-label="User details">
-              👤
-            </button>
-          </td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
-        <!-- Row shown when there is no matching data. -->
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
-        </tr>
-      </table>
-      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of activities"></mat-paginator>
-    </div>
-  </div>
-</div>
-
-<div class="row mt-3 card" *ngIf="addingNewUser">
-  <div class="col-12 col-sm-6 col-md-6 col-lg-3 my-3">
-    <form class="user" [formGroup]="userForm">
-      <div class="form-group row">
-          <div class="col-sm-12 mb-3 mb-sm-0">
-              <mat-form-field appearance="outline" style="width: 100%;">
-                  <mat-label>Name</mat-label>
-                  <input matInput formControlName="name" placeholder="Enter your name">
-                  <!-- <mat-hint>Hint</mat-hint> -->
-              </mat-form-field>
-          </div>
+<mat-tab-group>
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <p *ngIf="!addingNewUser"><mat-icon>manage_accounts</mat-icon> Manage Users</p>
+      <p *ngIf="addingNewUser"><mat-icon>person_add</mat-icon> Add User</p>
+    </ng-template>
+      <div style="margin-top: 1rem;">
+        <button mat-raised-button [color]="(addingNewUser) ? 'accent' : 'primary'" class="m-1" (click)="addNewUser()">
+          <span *ngIf="!addingNewUser">
+            Add User
+          </span>
+          <span *ngIf="addingNewUser">
+            Cancel
+          </span>
+        </button>
+        <!-- <button *ngIf="!addingNewUser" mat-raised-button class="m-1" (click)="exporter.exportTable('csv',{fileName:'products_system'})">
+          <mat-icon>download</mat-icon> Export Users
+        </button> -->
+        <br>
+        
+        <div class="row" *ngIf="!addingNewUser">
           <div class="col-sm-12">
-              <mat-form-field appearance="outline" style="width: 100%;">
-                  <mat-label>Surname</mat-label>
-                  <input matInput formControlName="surname" placeholder="Enter your surname">
-                  <!-- <mat-hint>Hint</mat-hint> -->
-              </mat-form-field>
+            <mat-form-field appearance="legacy" color="primary">
+              <mat-label>Search</mat-label>
+              <input matInput (keyup)="applyFilter($event)" placeholder="Search for mame, surname, email etc" #input>
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+            <div class="mat-elevation-z8">
+              <mat-progress-bar color="accent" *ngIf="usersLoader == true" mode="indeterminate"></mat-progress-bar>
+              <table matTableExporter mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)" #exporter="matTableExporter">
+                <!-- ID Column -->
+                <ng-container matColumnDef="id">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+                  <td mat-cell *matCellDef="let row"> 🔑 {{row.id}} </td>
+                </ng-container>
+                <!-- Name Column -->
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+                  <td mat-cell *matCellDef="let row">
+                    <!-- <mat-icon *ngIf="row.is_active == 1" color="primary" style=" font-size: 18px;">circle</mat-icon>
+                    <mat-icon *ngIf="row.is_active == 0" color="accent" style=" font-size: 18px;">circle</mat-icon> -->
+                    <i [class]="(row.is_active == 1) ? 'material-icons small text-success' : 'material-icons small text-warning'">circle</i>
+                     {{row.name}}
+                  </td>
+                </ng-container>
+                <!-- Surname Column -->
+                <ng-container matColumnDef="surname">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Surname </th>
+                  <td mat-cell *matCellDef="let row"> {{ row.surname }} </td>
+                </ng-container>
+                <!-- Email Column -->
+                <ng-container matColumnDef="email">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
+                  <td mat-cell *matCellDef="let row"> {{ row.email }} </td>
+                </ng-container>
+                <ng-container matColumnDef="is_active">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Account Status </th>
+                  <td mat-cell *matCellDef="let row">
+                    <span *ngIf="row.is_active == 1">Active</span>
+                    <span *ngIf="row.is_active == 0">Inactive</span>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="view">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> User </th>
+                  <td mat-cell *matCellDef="let row">
+                    <a matTooltip="More about {{row.name}}" color="basic" routerLink="/profile/{{row.id}}">Edit</a>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="team">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Team </th>
+                  <td mat-cell *matCellDef="let row">
+                    <mat-form-field appearance="outline" class="mt-3">
+                      <mat-label>Add to Team</mat-label>
+                      <mat-select (selectionChange)="addUserToTeam(row.id, $event)">
+                          <mat-option *ngFor="let t of teams" value="{{t.id}}">{{ t.teamName }}</mat-option>
+                      </mat-select>
+                  </mat-form-field>
+                  </td>
+                </ng-container>
+   
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                <!-- Row shown when there is no matching data. -->
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+                </tr>
+              </table>
+              <mat-paginator [pageSizeOptions]="[10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+            </div>
           </div>
-          <div class="col-sm-12 col-md-12">
-              <mat-form-field appearance="outline" style="width: 100%;">
-                  <mat-label>Email</mat-label>
-                  <input matInput type="email" formControlName="email" placeholder="Enter your email">
-                  <mat-hint *ngIf="userForm.controls['name'].invalid">Email Invalid</mat-hint>
-              </mat-form-field>
+        
+          <div class="col-sm-12 mt-5">
+            <mat-form-field appearance="legacy" color="primary">
+              <mat-label>User Activity History</mat-label>
+              <input matInput (keyup)="applyFilter2($event)" placeholder="Search for mame, product etc" #input>
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+            
+            <div class="mat-elevation-z8">
+              <mat-progress-bar color="accent" *ngIf="usersLoader == true" mode="indeterminate"></mat-progress-bar>
+              <table matTableExporter mat-table [dataSource]="dataSource2" matSort (matSortChange)="announceSortChange($event)" #exporter="matTableExporter" style="background-color: rgb(255, 255, 239);">
+                <ng-container matColumnDef="user_id">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> User </th>
+                  <td mat-cell *matCellDef="let row">
+                    <span matTooltip="Info about {{userName(row.user_id)}}" color="basic" routerLink="/profile/{{row.user_id}}">{{ userName(row.user_id) }}</span>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="activity">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+                  <td mat-cell *matCellDef="let row"> 📝 {{row.activity}} </td>
+                </ng-container>
+                <ng-container matColumnDef="product_id">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> ProductID </th>
+                  <td mat-cell *matCellDef="let row">
+                    <span *ngIf="row.product_id == 0">-</span> 
+                    <span *ngIf="row.product_id != 0">{{ row.product_id }}</span> 
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="date">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Date </th>
+                  <td mat-cell *matCellDef="let row"> 🕔 {{ row.created_at | date:'short' }} </td>
+                </ng-container>
+                <ng-container matColumnDef="product">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> View Details</th>
+                  <td mat-cell *matCellDef="let row">
+                    <button *ngIf="row.product_id > 0" mat-stroked-button (click)="goToProduct(row.product_id)" style="background-color: rgb(245, 245, 245); font-size: smaller;color: rgb(155, 155, 155);">
+                      📦 Product
+                    </button>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="user">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> User </th>
+                  <td mat-cell *matCellDef="let row">
+                    <button mat-mini-fab matTooltip="Info about {{userName(row.user_id)}}" color="basic" routerLink="/profile/{{row.user_id}}" aria-label="User details">
+                      👤
+                    </button>
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
+                <!-- Row shown when there is no matching data. -->
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
+                </tr>
+              </table>
+              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of activities"></mat-paginator>
+            </div>
           </div>
-          <mat-checkbox #nonSmdUser formControlName="nonSmdUser">Non SMD User</mat-checkbox>
-
-          <button [disabled]="!userForm.valid" mat-raised-button class="mx-2 mt-3" color="primary" (click)="submit()">
-             Add User
-          </button> 
+        </div>
+        
+        <div class="row mt-3 card" *ngIf="addingNewUser">
+          <div class="col-12 col-sm-6 col-md-6 col-lg-3 my-3">
+            <form class="user" [formGroup]="userForm">
+              <div class="form-group row">
+                  <div class="col-sm-12 mb-3 mb-sm-0">
+                      <mat-form-field appearance="outline" style="width: 100%;">
+                          <mat-label>Name</mat-label>
+                          <input matInput formControlName="name" placeholder="Enter your name">
+                          <!-- <mat-hint>Hint</mat-hint> -->
+                      </mat-form-field>
+                  </div>
+                  <div class="col-sm-12">
+                      <mat-form-field appearance="outline" style="width: 100%;">
+                          <mat-label>Surname</mat-label>
+                          <input matInput formControlName="surname" placeholder="Enter your surname">
+                          <!-- <mat-hint>Hint</mat-hint> -->
+                      </mat-form-field>
+                  </div>
+                  <div class="col-sm-12 col-md-12">
+                      <mat-form-field appearance="outline" style="width: 100%;">
+                          <mat-label>Email</mat-label>
+                          <input matInput type="email" formControlName="email" placeholder="Enter your email">
+                          <mat-hint *ngIf="userForm.controls['name'].invalid">Email Invalid</mat-hint>
+                      </mat-form-field>
+                  </div>
+                  <mat-checkbox #nonSmdUser formControlName="nonSmdUser">Non SMD User</mat-checkbox>
+        
+                  <button [disabled]="!userForm.valid" mat-raised-button class="mx-2 mt-3" color="primary" (click)="submit()">
+                     Add User
+                  </button> 
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
-    </form>
-  </div>
-</div>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>group</mat-icon> Teams
+      </ng-template>
+        <div class="row" style="margin-top: 1rem; overflow: hidden !important;">
+          
+          <div class="col-md-12 mb-3">
+            <button mat-raised-button color="primary" class="m-1" (click)="createTeam()" style="width: 10%;">
+              New Team
+            </button>
+          </div>
+          <div class="col-md-8">
+            <h3>Teams</h3>
+            <table class="table table-bordered mt-3">
+              <thead>
+                <tr>
+                  <th>Team ID</th>
+                  <th>Team Name</th>
+                  <th>Description</th>
+                  <th>Team Leader</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let t of teams" (click)="getTeamMembers(t.id)">
+                  <td>{{ t.id }}</td>
+                  <td>{{ t.teamName }}</td>
+                  <td>{{ t.description }}</td>
+                  <td>{{ t.firstname + " " + t.lastname}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-md-4">
+            <h3>Team Members</h3>
+            <table class="table table-bordered mt-3">
+              <thead>
+                <tr>
+                  <td>Member</td>
+                  <td>Email</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let t of teamMembers" (click)="getTeamMembers(t.id)">
+                  <td>{{ t.firstname + " " + t.lastname}}</td>
+                  <td>{{ t.email }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+         
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  
+  

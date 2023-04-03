@@ -881,6 +881,7 @@ export class SingleProductComponent implements OnInit {
   // if using dropdown
   chosenItem (e: any, t: number) {
     const v = e.value;
+    console.log(v);
 
     switch (t) {
       case 1:
@@ -904,6 +905,7 @@ export class SingleProductComponent implements OnInit {
     this.descedantsCategories = this.categoriesList.filter((c: any) => c.parent == v);
     this.tierLength = this.descedantsCategories.length;
     this.selectedCategories.push(v);
+    console.log(this.descedantsCategories);
   }
 
   saveCategories() {

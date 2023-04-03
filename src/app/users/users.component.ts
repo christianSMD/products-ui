@@ -23,7 +23,7 @@ export class UsersComponent implements OnInit {
 
   users: User[] = [];
   activities: Activity[] = [];
-  displayedColumns: string [] = ['name', 'surname', 'email', 'is_active', 'view'];
+  displayedColumns: string [] = ['name', 'surname', 'email', 'is_active', 'view', 'team'];
   displayedColumns2: string [] = ['user_id', 'activity', 'date','product'];
   dataSource: MatTableDataSource<User>;
   dataSource2: MatTableDataSource<Activity>;
@@ -31,6 +31,8 @@ export class UsersComponent implements OnInit {
   addingNewUser= false;
   pageTitle = "Manage Users";
   userForm !: FormGroup;
+  teams: any[] = [];
+  teamMembers: any[] = [];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -57,6 +59,7 @@ export class UsersComponent implements OnInit {
     this.treeNav.hide();
     this.getUsers();
     this.getUserActivities();
+    this.getTeams();
     this.userForm = this.formBuilder.group({
       name : ['', Validators.required],
       surname : ['', Validators.required],
@@ -177,6 +180,61 @@ export class UsersComponent implements OnInit {
     } else {
       alert("Form input invalid.");
     }
+  }
+
+  getTeams(): void {
+    this.api.GET('teams').subscribe({
+      next:(e) => {
+        this.teams = e;
+      }
+    });
+  }
+
+  createTeam(): void {
+    const name = prompt("Please enter team name", "Team1");
+    let description = prompt("Describe your team", ``);
+    let leaderEmail = prompt("Enter Team Leader's email adress", ``);
+    const leader = this.users.find((u: User) => u.email == leaderEmail);
+    console.log(leader?.name);
+
+    if (leader?.id == undefined) {
+      alert("No such user in the system");
+    } else {
+      this.api.POST('team',{ name: name, description: description, status: 'active', leader: leader?.id }).subscribe({
+        next:(res)=>{
+          this.getTeams();
+        },
+        error:(res)=>{
+          alert(res.message);
+        }
+      });
+    }
+  }
+
+  addUserToTeam(userId: number, e: any): void {
+    if (confirm("Add this user to team?") == true) {
+      this.api.POST("add-user-to-team", { user_id: userId,  team_id: e.value }).subscribe({
+        next:(res)=>{
+          console.log(res)
+          this.openSnackBar('Member added to team', 'Okay');
+        }, error:(res)=>{
+          alert(res.message);
+        }
+      });
+    } else {
+      console.log("Cancelled");
+    }
+  }
+
+  getTeamMembers(id: number) {
+    this.api.GET(`team-members/${id}`).subscribe({
+      next:(res) => {
+        this.teamMembers = res;
+      },
+      error:(e) => {
+        console.log(e);
+      }
+    });
   }
 
 }

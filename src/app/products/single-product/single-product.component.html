@@ -98,7 +98,8 @@
                         <mat-checkbox #is_in_development formControlName="is_in_development" [disabled]="!editRole">Is In Development</mat-checkbox><br>
                         <mat-checkbox #is_eol formControlName="is_eol" [disabled]="!editRole">Is EOL</mat-checkbox><br>
                         <mat-checkbox #is_active formControlName="is_active" [disabled]="!editRole">Is Active</mat-checkbox><hr>
-                        <mat-checkbox [disabled]="productManagerId == 0 || !canVerify" #verified formControlName="verified">Verified</mat-checkbox><br>
+                        <!-- <mat-checkbox [disabled]="productManagerId == 0 || !canVerify" #verified formControlName="verified">Verified</mat-checkbox><br> -->
+                        <mat-checkbox #verified formControlName="verified">Verified</mat-checkbox><br>
                         <span *ngIf="productManagerId == 0"><i class="text-muted">Product Manager is needed to verify this product</i></span>
                         <hr>
                         <button mat-raised-button [disabled]="!productForm.dirty" *ngIf="editRole" type="submit" color="primary" (click)="updateProduct()">Save Changes</button>
@@ -904,7 +905,7 @@
             </mat-list>
           </mat-card-content>          
           <div style="text-align: center;">
-            <button mat-raised-button color="primary" (click)="presentation()"><img src="../../../assets/icons/presentation.png" height="40" class="mx-2"> Create Presentation</button>
+            <!-- <button mat-raised-button color="primary" (click)="presentation()"><img src="../../../assets/icons/presentation.png" height="40" class="mx-2"> Create Presentation</button> -->
           </div>
      
           <mat-card-content style="margin-top: 2rem;">

@@ -185,7 +185,10 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
    */
   entireProducts() {
     this.entireProductsLoader = true;
-    let url: string = 'products-all';
+    let url: string = 'products-verified';
+    if (this.viewAllProductsRole) {
+      let url: string = 'products-all';
+    }
     this.api.GET(url).subscribe({
       next:(res)=>{
         this.productsList = res;

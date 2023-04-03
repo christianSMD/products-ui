@@ -31,7 +31,7 @@ export class ProfileComponent implements OnInit {
   authRole: boolean = false;
   notFound: string = '';
   adminRole: boolean = false;
-  
+  myteams:any[] = [];
 
   constructor(
     public navbar: NavbarService, 
@@ -79,6 +79,7 @@ export class ProfileComponent implements OnInit {
           });
           this.isActive = (this.user.is_active == 1) ? true : false; 
           this.getUserRoles();
+          this.getUserTeams();
           this.loader = false;
         } else {
           this.notFound = "🤷‍♂️ User not found.";
@@ -97,6 +98,16 @@ export class ProfileComponent implements OnInit {
         this.loader = false;
       }, error:(res)=>{
         console.log(res);
+      }
+    });
+  }
+
+  getUserTeams(): void {
+    this.api.GET(`teams/${this.id}`).subscribe({
+      next:(res) => {
+        console.log(res);
+      }, error:(e) => {
+        console.log(e);
       }
     });
   }
