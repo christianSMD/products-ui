@@ -667,7 +667,7 @@ export class SingleProductComponent implements OnInit {
       next:(res)=>{
         this.progressPercentage();
         this.getDetails(this.sku);
-        this.info.activity('Updated product', this.product.id);
+        this.info.activity(`${this.info.getUserName()} Updated product general details`, this.product.id);
         this.openSnackBar('Product Updated 😃', 'Okay');
       }, error:(res)=>{
         this.info.errorHandler(res);
@@ -682,7 +682,7 @@ export class SingleProductComponent implements OnInit {
     });
     this.api.POST(`packaging/update/${this.id}`, this.productFormPackaging.value).subscribe({
       next:(res)=>{
-        this.info.activity('Updated product packaging details', this.product.id);
+        this.info.activity(`${this.info.getUserName()} Updated product packaging details`, this.product.id);
         this.openSnackBar('Packaging Saved 😃', 'Okay');
         this.getPackaging(this.id);
       }, error:(res)=>{
@@ -754,8 +754,9 @@ export class SingleProductComponent implements OnInit {
         }]).subscribe({
           next:(res)=> {
             this.saveAttrBtnText = "Save Changes";
+            this.getProductAttributes(this.product.id);
             this.openSnackBar('Attributes Saved', 'Okay');
-            this.info.activity('Updated product attributes', this.product.id);
+            this.info.activity(`${this.info.getUserName()} Updated product attributes`, this.product.id);
           }, error:(res)=> {
             this.info.errorHandler(res);
             this.saveAttrBtnText = "Failed, try again.";
@@ -817,7 +818,7 @@ export class SingleProductComponent implements OnInit {
     const verified = (this.product.verified) ? 1 : 0;
     const status = (this.product.is_in_development > 0 || this.product.is_eol > 0 || this.product.is_active > 0) ? 1 : 0;
     const categories = (this.productCategories.length > 0) ? 1 : 0;
-    const attributes = (this.attributes.length > 0) ? 1 : 0;
+    const attributes = (this.attributes.length > 0 || this.productAttributes.length > 0) ? 1 : 0;
     const packaging = (this.packagingCount > 0) ? 1 : 0;
     const documents = (this.documentFiles.length > 0) ? 1 : 0;
     const media = (this.mediaFiles.length > 0 || this.imageServerFiles.length > 0) ? 1 : 0;
@@ -919,7 +920,7 @@ export class SingleProductComponent implements OnInit {
         }).subscribe({
           next:(res)=>{
             this.getProductCategories(this.id);
-            this.openSnackBar('Category Added 😃', 'Okay');
+            this.openSnackBar(`${this.info.getUserName()} Category Added 😃`, 'Okay');
             this.clearTempTiers();
           }, error:(res)=>{
             this.info.errorHandler(res);
@@ -957,6 +958,23 @@ export class SingleProductComponent implements OnInit {
         this.loadingPdsAttributes = false;
       }
     });
+  }
+
+  deleteProductAttribute(id: number, key: string, product_id: string) {
+
+    let text = `Delete ${key}?`;
+    if (confirm(text) == true) {
+      this.api.GET(`attributes/delete/${id}`).subscribe({
+        next:(res)=>{
+          this.getProductAttributes(product_id);
+          this.info.activity(`${this.info.getUserName()} deleted attribute: ${key}.`, parseInt(product_id));
+        }, error:(res)=> {
+          this.info.errorHandler(res);
+        }
+      });
+    } 
+
+    
   }
 
   downloadURI(uri: any, id: number, name: string, file: File) {
@@ -1050,7 +1068,7 @@ export class SingleProductComponent implements OnInit {
         this.featuresAndBenefitsForm.markAsDirty();
         break;
       case 82:
-        deleteId = this.featuresAndBenefitsForm.value.fabs[i].designId;
+        deleteId = this.extendedFabsForm.value.fabs[i].designId;
         this.fabs.removeAt(i);
         this.extendedFabsForm.markAsDirty();
         break;
@@ -1068,6 +1086,7 @@ export class SingleProductComponent implements OnInit {
         this.openSnackBar('Item removed', 'Okay');
         this.designLoader = false;
         //this.getDesigns(this.id)
+        //this.info.activity(`${this.info.getUserName()} deleted design item`, parseInt(product_id));
       }, error:(res)=> {
         this.info.errorHandler(res);
         this.openSnackBar('🔴 Item could not be removed', 'Okay');

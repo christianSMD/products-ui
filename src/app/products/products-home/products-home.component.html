@@ -14,11 +14,11 @@
       </button>
     </div>
 
-    <!-- <div *ngIf="addProductRole" class="col-12 col-ms-12 col-md-5 col-lg-2">
+    <div *ngIf="addProductRole" class="col-12 col-ms-12 col-md-5 col-lg-2">
       <button mat-raised-button class="p-2" style="width: 100%;" [routerLink]="['add/new', 'product']" >
         <img src="../../../assets/icons/new-product.png" height="35"> New Product
       </button>
-    </div> -->
+    </div>
     <div *ngIf="addProductRole" class="col-12 col-ms-12 col-md-5 col-lg-2">
       <!-- (click)="showPamphletCheckboxes()" -->
       <button mat-raised-button class="p-2" style="width: 100%;" [routerLink]="['add/new', 'linked-product']" >
@@ -35,11 +35,11 @@
         <img src="../../../assets/icons/csv.png" height="35"> Quick Export
       </button>
     </div>
-    <div class="col-12 col-ms-12 col-md-5 col-lg-3">
+    <!-- <div class="col-12 col-ms-12 col-md-5 col-lg-3">
       <button mat-raised-button class="p-2" style="width: 100%;" routerLink="products/export">
         <img src="../../../assets/icons/wordpress.png" height="35">  WordPress Export
       </button>
-    </div>
+    </div> -->
   </div>
   <div class="row" *ngIf="showNewPamphletPanel">
     <div class="col-md-12">

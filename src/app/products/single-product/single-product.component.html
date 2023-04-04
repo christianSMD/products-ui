@@ -311,6 +311,16 @@
                         <tr *ngFor="let i of productAttributes">
                           <td>{{ i.key }}</td>
                           <td>{{ i.value }}</td>
+                          <td *ngIf="editRole" style="width: 7px;">
+                            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Options">
+                              <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu="matMenu">
+                              <button mat-menu-item *ngIf="editRole" (click)="deleteProductAttribute(i.id, i.key, i.product_id)">
+                                <mat-icon>delete</mat-icon>
+                                <span>Delete</span>
+                              </button>
+                            </mat-menu>
                         </tr>
                       </table>
                     </div>
@@ -434,7 +444,8 @@
             </div>
           </mat-tab>
           <mat-tab *ngIf="editRole" label="Manage Attributes">
-            <div class="mt-5 custom-tab form-border" style="overflow: hidden !important;">
+
+            <div class="mt-2 custom-tab form-border" style="overflow: hidden !important;">
               <mat-card style="background-color: rgb(255, 255, 255);">
                 <form [formGroup]="productFormAttributes">
                   <ng-container formArrayName="attributes">
@@ -464,6 +475,25 @@
                   </button>
                   <button mat-raised-button type="submit" *ngIf="editRole" [disabled]="!productFormAttributes.dirty" color="primary" (click)="updateAttributes()" style="margin-left: 1rem;">{{saveAttrBtnText}}</button>
                 </form>
+              </mat-card>
+
+              <mat-card style="background-color: rgb(255, 255, 255); margin-top: 1rem;">
+                <table class="table table-bordered">
+                  <tr *ngFor="let i of productAttributes">
+                    <td>{{ i.key }}</td>
+                    <td>{{ i.value }}</td>
+                    <td *ngIf="editRole" style="width: 7px;">
+                      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Options">
+                        <mat-icon>more_vert</mat-icon>
+                      </button>
+                      <mat-menu #menu="matMenu">
+                        <button mat-menu-item *ngIf="editRole" (click)="deleteProductAttribute(i.id, i.key, i.product_id)">
+                          <mat-icon>delete</mat-icon>
+                          <span>Delete</span>
+                        </button>
+                      </mat-menu>
+                  </tr>
+                </table>
               </mat-card>
             </div>
           </mat-tab>
@@ -587,7 +617,7 @@
               </div>
             </div>
           </mat-tab>
-          <mat-tab label="Briefing Files">
+          <!-- <mat-tab label="Briefing Files">
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <div class="row">
                 <div class="col-md-4">
@@ -631,19 +661,19 @@
                         <tr style="list-style: none;">
                           <th>Document</th>
                           <th>Uploaded</th>
-                          <!-- <th>Expiry Date</th> -->
-                          <!-- <th>Permission</th> -->
+                          <th>Expiry Date</th>
+                          <th>Permission</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr *ngFor="let file of documentFiles" >
                           <td>{{ file.name }}</td>
                           <td>{{ file.created_at | date }}</td>
-                          <!-- <td>
+                          <td>
                             <span *ngIf="today > file.expiry_date">⚠</span>
                             {{ file.expiry_date | date }}
-                          </td> -->
-                          <!-- <td></td> -->
+                          </td>
+                          <td></td>
                         </tr>
                   
                       </tbody>
@@ -652,7 +682,7 @@
                 </div>
               </div>
             </div>
-          </mat-tab>
+          </mat-tab> -->
           <mat-tab label="Media" *ngIf="uploadRole">
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <mat-tab-group>
@@ -839,8 +869,12 @@
                   </td>
                 </tr>
                 <tr>
-                  <td class="table-label-cell">Is Portable</td>
-                  <td> </td>
+                  <td class="table-label-cell">Attributes</td>
+                  <td>
+                    <ul>
+                      <li *ngFor="let i of productAttributes">{{ i.key }} : {{ i.value }}</li>
+                    </ul>
+                  </td>
                 </tr>
               </table>
             </div>
@@ -887,8 +921,8 @@
                 <mat-icon *ngIf="categoriesList.length > 0">check_circle</mat-icon> Categories
               </mat-list-item>
               <mat-list-item role="listitem">
-                <mat-icon *ngIf="attributes.length < 1">radio_button_unchecked</mat-icon>
-                <mat-icon *ngIf="attributes.length > 0">check_circle</mat-icon> Attributes
+                <mat-icon *ngIf="productAttributes.length < 1 && attributes.length < 1">radio_button_unchecked</mat-icon>
+                <mat-icon *ngIf="productAttributes.length > 0 || attributes.length > 0">check_circle</mat-icon> Attributes
               </mat-list-item>
               <mat-list-item role="listitem">
                 <mat-icon *ngIf="packagingCount < 1">radio_button_unchecked</mat-icon>

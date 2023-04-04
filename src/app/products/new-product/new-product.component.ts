@@ -202,9 +202,10 @@ export class NewProductComponent implements OnInit {
         this.newProductFormPackaging.patchValue({
           product_id: res.id,
         });
-        this.info.activity('Added new product', this.newProductId);
+        this.info.activity(`${this.info.getUserName()} added a new product`, this.newProductId);
         this.openSnackBar(res.name + ' Added 😃', 'Okay');
-        this.nextTab();
+        //this.nextTab();
+        this.router.navigate([res.sku]);
       }, error:(res)=>{
         this.openSnackBar('😢 ' + res.message, 'Okay');
       }
