@@ -146,7 +146,10 @@ export class SingleProductComponent implements OnInit {
   switchImageMain = 0;
   inTheBox: any[] = [];
   featuresAndBenefits: any[] = [];
+  shoutOuts: any[] = [];
+  extendedFabs: any[] = [];
   productBarcode: string;
+  imagesAreSorted: boolean = false;
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -388,6 +391,7 @@ export class SingleProductComponent implements OnInit {
         let allAttr: any[] = [];
         let attrs: any[] =[];
         for (let index = 0; index < res.length; index++) {
+          console.log("test attr:", JSON.parse(res[index].attributes));
           attrs = JSON.parse(res[index].attributes);
           for (let x = 0; x < attrs.length; x++) {
             allAttr.push(attrs[x])
@@ -614,7 +618,10 @@ export class SingleProductComponent implements OnInit {
             const obj = this.mediaFiles.find(x => x.id == id);
             orderedImages.push(obj);    
           }
+          this.imagesAreSorted = true;
           this.mediaFiles = orderedImages;
+        } else {
+          this.imagesAreSorted = false;
         }
         this.mediaFiles = this.mediaFiles;
       }, error:(res)=> {
@@ -821,7 +828,8 @@ export class SingleProductComponent implements OnInit {
     const attributes = (this.attributes.length > 0 || this.productAttributes.length > 0) ? 1 : 0;
     const packaging = (this.packagingCount > 0) ? 1 : 0;
     const documents = (this.documentFiles.length > 0) ? 1 : 0;
-    const media = (this.mediaFiles.length > 0 || this.imageServerFiles.length > 0) ? 1 : 0;
+    // const media = (this.mediaFiles.length > 0 || this.imageServerFiles.length > 0) ? 1 : 0;
+    const media = (this.mediaFiles.length > 0) ? 1 : 0;
     const brand = (this.productForm.value.brand_type_id) ? 1 : 0;
     const total = categories + attributes + packaging + documents + media + brand + status + verified;
     const p = (total / 8) * 100;
@@ -938,6 +946,7 @@ export class SingleProductComponent implements OnInit {
     }).subscribe({
       next:(res)=>{
         console.log(res);
+        this.getProductCategories(this.id);
       }, error:(res)=>{
         this.info.errorHandler(res);
       }
@@ -1149,6 +1158,7 @@ export class SingleProductComponent implements OnInit {
             switch (res[index].design_type_id) {
               case 80:
                 this.shoutouts.push(designs);
+                this.shoutOuts.push(res[index]);
                 break;
               case 81:
                 this.features.push(designs);
@@ -1156,6 +1166,7 @@ export class SingleProductComponent implements OnInit {
                 break;
               case 82:
                 this.fabs.push(designs);
+                this.extendedFabs.push(res[index]);
                 break;
               case 83:
                 this.contents.push(designs);
@@ -1391,7 +1402,15 @@ export class SingleProductComponent implements OnInit {
   }
 
   modifyCats() {
+    this.clearTempTiers();
+    this.descedantsCategories = [];
     this.modifyingCategories = !this.modifyingCategories;
+  }
+
+  clearCats() {
+    this.clearTempTiers();
+    this.descedantsCategories = [];
+    this.removePrevCatsFromDb();
   }
 
   clearTempTiers () {
@@ -1399,6 +1418,8 @@ export class SingleProductComponent implements OnInit {
     this.tier2 = 0;
     this.tier3 = 0;
     this.tier4 = 0;
+    this.tierLabels = [];
+    this.selectedCategories = [];
   }
 
   test() {
