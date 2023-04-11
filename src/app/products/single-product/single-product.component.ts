@@ -427,11 +427,11 @@ export class SingleProductComponent implements OnInit {
           this.packaging = res;
           this.packagingCount = this.packaging.length;
           this.productBarcode = res[0].barcode;
-          this.productFormPackaging = this.formBuilder.group({   
-            length : [res[0].height],
+          this.productFormPackaging = this.formBuilder.group({ 
+            weight : [res[0].weight],  
+            length : [res[0].length],
             width : [res[0].width],
             height : [res[0].height],
-            weight : [res[0].weight],
             packaging_type_id : [res[0].packaging_type_id],
             product_id: [this.id],
             barcode : [res[0].barcode]
