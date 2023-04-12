@@ -694,7 +694,7 @@ export class SingleProductComponent implements OnInit {
     this.productFormPackaging.patchValue({
       product_id: this.id,
     });
-    this.api.POST(`packaging`, this.productFormPackaging.value).subscribe({
+    this.api.POST(`packaging/update/${this.id}`, this.productFormPackaging.value).subscribe({
       next:(res)=>{
         this.info.activity(`${this.info.getUserName()} Updated product packaging details`, this.product.id);
         this.openSnackBar('Packaging Saved 😃', 'Okay');
