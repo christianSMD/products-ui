@@ -151,7 +151,7 @@ export class SingleProductComponent implements OnInit {
   extendedFabs: any[] = [];
   productBarcode: string;
   imagesAreSorted: boolean = false;
-  updateHeight: number;
+  packagingLoader: boolean = false;
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -691,11 +691,13 @@ export class SingleProductComponent implements OnInit {
   }
 
   updatePackaging(): void {
+    this.packagingLoader = true;
     this.productFormPackaging.patchValue({
       product_id: this.id,
     });
-    this.api.POST(`packaging/update/${this.id}`, this.productFormPackaging.value).subscribe({
+    this.api.POST(`packaging`, this.productFormPackaging.value).subscribe({
       next:(res)=>{
+        this.packagingLoader = false;
         this.info.activity(`${this.info.getUserName()} Updated product packaging details`, this.product.id);
         this.openSnackBar('Packaging Saved 😃', 'Okay');
         this.getPackaging(this.id);
@@ -706,25 +708,47 @@ export class SingleProductComponent implements OnInit {
   }
 
   deletePackaging(id: number): void {
-    this.api.GET(`packaging/delete/${id}`).subscribe({
-      next:(res)=>{
-        console.log(res);
-      }, error:(res)=> {
-        this.info.errorHandler(res);
-      }
-    });
+    
+    if(confirm("This packaging information will be removed")) {
+      this.packagingLoader = true;
+      this.api.GET(`packaging/delete/${id}`).subscribe({
+        next:(res)=>{
+          this.packagingLoader = false;
+          this.info.activity(`${this.info.getUserName()} removed some packaing information`, this.product.id);
+          this.openSnackBar('Packaging information deleted', 'Okay');
+          this.getPackaging(this.id);
+        }, error:(res)=> {
+          this.info.errorHandler(res);
+        }
+      });
+    }
+    
   }
 
   savePackagingChanges(id: number): void {
-    // this.api.POST(`packaging/update-by-id/${id}`, this.productFormPackaging.value).subscribe({
-    //   next:(res)=>{
-    //     this.info.activity(`${this.info.getUserName()} Updated product packaging details`, this.product.id);
-    //     this.openSnackBar('Packaging Saved 😃', 'Okay');
-    //     this.getPackaging(this.id);
-    //   }, error:(res)=>{
-    //     this.openSnackBar('😢 ' + res.message, 'Okay');
-    //   }
-    // });
+    this.packagingLoader = true;
+    const length = document.getElementById("length" + id) as HTMLInputElement | null;
+    const height = document.getElementById("height" + id) as HTMLInputElement | null;
+    const width = document.getElementById("width" + id) as HTMLInputElement | null;
+    const weight = document.getElementById("weight" + id) as HTMLInputElement | null;
+    const barcode = document.getElementById("barcode" + id) as HTMLInputElement | null;
+
+    this.api.POST(`packaging/update-by-id/${id}`, {
+      length: length?.value,
+      height: height?.value,
+      width: width?.value,
+      weight: weight?.value,
+      barcode: barcode?.value
+    }).subscribe({
+      next:(res)=>{
+        this.packagingLoader = false;
+        this.info.activity(`${this.info.getUserName()} Updated product packaging details`, this.product.id);
+        this.openSnackBar('Packaging Saved 😃', 'Okay');
+        this.getPackaging(this.id);
+      }, error:(res)=>{
+        this.openSnackBar('😢 ' + res.message, 'Okay');
+      }
+    });
   }
 
   updateRegion() {

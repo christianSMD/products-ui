@@ -318,7 +318,7 @@
                             </button>
                             <mat-menu #menu="matMenu">
                               <button mat-menu-item *ngIf="editRole" (click)="deleteProductAttribute(i.id, i.key, i.product_id)">
-                                <mat-icon>delete</mat-icon>
+                                <mat-icon color="warn">delete</mat-icon>
                                 <span>Delete</span>
                               </button>
                             </mat-menu>
@@ -504,7 +504,7 @@
                       </button>
                       <mat-menu #menu="matMenu">
                         <button mat-menu-item *ngIf="editRole" (click)="deleteProductAttribute(i.id, i.key, i.product_id)">
-                          <mat-icon>delete</mat-icon>
+                          <mat-icon color="warn">delete</mat-icon>
                           <span>Delete</span>
                         </button>
                       </mat-menu>
@@ -518,7 +518,12 @@
           <mat-tab label="Packaging">
 
             <mat-card style="background-color: rgb(255, 255, 255);">
-                <!-- <table class="table table-bordered mt-2">
+
+              <h2>Packaging Information</h2>
+              <span *ngIf="packagingCount < 0" class="warning">No information to show</span>
+              <mat-progress-bar *ngIf="packagingLoader" color="accent" mode="indeterminate"></mat-progress-bar>
+              
+                <table class="table table-bordered mt-2">
                   <tr>
                     <th>Type</th>
                     <th>Length</th>
@@ -529,11 +534,11 @@
                   </tr>
                   <tr *ngFor="let i of packaging">
                     <td>{{ returnTypeName(i.packaging_type_id) }}</td>
-                    <td><input matInput placeholder="Length" [value]="i.length" [readonly]="!editRole"></td>
-                    <td><input matInput placeholder="Height" [value]="i.height"  [readonly]="!editRole"></td>
-                    <td><input matInput placeholder="Width" [value]="i.width" [readonly]="!editRole"></td>
-                    <td><input matInput placeholder="Weight" [value]="i.weight" [readonly]="!editRole"></td>
-                    <td><input matInput placeholder="Barcode" [value]="i.barcode" [readonly]="!editRole"></td>
+                    <td><input id="length{{i.id}}" matInput placeholder="Length" [value]="i.length" [readonly]="!editRole"></td>
+                    <td><input id="height{{i.id}}" matInput placeholder="Height" [value]="i.height"  [readonly]="!editRole"></td>
+                    <td><input id="width{{i.id}}" matInput placeholder="Width" [value]="i.width" [readonly]="!editRole"></td>
+                    <td><input id="weight{{i.id}}" matInput placeholder="Weight" [value]="i.weight" [readonly]="!editRole"></td>
+                    <td><input id="barcode{{i.id}}" matInput placeholder="Barcode" [value]="i.barcode" [readonly]="!editRole"></td>
                     <td *ngIf="editRole" style="width: 7px;">
                       <span *ngIf="editRole" style="width: 7px;">
                         <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Options">
@@ -541,11 +546,11 @@
                         </button>
                         <mat-menu #menu="matMenu">
                           <button mat-menu-item *ngIf="editRole" (click)="savePackagingChanges(i.id)">
-                            <mat-icon>save</mat-icon>
+                            <mat-icon color="primary">save</mat-icon>
                             <span>Save</span>
                           </button>
                           <button mat-menu-item *ngIf="editRole" (click)="deletePackaging(i.id)">
-                            <mat-icon>delete</mat-icon>
+                            <mat-icon color="warn">delete</mat-icon>
                             <span>Delete</span>
                           </button>
                         </mat-menu>
@@ -553,10 +558,11 @@
                     </td>
                   </tr>
                 </table>
-              <hr>
-              <h3>Add New Packaging Information</h3> -->
+            </mat-card>
+            <mat-card style="background-color: rgb(255, 255, 255); margin-top: 1rem;">
+              <h2>Add New Packaging Information</h2>
               <form [formGroup]="productFormPackaging">
-                <div class="mt-5 custom-tab" style="overflow: hidden !important;">
+                <div class="mt-2 custom-tab" style="overflow: hidden !important;">
                   <div class="row form-border">
                     <div class="col-md-6">
                       <mat-form-field appearance="outline">
