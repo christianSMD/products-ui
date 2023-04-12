@@ -275,6 +275,16 @@ table {
   margin-bottom: 1rem;
 }
 
+.example-button-row button,
+.example-button-row a {
+  margin-right: 8px;
+}
+
+.example-disabled {
+  display: inline-block;
+}
+
+
  /* Extra small devices (phones, 600px and down) */
  @media only screen and (max-width: 600px) {
 

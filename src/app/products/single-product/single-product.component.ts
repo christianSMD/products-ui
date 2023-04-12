@@ -50,6 +50,7 @@ export class SingleProductComponent implements OnInit {
   parent: string;
   productForm !: FormGroup;
   productFormAttributes !: FormGroup;
+  productFormAttributesBulk !: FormGroup;
   productFormPackaging !: FormGroup;
   productName: string;
   isInDev: number;
@@ -150,6 +151,7 @@ export class SingleProductComponent implements OnInit {
   extendedFabs: any[] = [];
   productBarcode: string;
   imagesAreSorted: boolean = false;
+  updateHeight: number;
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -214,8 +216,13 @@ export class SingleProductComponent implements OnInit {
       width  : [''],
       height : [''],
       packaging_type_id : ['', Validators.required],
-      product_id: [''],
-      barcode: ['']
+      product_id: [this.id],
+      barcode: [''],
+    });
+
+    this.productFormAttributesBulk = this.formBuilder.group({
+      attrKey : [''],
+      attrValue : [''],
     });
     
     this.productFormAttributes = this.formBuilder.group({
@@ -687,7 +694,7 @@ export class SingleProductComponent implements OnInit {
     this.productFormPackaging.patchValue({
       product_id: this.id,
     });
-    this.api.POST(`packaging/update/${this.id}`, this.productFormPackaging.value).subscribe({
+    this.api.POST(`packaging`, this.productFormPackaging.value).subscribe({
       next:(res)=>{
         this.info.activity(`${this.info.getUserName()} Updated product packaging details`, this.product.id);
         this.openSnackBar('Packaging Saved 😃', 'Okay');
@@ -696,6 +703,28 @@ export class SingleProductComponent implements OnInit {
         this.openSnackBar('😢 ' + res.message, 'Okay');
       }
     });
+  }
+
+  deletePackaging(id: number): void {
+    this.api.GET(`packaging/delete/${id}`).subscribe({
+      next:(res)=>{
+        console.log(res);
+      }, error:(res)=> {
+        this.info.errorHandler(res);
+      }
+    });
+  }
+
+  savePackagingChanges(id: number): void {
+    // this.api.POST(`packaging/update-by-id/${id}`, this.productFormPackaging.value).subscribe({
+    //   next:(res)=>{
+    //     this.info.activity(`${this.info.getUserName()} Updated product packaging details`, this.product.id);
+    //     this.openSnackBar('Packaging Saved 😃', 'Okay');
+    //     this.getPackaging(this.id);
+    //   }, error:(res)=>{
+    //     this.openSnackBar('😢 ' + res.message, 'Okay');
+    //   }
+    // });
   }
 
   updateRegion() {
@@ -748,7 +777,26 @@ export class SingleProductComponent implements OnInit {
    * @description Add or remove categorie's attributes
    * @param action - Can be 'New' or 'Update' 
    */
-   updateAttributes(): void {
+  updateAttributesBulk() {
+    this.api.POST(`attributes`, [{
+      product_id: this.id,
+      key : "",
+      value: this.productFormAttributesBulk.value.attrValue,
+    }]).subscribe({
+      next:(res)=> {
+        this.saveAttrBtnText = "Save Changes";
+        this.getProductAttributes(this.product.id);
+        this.openSnackBar('Attributes Saved', 'Okay');
+        this.info.activity(`${this.info.getUserName()} Updated product attributes`, this.product.id);
+      }, error:(res)=> {
+        this.info.errorHandler(res);
+        this.saveAttrBtnText = "Failed, try again.";
+        this.openSnackBar(res.message, 'Okay');
+      }
+    });
+  }
+
+  updateAttributes(): void {
 
     let temp: any[] = this.productFormAttributes.value.attributes;
 
@@ -1178,7 +1226,6 @@ export class SingleProductComponent implements OnInit {
           }
         }
 
-        console.log("Contents: ", this.inTheBox);
       }, error:(res)=>{
         this.info.errorHandler(res);
         //this.designLoader = false;

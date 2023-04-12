@@ -309,11 +309,10 @@
                     <mat-progress-bar color="accent" *ngIf="loadingPdsAttributes" mode="indeterminate"></mat-progress-bar>
                     <br>
                     <div *ngIf="!loadingPdsAttributes">
-                      <table class="table table-bordered">
-                        <tr *ngFor="let i of productAttributes">
-                          <td>{{ i.key }}</td>
-                          <td>{{ i.value }}</td>
-                          <td *ngIf="editRole" style="width: 7px;">
+                      <ul>
+                        <li *ngFor="let i of productAttributes">
+                          <span *ngIf="i.key">{{ i.key }}: </span> {{ i.value }}
+                          <span *ngIf="editRole" style="width: 7px;">
                             <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Options">
                               <mat-icon>more_vert</mat-icon>
                             </button>
@@ -323,8 +322,9 @@
                                 <span>Delete</span>
                               </button>
                             </mat-menu>
-                        </tr>
-                      </table>
+                          </span>
+                        </li>
+                      </ul>
                     </div>
                   </mat-card>
 
@@ -453,6 +453,7 @@
 
             <div class="mt-2 custom-tab form-border" style="overflow: hidden !important;">
               <mat-card style="background-color: rgb(255, 255, 255);">
+                <h2>Manually add Attributes</h2>
                 <form [formGroup]="productFormAttributes">
                   <ng-container formArrayName="attributes">
                     <ng-container *ngFor="let x of attributes.controls; let index = index">
@@ -460,12 +461,12 @@
                             <mat-grid-list cols="3" rowHeight="80px">
                                 <mat-grid-tile>
                                     <mat-form-field appearance="outline" style="width: 100%;">
-                                        <input matInput id="attrName" type="text" formControlName="attrName" placeholder="Enter Value" [readonly]="!editRole" required>
+                                        <input matInput id="attrName" type="text" formControlName="attrName" placeholder="Enter Value" [readonly]="!editRole">
                                     </mat-form-field>
                                 </mat-grid-tile>
                                 <mat-grid-tile>
                                     <mat-form-field appearance="outline" style="width: 100%;">
-                                        <input matInput id="attrValue" type="text" formControlName="attrValue" placeholder="Enter Value" [readonly]="!editRole" required>
+                                        <input type="text" matInput id="attrValue" formControlName="attrValue" placeholder="Enter Value" [readonly]="!editRole">
                                     </mat-form-field>
                                 </mat-grid-tile>
                                 <mat-grid-tile>
@@ -479,16 +480,25 @@
                     <mat-icon>add_circle_outline</mat-icon>
                     Add Attribute
                   </button>
-                  <button mat-raised-button type="submit" *ngIf="editRole" [disabled]="!productFormAttributes.dirty" color="primary" (click)="updateAttributes()" style="margin-left: 1rem;">{{saveAttrBtnText}}</button>
+                  <button mat-raised-button type="submit" *ngIf="editRole" [disabled]="!productFormAttributes.dirty" color="primary" (click)="updateAttributes()" style="float: right; ">{{saveAttrBtnText}}</button>
                 </form>
               </mat-card>
 
               <mat-card style="background-color: rgb(255, 255, 255); margin-top: 1rem;">
-                <table class="table table-bordered">
-                  <tr *ngFor="let i of productAttributes">
-                    <td>{{ i.key }}</td>
-                    <td>{{ i.value }}</td>
-                    <td *ngIf="editRole" style="width: 7px;">
+                <h2>Paste Attributes</h2>
+                <form [formGroup]="productFormAttributesBulk">
+                  <input formControlName="attrName" type="hidden" value="6">
+                  <textarea formControlName="attrValue" rows="6" placeholder="Paste attributes here" [readonly]="!editRole" style="width: 100%;"></textarea>
+                  <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="updateAttributesBulk()" style="margin-left: 1rem; ">{{saveAttrBtnText}}</button>
+                </form>
+              </mat-card>
+
+              <mat-card style="background-color: rgb(255, 255, 255); margin-top: 1rem;">
+
+                <ul>
+                  <li *ngFor="let i of productAttributes">
+                    <span *ngIf="i.key">{{ i.key }}: </span> {{ i.value }}
+                    <span *ngIf="editRole" style="width: 7px;">
                       <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Options">
                         <mat-icon>more_vert</mat-icon>
                       </button>
@@ -498,13 +508,53 @@
                           <span>Delete</span>
                         </button>
                       </mat-menu>
-                  </tr>
-                </table>
+                    </span>
+                  </li>
+                </ul>
+              
               </mat-card>
             </div>
           </mat-tab>
           <mat-tab label="Packaging">
+
             <mat-card style="background-color: rgb(255, 255, 255);">
+                <table class="table table-bordered mt-2">
+                  <tr>
+                    <th>Type</th>
+                    <th>Length</th>
+                    <th>Height</th>
+                    <th>Width</th>
+                    <th>Weight</th>
+                    <th>Barcode</th>
+                  </tr>
+                  <tr *ngFor="let i of packaging">
+                    <td>{{ returnTypeName(i.packaging_type_id) }}</td>
+                    <td><input matInput placeholder="Length" [value]="i.length" [readonly]="!editRole"></td>
+                    <td><input matInput placeholder="Height" [value]="i.height"  [readonly]="!editRole"></td>
+                    <td><input matInput placeholder="Width" [value]="i.width" [readonly]="!editRole"></td>
+                    <td><input matInput placeholder="Weight" [value]="i.weight" [readonly]="!editRole"></td>
+                    <td><input matInput placeholder="Barcode" [value]="i.barcode" [readonly]="!editRole"></td>
+                    <td *ngIf="editRole" style="width: 7px;">
+                      <span *ngIf="editRole" style="width: 7px;">
+                        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Options">
+                          <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
+                          <button mat-menu-item *ngIf="editRole" (click)="savePackagingChanges(i.id)">
+                            <mat-icon>save</mat-icon>
+                            <span>Save</span>
+                          </button>
+                          <button mat-menu-item *ngIf="editRole" (click)="deletePackaging(i.id)">
+                            <mat-icon>delete</mat-icon>
+                            <span>Delete</span>
+                          </button>
+                        </mat-menu>
+                      </span>
+                    </td>
+                  </tr>
+                </table>
+              <hr>
+              <h3>Add New Packaging Information</h3>
               <form [formGroup]="productFormPackaging">
                 <div class="mt-5 custom-tab" style="overflow: hidden !important;">
                   <div class="row form-border">
@@ -542,7 +592,10 @@
                       <mat-form-field appearance="outline">
                         <mat-label>Barcode</mat-label>
                         <input matInput formControlName="barcode" placeholder="barcode" [readonly]="!editRole">
-                        <mat-icon matSuffix>qr_code</mat-icon>
+                      </mat-form-field>
+                      <mat-form-field appearance="outline">
+                        <mat-label>Product Id</mat-label>
+                        <input matInput formControlName="product_id" placeholder="barcode" readonly>
                       </mat-form-field>
 
                       <div class="m-3">
@@ -891,7 +944,9 @@
                   <td class="table-label-cell">Attributes</td>
                   <td>
                     <ul>
-                      <li *ngFor="let i of productAttributes">{{ i.key }} : {{ i.value }}</li>
+                      <li *ngFor="let i of productAttributes">
+                        <span *ngIf="i.key">{{ i.key }}: </span> {{ i.value }}
+                      </li>
                     </ul>
                   </td>
                 </tr>
