@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api/api.service';
@@ -13,6 +13,10 @@ import { Type } from 'src/app/interfaces/type';
 import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
 import { LookupService } from 'src/app/services/lookup/lookup.service';
 import { ProductsService } from 'src/app/services/products/products.service';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort, Sort } from '@angular/material/sort';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,14 +34,18 @@ export class DashboardComponent implements OnInit {
   eolProducts: number = 0;
   developmentProducts: number = 0;
   allProducts: number = 0;
-  categoriesCount: number = 0;
-  brandsCount: number = 0;
   regionsCount: number = 0;
   progressMode: ProgressSpinnerMode = 'determinate';
   brands: any[] = [];
   productsByBrand: any[] = [];
   uknownBrandProducts: number = 0;
+  displayedColumns: string[] = ['verified', 'thumbnail', 'sku', 'name', 'brand', 'description', 'updated', 'view'];
+  dataSource: MatTableDataSource<Product>;
+  verifiedProducts: any[] = [];
+  owners: any[] = [];
 
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
   @BlockUI() blockUI: NgBlockUI;
 
   constructor(
@@ -50,7 +58,8 @@ export class DashboardComponent implements OnInit {
     private info: InfoService,
     private router: Router,
     private lookup: LookupService,
-    private products: ProductsService
+    private products: ProductsService,
+    public _liveAnnouncer: LiveAnnouncer,
   ) { }
 
   ngOnInit(): void {
@@ -59,27 +68,45 @@ export class DashboardComponent implements OnInit {
     this.treeNav.hide();
     this.getAllProducts();
     this.getAllTypes();
-    this.getAllCategories();
-    this.productsBybrand();
   }
 
   getAllProducts() {
-    this.productsList = this.products.getProducts();
-    this.allProducts = this.productsList.length;
-    const active = this.productsList.filter(x => x.is_active == 1);
-    this.activeProducts = active.length;
-    const development = this.productsList.filter(x => x.is_in_development == 1);
-    this.developmentProducts = development.length;
-    const eol = this.productsList.filter(x => x.is_eol == 1);
-    this.eolProducts = eol.length;
+    this.productsLoader = true;
+    this.api.GET('products').subscribe({
+      next:(res)=>{
+        this.productsList = res;
+        this.productsLoader = false;
+        this.verifiedProducts = this.productsList.filter((p: any) => p.verified == 1);
+        this.dataSource = new MatTableDataSource(this.productsList);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        this.productsLoader = false;
+        this.blockUI.stop();
+        this.veriftStats(this.productsList);
+      }, error:(res)=>{
+        this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
+      }
+    });
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  announceSortChange(sortState: Sort) {
+    if (sortState.direction) {
+      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
+    } else {
+      this._liveAnnouncer.announce('Sorting cleared');
+    }
   }
   
   getAllTypes() {
     this.typesList = this.lookup.getTypes();
-  }
-
-  getAllCategories(): void {
-    this.categoriesList = this.products.getCategories();
   }
 
   productsBybrand () {
@@ -93,8 +120,41 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  getBrandName(id: string) {
+    try {
+      let i = 0;
+      i = parseInt(id) - 1;
+      if(this.typesList[i] == undefined || isNaN(i) || i == null) {
+        return '';
+      }
+      return this.typesList[i].name;
+    } catch (error) {
+      this.info.errorHandler(error);
+      return "";
+    }
+    
+  }
+
   openSnackBar(message: string, action: string) {
     this._snackBar.open(message, action, { duration: 2000 });
+  }
+
+  table(results: Product[]) {
+    this.dataSource = new MatTableDataSource(results);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  veriftStats(products: Product[]) {
+
+    let co = products[0].product_manager;
+    let owners = [];
+
+    owners.push(co);
+    for (let x = 0; x < products.length; x++) {
+      let f = owners.find((o: any) => o.product_manager == co);
+      console.log(owners);
+    }
   }
 
 }

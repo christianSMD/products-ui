@@ -18,4 +18,5 @@ export interface Product {
     is_eol: number;
     product_id: number;
     brand_type_id: NumberConstructor;
+    product_manager: number;
 }

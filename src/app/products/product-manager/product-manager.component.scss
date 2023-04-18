@@ -91,6 +91,21 @@ table {
     float: right;
 }
 
+:host {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .warning {
+    background-color: rgba(255, 166, 0, 0.836);
+    color: #000;
+    padding: 9px;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+  }
+  
+
 /* Extra small devices (phones, 600px and down) */
 @media only screen and (max-width: 600px) {
 

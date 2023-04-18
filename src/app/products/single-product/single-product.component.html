@@ -11,11 +11,15 @@
 
 <div *ngIf="product">
   <p>
-    <a routerLink="/">Products </a> / Product Details / {{ productName }}
+    <a routerLink="/">Products </a> / Product Details / {{ productName }} 
+    <span style="float: right; cursor: pointer;" (click)="toggleInfoBar()">
+      <i *ngIf="showInfoBar" class="material-icons">arrow_right</i>
+      <i *ngIf="!showInfoBar" class="material-icons">arrow_left</i>
+    </span>
   </p>
 
   <div class="row" id="pdfContent">
-    <div class="col-md-11 col-lg-9">
+    <div [class]="mainTabsCls" style="transition: width 1s;">
       <mat-card style="background: #EFEFEF;">
         
         <mat-tab-group>
@@ -100,9 +104,12 @@
                         <mat-checkbox #is_active formControlName="is_active" [disabled]="!editRole">Is Active</mat-checkbox><hr>
                         <!-- <mat-checkbox [disabled]="productManagerId == 0 || !canVerify" #verified formControlName="verified">Verified</mat-checkbox><br> -->
                         <div *ngIf="!imagesAreSorted" class="card warning">
-                          Before verifying, make sure your images are arranged correctly on the "Media" tab.
+                          ⚠ Before verifying, make sure your images are arranged correctly on the "Media" tab.
                         </div>
-                        <mat-checkbox #verified formControlName="verified">Verified</mat-checkbox><br>
+                        <div *ngIf="productCategories.length < 1" class="card warning">
+                          ⚠ Please set categories for this product
+                        </div>
+                        <mat-checkbox [disabled]="productCategories.length < 1" #verified formControlName="verified">Verified</mat-checkbox><br>
                         <span *ngIf="productManagerId == 0"><i class="text-muted">Product Manager is needed to verify this product</i></span>
                         <hr>
                         <button mat-raised-button [disabled]="!productForm.dirty" *ngIf="editRole" type="submit" color="primary" (click)="updateProduct()">Save Changes</button>
@@ -309,20 +316,11 @@
                     <mat-progress-bar color="accent" *ngIf="loadingPdsAttributes" mode="indeterminate"></mat-progress-bar>
                     <br>
                     <div *ngIf="!loadingPdsAttributes">
-                      <ul>
+                      <ul class="attributes-bullets">
                         <li *ngFor="let i of productAttributes">
-                          <span *ngIf="i.key">{{ i.key }}: </span> {{ i.value }}
-                          <span *ngIf="editRole" style="width: 7px;">
-                            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Options">
-                              <mat-icon>more_vert</mat-icon>
-                            </button>
-                            <mat-menu #menu="matMenu">
-                              <button mat-menu-item *ngIf="editRole" (click)="deleteProductAttribute(i.id, i.key, i.product_id)">
-                                <mat-icon color="warn">delete</mat-icon>
-                                <span>Delete</span>
-                              </button>
-                            </mat-menu>
-                          </span>
+                          <span *ngIf="i.key">• {{ i.key }}: </span>
+                          <span [innerHTML]="beautifyAttr(i.value)"></span>
+                          
                         </li>
                       </ul>
                     </div>
@@ -495,11 +493,12 @@
 
               <mat-card style="background-color: rgb(255, 255, 255); margin-top: 1rem;">
 
-                <ul>
+                <ul class="attributes-bullets">
                   <li *ngFor="let i of productAttributes">
-                    <span *ngIf="i.key">{{ i.key }}: </span> {{ i.value }}
+                    <span *ngIf="i.key">• {{ i.key }}: </span> 
+                    <span [innerHTML]="beautifyAttr(i.value)"></span>
                     <span *ngIf="editRole" style="width: 7px;">
-                      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Options">
+                      <button mat-button [matMenuTriggerFor]="menu" aria-label="Options">
                         <mat-icon>more_vert</mat-icon>
                       </button>
                       <mat-menu #menu="matMenu">
@@ -949,23 +948,24 @@
                 <tr>
                   <td class="table-label-cell">Attributes</td>
                   <td>
-                    <ul>
+                    <ul class="attributes-bullets">
                       <li *ngFor="let i of productAttributes">
-                        <span *ngIf="i.key">{{ i.key }}: </span> {{ i.value }}
+                        <span *ngIf="i.key">• {{ i.key }}: </span>
+                        <span [innerHTML]="beautifyAttr(i.value)"></span>
                       </li>
                     </ul>
                   </td>
                 </tr>
               </table>
             </div>
-
+           
           </mat-tab>
 
         </mat-tab-group>
       </mat-card>
     </div>
-    <div class="col-md-1 col-lg-3">
-
+    
+    <div [class]="infoBarCls" *ngIf="showInfoBar" style="transition: display 1s;">
       <div class="text-muted">
         <mat-card>
           <mat-card-content>

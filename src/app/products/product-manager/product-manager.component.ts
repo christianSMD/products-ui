@@ -50,7 +50,11 @@ export class ProductManagerComponent extends CdkTableExporterModule implements O
   showNewPamphletPanel: boolean = false;
   newProductForm !: FormGroup;
   productManagerProducts: Product[] = [];
+  productsMissingCategories: Product[] = [];
   productManagerRole: boolean = false;
+  verifiedProducts: any[] = [];
+  productsViewInfo: string;
+
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -157,11 +161,13 @@ export class ProductManagerComponent extends CdkTableExporterModule implements O
     this.api.GET(`product-manager/products/${this.info.getUserId()}`).subscribe({
       next:(res)=>{
         this.productsList = res;
+        this.verifiedProducts = this.productsList.filter((p: any) => p.verified == 1);
         this.dataSource = new MatTableDataSource(this.productsList);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         this.productsLoader = false;
         this.blockUI.stop();
+        this.checkProductCategories();
       }, error:(res)=>{
         this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
       }
@@ -307,6 +313,42 @@ export class ProductManagerComponent extends CdkTableExporterModule implements O
     }
   }
 
+  productsToDisplay(s: string) {
+    let products_to_display: Product[] = [];
+    if (s == 'active') {
+      products_to_display= this.productsList.filter((p: any) => p.is_active == 1);
+      this.productsViewInfo = "Showing: Active Products";
+    }
+    if (s == 'verified') {
+      products_to_display = this.productsList.filter((p: any) => p.verified == 1);
+      this.productsViewInfo = "Showing: Verified Products";
+    }
+    if (s == 'unverified') {
+      products_to_display = this.productsList.filter((p: any) => p.verified == 0);
+      this.productsViewInfo = "Showing: Unverified Products";
+    }
+    if (s == 'missingCategories') {
+      products_to_display = this.productsMissingCategories;
+      this.productsViewInfo = "Showing: Verified Products with missing categories";
+    }
+    
+    this.dataSource = new MatTableDataSource(products_to_display);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  checkProductCategories() {
+    this.productsLoader = true;
+    this.api.GET(`product-manager-catrgories/products/${this.info.getUserId()}`).subscribe({
+      next:(res)=>{
+        console.log(res);
+        this.productsMissingCategories = res;
+        this.productsLoader = false;
+        this.blockUI.stop();
+      }, error:(res)=>{ }
+    });
+  }
+
   openSnackBar(message: string, action: string) {
     this._snackBar.open(message, action, { duration: 2000 });
   }
@@ -314,7 +356,6 @@ export class ProductManagerComponent extends CdkTableExporterModule implements O
   addToPamphlet (productId: string, sku: string, e: any) {
     // Moved to New Product
   }
-
 
   saveProduct() {
     // Moved to New Product

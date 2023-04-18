@@ -6,33 +6,44 @@
 
 <div *ngIf="loggedIn">
   <p> <a routerLink="/">All Products</a> / Product Manager / My Products</p>
-
   <div class="row">
-    <div *ngIf="addProductRole" class="col-12 col-ms-12 col-md-5 col-lg-2">
-      <button mat-raised-button class="p-2" style="width: 100%;" [routerLink]="['add/new', 'product']" >
-        <img src="../../../assets/icons/new-product.png" height="35"> New Product
+    <div class="col-12 col-md-12">
+      <button mat-raised-button matBadge="{{ productsList.length }}" color="accent" class="p-2" (click)="productsToDisplay('active')">
+        <mat-icon>check_circle_outline</mat-icon> Active Products
       </button>
-    </div>
-    <div *ngIf="addProductRole" class="col-12 col-ms-12 col-md-5 col-lg-2">
-      <!-- (click)="showPamphletCheckboxes()" -->
-      <button mat-raised-button class="p-2" style="width: 100%;" [routerLink]="['add/new', 'linked-product']" >
-        <img src="../../../assets/icons/linked-products.png" height="35"> Create Bundle
+      <button mat-raised-button matBadge="{{ verifiedProducts.length }}" color="accent" class="p-2" style="margin-left: 1rem;" (click)="productsToDisplay('verified')">
+        <mat-icon>verified</mat-icon>  Verfied Products
       </button>
+      <button mat-raised-button matBadge="{{ productsList.length - verifiedProducts.length }}" color="warn" class="p-2" style="margin-left: 1rem;" (click)="productsToDisplay('unverified')">
+        <mat-icon>do_not_disturb</mat-icon> Unverfied Products
+      </button>
+      
     </div>
-    <div class="col-12 col-ms-12 col-md-5 col-lg-2">
+    
+    <!-- <div class="col-12 col-ms-12 col-md-5 col-lg-2">
       <button mat-raised-button class="p-2" style="width: 100%;" [routerLink]="['add/new', 'presentation']" >
         <img src="../../../assets/icons/presentation.png" height="35"> Create Presentation
       </button>
-    </div>
-    <div class="col-12 col-ms-12 col-md-5 col-lg-2">
-      <button mat-raised-button class="p-2" style="width: 100%;" (click)="exporter.exportTable('csv',{fileName:'products_system'})">
-        <img src="../../../assets/icons/csv.png" height="35"> Quick Export
+    </div> -->
+    <!-- <div class="col-12 col-ms-12 col-md-12 col-lg-12 pull-right">
+      <button mat-raised-button class="p-2" style="float: right;" matTooltip="Download CSV" (click)="exporter.exportTable('csv',{fileName:'products_system'})">
+        <img src="../../../assets/icons/csv.png" height="35">
       </button>
-    </div>
-    <div class="col-12 col-ms-12 col-md-5 col-lg-3">
+    </div> -->
+    <!-- <div class="col-12 col-ms-12 col-md-5 col-lg-3">
       <button mat-raised-button class="p-2" style="width: 100%;" routerLink="products/export">
         <img src="../../../assets/icons/wordpress.png" height="35">  WordPress Export
       </button>
+    </div> -->
+  </div>
+  <div *ngIf="productsMissingCategories.length > 0" class="card warning">
+    <div class="row">
+      <div class="col-md-8">
+        ⚠ {{ productsMissingCategories.length }} of your verified products are missing categories. Please add categories to these products.
+      </div>
+      <div class="col-md-4">
+        <button mat-stroked-button style="float: right;" (click)="productsToDisplay('missingCategories')">View Products</button>
+      </div>
     </div>
   </div>
   <div class="row" *ngIf="showNewPamphletPanel">
@@ -77,21 +88,14 @@
   </div>
 
   <div class="row">
-    <div class="col-md-12 mt-3">
+    <div class="col-md-12 mt-1">
       <mat-form-field appearance="legacy" color="primary" class="table-search">
         <mat-label>Search</mat-label>
         <input matInput (keyup)="applyFilter($event)" placeholder="Enter sku, mame, brand, description etc" #input>
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
 
-      <mat-form-field appearance="legacy" class="table-category">
-        <mat-label>Categories</mat-label>
-        <mat-select (selectionChange)="filterByCategory($event)">
-            <mat-option [value]="category.id" *ngFor="let category of primaryCategoriesList">
-              {{ category.name }}
-            </mat-option>
-        </mat-select>
-      </mat-form-field> 
+      <span style="float:right; margin-left: 3rem; color: rgb(145, 194, 211);">{{productsViewInfo}}</span> 
 
       <div class="mat-elevation-z8">
 

@@ -152,6 +152,9 @@ export class SingleProductComponent implements OnInit {
   productBarcode: string;
   imagesAreSorted: boolean = false;
   packagingLoader: boolean = false;
+  showInfoBar: boolean = true;
+  mainTabsCls: string = "col-md-11 col-lg-9";
+  infoBarCls: string = "col-md-1 col-lg-3";
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -193,7 +196,7 @@ export class SingleProductComponent implements OnInit {
     });
     this.getDetails(this.sku);
     this.getAllCategories();
-    this.entireProducts();
+    this.entireProducts(); // Need to investigate this
 
     this.productForm = this.formBuilder.group({
       id: [''],
@@ -398,7 +401,6 @@ export class SingleProductComponent implements OnInit {
         let allAttr: any[] = [];
         let attrs: any[] =[];
         for (let index = 0; index < res.length; index++) {
-          console.log("test attr:", JSON.parse(res[index].attributes));
           attrs = JSON.parse(res[index].attributes);
           for (let x = 0; x < attrs.length; x++) {
             allAttr.push(attrs[x])
@@ -1505,5 +1507,21 @@ export class SingleProductComponent implements OnInit {
 
   switchImage(i: number) {
     this.switchImageMain = i;
+  }
+
+  beautifyAttr(attr: string) {
+    const pretty = attr.replaceAll("•","<br>•");
+    return pretty;
+  }
+
+  toggleInfoBar () {
+    this.showInfoBar = !this.showInfoBar;
+
+    if (this.showInfoBar) {
+      this.mainTabsCls = "col-md-1 col-lg-9";
+    } else {
+      this.mainTabsCls = "col-md-12 col-lg-12";
+    }
+    
   }
 }
