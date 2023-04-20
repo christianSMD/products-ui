@@ -1,3 +1,4 @@
+<span class="loadingInfo"></span>
 <p>
   <a routerLink="../products/product-manager" *ngIf="productManagerId !== 0">
     < Back to My products
@@ -118,7 +119,7 @@
                   </mat-card>
                   <br>
                   <mat-card>
-                    <img src="../../../assets/icons/regions.png" height="25" class="mx-2"> <strong>Regions </strong><hr>            
+                    <img src="../../../assets/icons/regions.png" height="25" class="mx-2"> <strong>Regions </strong><span class="loadingInfo"></span><hr>            
                     <form [formGroup]="regionsForm">
                       <ng-container formArrayName="regions">
                         <ng-container *ngFor="let x of regions.controls; let index = index">
@@ -156,7 +157,7 @@
                       <button *ngIf="editRole" mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
                         Add New
                       </button>
-                      <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;">Save</button>
+                      <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;" [disabled]="designLoader">Save</button>
                     </form>
 
                     <form *ngIf="type.id == 81" [formGroup]="featuresAndBenefitsForm">
@@ -174,7 +175,7 @@
                       <button *ngIf="editRole" mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
                         Add New
                       </button>
-                      <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;">Save</button>
+                      <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;" [disabled]="designLoader">Save</button>
                     </form>
 
                     <form *ngIf="type.id == 82" [formGroup]="extendedFabsForm">
@@ -192,7 +193,7 @@
                       <button *ngIf="editRole" mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
                         Add New
                       </button>
-                      <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;">Save</button>
+                      <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;" [disabled]="designLoader">Save</button>
                     </form>
 
                     <form *ngIf="type.id == 83" [formGroup]="packageContentsForm">
@@ -210,7 +211,7 @@
                       <button *ngIf="editRole" mat-raised-button type="button" (click)="addDesign(type.id)" style="margin-left: 1rem;">
                         Add New
                       </button>
-                      <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;">Save</button>
+                      <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;" [disabled]="designLoader">Save</button>
                     </form>
                   </mat-card>
                 </div>

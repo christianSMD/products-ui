@@ -155,6 +155,7 @@ export class SingleProductComponent implements OnInit {
   showInfoBar: boolean = true;
   mainTabsCls: string = "col-md-11 col-lg-9";
   infoBarCls: string = "col-md-1 col-lg-3";
+  loadingInfo: string = "Preparing...";
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -174,6 +175,7 @@ export class SingleProductComponent implements OnInit {
 
   ngOnInit(): void {
     this.info.auth();
+    this.info.setLoadingInfo('Preparing...', 'info');
     window.scroll({ 
       top: 0, 
       left: 0, 
@@ -302,12 +304,13 @@ export class SingleProductComponent implements OnInit {
   }
 
   getAllCategories() {
+    this.info.setLoadingInfo('Loading categories...', 'info');
     this.api.GET('categories').subscribe({
       next:(res)=>{
-        console.log('Categories: ' + res);
         this.products.setCategories(res);
         this.categoriesList = this.products.getCategories();
         this.primaryCategoriesList = res.filter((c: Category) => c.parent == '0');
+        this.info.setLoadingInfo('', 'success');
       }, error:(res)=>{
         console.log(res);
       }
@@ -316,9 +319,11 @@ export class SingleProductComponent implements OnInit {
 
   getDetails(sku: string): void {
     this.productsLoader = true;
+    this.info.setLoadingInfo('Loading product details...', 'info');
     this.api.GET(`products/${sku}`).subscribe({
       next:(res)=>{
         this.productsLoader = false;
+        this.info.setLoadingInfo('', 'success');
         if (res.length > 0) {
           this.detailProgress++;
           this.product = res[0];
@@ -326,7 +331,6 @@ export class SingleProductComponent implements OnInit {
           this.id = this.product.id;
           const seriesType = this.typesList.find((x: Type) => x.id == this.product.family_grouping);
           this.productSeries = seriesType?.name;
-          console.log("productSeries",this.productSeries);
           const productBrand = this.typesList.find((x: Type) => x.id == this.product.brand_type_id);
           this.productBrand  = productBrand?.name;
           this.productManagerId = this.product.product_manager;
@@ -395,26 +399,26 @@ export class SingleProductComponent implements OnInit {
    * @todo Loop each category for attributes.
    */
    getProductCategories(id: string): void {
+    this.info.setLoadingInfo('Loading product categories...', 'info');
     this.api.GET(`product-categories/search/${id}`).subscribe({
       next:(res)=>{
         this.productCategories = res;
-        let allAttr: any[] = [];
-        let attrs: any[] =[];
-        for (let index = 0; index < res.length; index++) {
-          attrs = JSON.parse(res[index].attributes);
-          for (let x = 0; x < attrs.length; x++) {
-            allAttr.push(attrs[x])
+        // let allAttr: any[] = [];
+        // let attrs: any[] =[];
+        // for (let index = 0; index < res.length; index++) {
+        //   attrs = JSON.parse(res[index].attributes);
+        //   for (let x = 0; x < attrs.length; x++) {
+        //     allAttr.push(attrs[x])
 
-            const parentAttrs = this.formBuilder.group({
-              attrName: [attrs[x], Validators.required],
-              attrValue: [0, Validators.required]
-            })
-            this.attributes.push(parentAttrs);
-            this.attrCount = this.attrCount + 1;
+        //     const parentAttrs = this.formBuilder.group({
+        //       attrName: [attrs[x], Validators.required],
+        //       attrValue: [0, Validators.required]
+        //     })
+        //     this.attributes.push(parentAttrs);
+        //     this.attrCount = this.attrCount + 1;
 
-          }
-        }
-        console.log('All Attributes: ', allAttr);
+        //   }
+        // }
         
       }, error:(res)=> {
         console.log(res);
@@ -424,11 +428,13 @@ export class SingleProductComponent implements OnInit {
 
   getAllTypes(): void {
     this.typesList = this.lookup.getTypes();
+    this.info.setLoadingInfo('Loading types...', 'info');
   }
 
   getPackaging(id: string): void {
     this.packagingCount = 0;
     this.packagingLoading = true;
+    this.info.setLoadingInfo('Fetching packaging ingo...', 'info');
     this.api.GET(`packaging/search/${id}`).subscribe({
       next:(res)=>{
         if (res.length > 0) {
@@ -447,8 +453,10 @@ export class SingleProductComponent implements OnInit {
           });
         }
         this.packagingLoading = false;
+        this.info.setLoadingInfo('', 'success');
       }, error:(res)=>{
         this.info.errorHandler(res);
+        this.info.setLoadingInfo('Could not load packaging...', 'warn');
         this.typesLoader = false;
         this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
       }
@@ -456,12 +464,15 @@ export class SingleProductComponent implements OnInit {
   }
 
   getProductAttributes(id: string) {
+    this.info.setLoadingInfo('Fetching attributes...', 'info');
     this.api.GET(`attributes/search-by-id/${id}`).subscribe({
       next:(res)=>{
         this.productAttributes = res;
+        this.info.setLoadingInfo('', 'success');
         console.log(res);
       }, error:(res)=>{
         console.log(res);
+        this.info.setLoadingInfo('Could not load attributes', 'warn');
       }
     });
   }
@@ -564,14 +575,15 @@ export class SingleProductComponent implements OnInit {
   }
   
   media(): void {
+    this.info.setLoadingInfo('Loading media...', 'info');
     this.api.GET(`product-media-files/${this.id}`).subscribe({
       next:(res)=>{
         if(res.length > 0) {
           this.detailProgress++;
           this.mediaFiles = res;
-          console.log('Media ', this.mediaFiles);
           this.getProductImageOrder();
         }
+        this.info.setLoadingInfo('', 'success');
       }, error:(res)=> {
         this.info.errorHandler(res);
       }
@@ -600,6 +612,7 @@ export class SingleProductComponent implements OnInit {
   }
 
   documents(): void {
+    this.info.setLoadingInfo('Loading documents...', 'info');
     this.api.GET(`product-document-files/${this.id}`).subscribe({
       next:(res)=>{
         if(res.length > 0) {
@@ -617,6 +630,7 @@ export class SingleProductComponent implements OnInit {
    * @todo Display images as per list order.
    */
    getProductImageOrder(): void {
+    this.info.setLoadingInfo('Arranging images...', 'info');
     this.api.GET(`image-order/search/${this.id}`).subscribe({
       next:(res)=>{
         if (res.length > 0) {
@@ -633,6 +647,7 @@ export class SingleProductComponent implements OnInit {
           this.imagesAreSorted = false;
         }
         this.mediaFiles = this.mediaFiles;
+        this.info.setLoadingInfo('', 'success');
       }, error:(res)=> {
         this.info.errorHandler(res);
       }
@@ -644,6 +659,7 @@ export class SingleProductComponent implements OnInit {
    * @todo Display Prodict regions.
    */
    getProductRegions(id: string): void {
+    this.info.setLoadingInfo('Loading regions...', 'info');
     this.api.GET(`product-regions/${id}`).subscribe({
       next:(res)=>{
         this.productRegionList = res;
@@ -654,6 +670,7 @@ export class SingleProductComponent implements OnInit {
             })
             this.regions.push(regs);
           }
+          this.info.setLoadingInfo('', 'success');
         }
       }, error:(res)=> {
         this.info.errorHandler(res);
@@ -693,6 +710,7 @@ export class SingleProductComponent implements OnInit {
   }
 
   updatePackaging(): void {
+    this.info.setLoadingInfo('Updating packaging...', 'info');
     this.packagingLoader = true;
     this.productFormPackaging.patchValue({
       product_id: this.id,
@@ -702,6 +720,7 @@ export class SingleProductComponent implements OnInit {
         this.packagingLoader = false;
         this.info.activity(`${this.info.getUserName()} Updated product packaging details`, this.product.id);
         this.openSnackBar('Packaging Saved 😃', 'Okay');
+        this.info.setLoadingInfo('Packaging updated...', 'success');
         this.getPackaging(this.id);
       }, error:(res)=>{
         this.openSnackBar('😢 ' + res.message, 'Okay');
@@ -710,15 +729,16 @@ export class SingleProductComponent implements OnInit {
   }
 
   deletePackaging(id: number): void {
-    
     if(confirm("This packaging information will be removed")) {
       this.packagingLoader = true;
+      this.info.setLoadingInfo('Deleting packaging info', 'info');
       this.api.GET(`packaging/delete/${id}`).subscribe({
         next:(res)=>{
           this.packagingLoader = false;
           this.info.activity(`${this.info.getUserName()} removed some packaing information`, this.product.id);
           this.openSnackBar('Packaging information deleted', 'Okay');
           this.getPackaging(this.id);
+          this.info.setLoadingInfo('Packaging item removed', 'success');
         }, error:(res)=> {
           this.info.errorHandler(res);
         }
@@ -734,7 +754,7 @@ export class SingleProductComponent implements OnInit {
     const width = document.getElementById("width" + id) as HTMLInputElement | null;
     const weight = document.getElementById("weight" + id) as HTMLInputElement | null;
     const barcode = document.getElementById("barcode" + id) as HTMLInputElement | null;
-
+    this.info.setLoadingInfo('Updating packaging changes...', 'info');
     this.api.POST(`packaging/update-by-id/${id}`, {
       length: length?.value,
       height: height?.value,
@@ -746,14 +766,17 @@ export class SingleProductComponent implements OnInit {
         this.packagingLoader = false;
         this.info.activity(`${this.info.getUserName()} Updated product packaging details`, this.product.id);
         this.openSnackBar('Packaging Saved 😃', 'Okay');
+        this.info.setLoadingInfo('Packaging info saved...', 'success');
         this.getPackaging(this.id);
       }, error:(res)=>{
         this.openSnackBar('😢 ' + res.message, 'Okay');
+        this.info.setLoadingInfo('Failed to save packaging changes...', 'danger');
       }
     });
   }
 
   updateRegion() {
+    this.info.setLoadingInfo('Updating regions...', 'info');
     for (let index = 0; index < this.regionsForm.value.regions.length; index++) {
       this.api.POST(`products-regions`, { 
         product_id: this.id,
@@ -762,8 +785,10 @@ export class SingleProductComponent implements OnInit {
         next:(res)=>{
           this.getProductRegions(this.id,);
           this.openSnackBar('Region Updated 😃', 'Okay');
+          this.info.setLoadingInfo('Regions updated...', 'success');
         }, error:(res)=>{
           this.info.errorHandler(res);
+          this.info.setLoadingInfo('Failed to update regions...', 'danger');
         }
       });
     }
@@ -804,6 +829,8 @@ export class SingleProductComponent implements OnInit {
    * @param action - Can be 'New' or 'Update' 
    */
   updateAttributesBulk() {
+    this.info.setLoadingInfo('Updating attributes...', 'info');
+    this.info.setLoadingInfo('Fetching attributes...', 'info');
     this.api.POST(`attributes`, [{
       product_id: this.id,
       key : "",
@@ -814,16 +841,19 @@ export class SingleProductComponent implements OnInit {
         this.getProductAttributes(this.product.id);
         this.openSnackBar('Attributes Saved', 'Okay');
         this.info.activity(`${this.info.getUserName()} Updated product attributes`, this.product.id);
+        this.info.setLoadingInfo('Attributes saved...', 'success');
       }, error:(res)=> {
         this.info.errorHandler(res);
         this.saveAttrBtnText = "Failed, try again.";
         this.openSnackBar(res.message, 'Okay');
+        this.info.setLoadingInfo('Failed to update attributes...', 'danger');
       }
     });
   }
 
   updateAttributes(): void {
-
+    this.info.setLoadingInfo('Updating attributes...', 'info');
+    this.info.setLoadingInfo('Fetching attributes...', 'info');
     let temp: any[] = this.productFormAttributes.value.attributes;
 
     for (let index = 0; index < temp.length; index++) {
@@ -842,6 +872,7 @@ export class SingleProductComponent implements OnInit {
             this.info.errorHandler(res);
             this.saveAttrBtnText = "Failed, try again.";
             this.openSnackBar(res.message, 'Okay');
+            this.info.setLoadingInfo('Failed to update attributes...', 'danger');
           }
         });
       }
@@ -872,15 +903,23 @@ export class SingleProductComponent implements OnInit {
   }
 
   deleteFile(id: number): void {
-    this.api.GET(`delete-file/${id}`).subscribe({
-      next:(res)=>{
-        if(res.length > 0) {
-          //console.log("delete: ", res);
+
+    if(confirm("This image / file will be deleted")) {
+      this.openSnackBar(`Deleting file...`, '');
+      this.info.setLoadingInfo('Deleting file...', 'info');
+      this.api.GET(`delete-file/${id}`).subscribe({
+        next:(res)=>{
+          if(res.length > 0) {
+            //console.log("delete: ", res);
+          }
+          this.openSnackBar(`File deleted...`, 'Okay');
+          this.info.setLoadingInfo('File deleted', 'success');
+        }, error:(res)=> {
+          this.info.errorHandler(res);
         }
-      }, error:(res)=> {
-        this.info.errorHandler(res);
-      }
-    });
+      });
+    }
+    
   }
 
   hideFile(id: number): void {
@@ -992,6 +1031,7 @@ export class SingleProductComponent implements OnInit {
   }
 
   saveCategories() {
+    this.info.setLoadingInfo('Saving categories...', 'info');
     const vals = this.selectedCategories;
     this.removePrevCatsFromDb();
     if (vals.length > 0) {
@@ -1004,9 +1044,11 @@ export class SingleProductComponent implements OnInit {
             this.getProductCategories(this.id);
             this.openSnackBar(`${this.info.getUserName()} Category Added 😃`, 'Okay');
             this.clearTempTiers();
+            this.info.setLoadingInfo('Categories updated...', 'success');
           }, error:(res)=>{
             this.info.errorHandler(res);
             this.openSnackBar('😢 ' + res.message, 'Okay');
+            this.info.setLoadingInfo('Failed to update categories...', 'danger');
           }
         });
       }
@@ -1015,14 +1057,17 @@ export class SingleProductComponent implements OnInit {
   }
 
   removePrevCatsFromDb() {
+    this.info.setLoadingInfo('Removing categories...', 'info');
     this.api.POST('product-categories/clean', {
       product_id: this.id,
     }).subscribe({
       next:(res)=>{
         console.log(res);
         this.getProductCategories(this.id);
+        this.info.setLoadingInfo('Categories removed...', 'warn');
       }, error:(res)=>{
         this.info.errorHandler(res);
+        this.info.setLoadingInfo('Could not remove categories...', 'danger');
       }
     });
   }
@@ -1032,13 +1077,16 @@ export class SingleProductComponent implements OnInit {
   }
 
   getPdsAttributes(sku: string): void {
+    this.info.setLoadingInfo('Fetching attributes from PDS...', 'info');
     this.api.GET(`pds-attributes/${sku}`).subscribe({
       next:(res)=>{
         this.pdsAttributes = res;
         this.loadingPdsAttributes = false;
+        this.info.setLoadingInfo('', 'success');
       }, error:(res)=> {
         this.info.errorHandler(res);
         this.loadingPdsAttributes = false;
+        this.info.setLoadingInfo('', 'danger');
       }
     });
   }
@@ -1047,12 +1095,15 @@ export class SingleProductComponent implements OnInit {
 
     let text = `Delete ${key}?`;
     if (confirm(text) == true) {
+      this.info.setLoadingInfo('Deleting attributes', 'info');
       this.api.GET(`attributes/delete/${id}`).subscribe({
         next:(res)=>{
           this.getProductAttributes(product_id);
           this.info.activity(`${this.info.getUserName()} deleted attribute: ${key}.`, parseInt(product_id));
+          this.info.setLoadingInfo('Attribute(s) removed', 'success');
         }, error:(res)=> {
           this.info.errorHandler(res);
+          this.info.setLoadingInfo('Failed to delete ttribute(s)', 'danger');
         }
       });
     } 
@@ -1083,6 +1134,7 @@ export class SingleProductComponent implements OnInit {
   getLinkedProducts() {
     this.bundleLoader = true;
     this.linkedImagesLoader = true;
+    this.info.setLoadingInfo('Getting linked products', 'info');
     this.api.GET(`linked-products/${this.id}`).subscribe({
       next:(res)=>{
         this.linkedProducts = res;
@@ -1093,7 +1145,8 @@ export class SingleProductComponent implements OnInit {
           let child = this.productsList.find((x: any)=>x.id == res[index].child_id);
           this.linkedProductSKUs.push(child?.sku);
           this.linkedProductsIDs.push(child?.id);
-          this.imageserver(child!.sku);     
+          this.imageserver(child!.sku); 
+          this.info.setLoadingInfo('Getting linked products media', 'info');   
           this.api.GET(`product-media-files/${child?.id}`).subscribe({
             next:(res)=>{
               if(res.length > 0) {
@@ -1104,7 +1157,8 @@ export class SingleProductComponent implements OnInit {
             }
           });
         } 
-        this.bundleLoader = false;       
+        this.bundleLoader = false; 
+        this.info.setLoadingInfo('', 'success');      
       }, error:(res)=> {
         this.info.errorHandler(res);
         this.bundleLoader = false;
@@ -1197,12 +1251,14 @@ export class SingleProductComponent implements OnInit {
   }
 
   saveDesign (formObj: any, typeId: number) {
+    this.designLoader = true;
+    this.info.setLoadingInfo('Saving changes', 'info');
+    this.openSnackBar('Saving changes...', '');
     for (let index = 0; index < formObj.length; index++) {
       const checkValue = formObj[index].designField;
       const valueFound = formObj.find((x: any) => x.designField == checkValue);
       const insertId = valueFound.designId;
       if (insertId == undefined) {
-        this.designLoader = true;
         this.api.POST(`design`, { 
           product_id: this.id,
           design_type_id: typeId,
@@ -1210,6 +1266,8 @@ export class SingleProductComponent implements OnInit {
         }).subscribe({
           next:(res)=>{
             this.designLoader = false;
+            this.info.setLoadingInfo('Changes saved', 'success');
+            this.openSnackBar('Changes saved', 'Okay');
             this.info.errorHandler(res);
           }
         });
@@ -1218,11 +1276,12 @@ export class SingleProductComponent implements OnInit {
   }
 
   getDesigns(id: string) {
+    this.info.setLoadingInfo('Fetching design data', 'info');
     this.designLoader = true;
     this.api.GET(`design/${id}`).subscribe({
       next:(res)=>{
-        console.log("Designs: ", res);
         this.designLoader = false;
+        this.info.setLoadingInfo('', 'success');
         if (res !== null) {
           for (let index = 0; index < res.length; index++) {
             const designs = this.formBuilder.group({
@@ -1380,11 +1439,14 @@ export class SingleProductComponent implements OnInit {
   }
 
   audit(id: string) {
+    this.info.setLoadingInfo('Getting audits', 'info');
     this.api.GET(`activity/${this.id}`).subscribe({
       next:(res)=>{
         this.audits = res;
+        this.info.setLoadingInfo('', 'success');
       }, error:(res)=> {
         this.info.errorHandler(res);
+        this.info.setLoadingInfo('Audits did not load properrly', 'warn');
       }
     });
   }
@@ -1510,7 +1572,14 @@ export class SingleProductComponent implements OnInit {
   }
 
   beautifyAttr(attr: string) {
-    const pretty = attr.replaceAll("•","<br>•");
+    const l = attr[0];
+    let pretty: string;
+
+    if(l.match(/[a-z]/i)){
+      pretty = attr;
+    } else {
+      pretty = attr.replaceAll(l,"<br>•");
+    }
     return pretty;
   }
 

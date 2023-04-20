@@ -284,9 +284,16 @@ table {
   display: inline-block;
 }
 
+
 .attributes-bullets {
   list-style-type: none;
 }
+
+.loadingInfo {
+  float: right;
+  color: lightblue;
+}
+
 
  /* Extra small devices (phones, 600px and down) */
  @media only screen and (max-width: 600px) {

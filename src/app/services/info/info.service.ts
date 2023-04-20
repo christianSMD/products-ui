@@ -180,6 +180,27 @@ export class InfoService {
       }
     );
   }
+
+  setLoadingInfo(text: string, type: string) {
+    let e = <HTMLElement> document.querySelector(".loadingInfo");
+    e.innerHTML = text;
+    switch (type) {
+      case "info":
+        e.style.color = "lightblue";
+        break;
+      case "success":
+        e.style.color = "green";
+        break;
+      case "warn":
+        e.style.color = "orange";
+        break;
+      case "danger":
+        e.style.color = "red";
+        break;
+      default:
+        break;
+    }
+  }
   
   public errorHandler(error: any) {
     console.log("Error handled: ", error);

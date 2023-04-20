@@ -39,10 +39,14 @@ export class DashboardComponent implements OnInit {
   brands: any[] = [];
   productsByBrand: any[] = [];
   uknownBrandProducts: number = 0;
-  displayedColumns: string[] = ['verified', 'thumbnail', 'sku', 'name', 'brand', 'description', 'updated', 'view'];
+  displayedColumns: string[] = ['verified', 'thumbnail', 'sku', 'name', 'brand', 'description',  'categories', 'updated', 'view'];
   dataSource: MatTableDataSource<Product>;
   verifiedProducts: any[] = [];
   owners: any[] = [];
+  productsViewInfo: string;
+  productCategories: Category[] = [];
+  productCategoryTree: any[] = [];
+  loaderInfo: string;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -66,25 +70,42 @@ export class DashboardComponent implements OnInit {
     this.topNav.show();
     this.sideNav.show();
     this.treeNav.hide();
-    this.getAllProducts();
     this.getAllTypes();
+    this.getAllProducts();
   }
 
   getAllProducts() {
     this.productsLoader = true;
+    this.loaderInfo = "Loading products...";
     this.api.GET('products').subscribe({
       next:(res)=>{
         this.productsList = res;
-        this.productsLoader = false;
         this.verifiedProducts = this.productsList.filter((p: any) => p.verified == 1);
         this.dataSource = new MatTableDataSource(this.productsList);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         this.productsLoader = false;
+        this.loaderInfo = "Loading products complete...";
         this.blockUI.stop();
         this.veriftStats(this.productsList);
+        //this.getAllCategories();
       }, error:(res)=>{
         this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
+      }
+    });
+  }
+
+  getAllCategories() {
+    this.productsLoader = true;
+    this.loaderInfo = "Loading categories";
+    this.api.GET('categories').subscribe({
+      next:(res)=>{
+        this.categoriesList = res;
+        this.productsLoader = false;
+        this.loaderInfo = "Loading categories complete...";
+      }, error:(res)=>{
+        this.productsLoader = false;
+        this.loaderInfo = "Failed to load categories";
       }
     });
   }
@@ -149,12 +170,47 @@ export class DashboardComponent implements OnInit {
 
     let co = products[0].product_manager;
     let owners = [];
+  }
 
-    owners.push(co);
-    for (let x = 0; x < products.length; x++) {
-      let f = owners.find((o: any) => o.product_manager == co);
-      console.log(owners);
+  productsToDisplay(s: string) {
+    let products_to_display: Product[] = [];
+    if (s == 'active') {
+      products_to_display= this.productsList.filter((p: any) => p.is_active == 1);
+      this.productsViewInfo = "Showing: Active Products...";
     }
+    if (s == 'verified') {
+      products_to_display = this.productsList.filter((p: any) => p.verified == 1);
+      this.productsViewInfo = "Showing: Verified Products...";
+    }
+    if (s == 'unverified') {
+      products_to_display = this.productsList.filter((p: any) => p.verified == 0);
+      this.productsViewInfo = "Showing: Unverified Products...";
+    }
+    
+    this.dataSource = new MatTableDataSource(products_to_display);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  /**
+   * @todo Get categories asigned to product.
+   * @todo Loop each category for attributes.
+   */
+  displayProductCategories(id: string) {
+    this.productsLoader = true;
+    this.loaderInfo = "Loading product categories...";
+    this.api.GET(`product-categories/search/${id}`).subscribe({
+      next:(res)=>{
+        this.productCategories = res;
+        console.log(res);
+        this.productsLoader = false;
+        this.loaderInfo = "Loading complete";   
+      }, error:(e)=>{
+        this.productsLoader = false;
+        this.loaderInfo = "Something went wrong when trying to load some product categories.";
+      }
+    });
+    
   }
 
 }
