@@ -581,7 +581,7 @@ export class SingleProductComponent implements OnInit {
         if(res.length > 0) {
           this.detailProgress++;
           this.mediaFiles = res;
-          this.getProductImageOrder();
+          //this.getProductImageOrder();
         }
         this.info.setLoadingInfo('', 'success');
       }, error:(res)=> {
@@ -629,30 +629,30 @@ export class SingleProductComponent implements OnInit {
    * @todo Get Image order list
    * @todo Display images as per list order.
    */
-   getProductImageOrder(): void {
-    this.info.setLoadingInfo('Arranging images...', 'info');
-    this.api.GET(`image-order/search/${this.id}`).subscribe({
-      next:(res)=>{
-        if (res.length > 0) {
-          const imgOrder = JSON.parse(res[0].order_list);
-          let orderedImages: any[] = [];
-          for (let x = 0; x < imgOrder.length; x++) {
-            const id = imgOrder[x];
-            const obj = this.mediaFiles.find(x => x.id == id);
-            orderedImages.push(obj);    
-          }
-          this.imagesAreSorted = true;
-          this.mediaFiles = orderedImages;
-        } else {
-          this.imagesAreSorted = false;
-        }
-        this.mediaFiles = this.mediaFiles;
-        this.info.setLoadingInfo('', 'success');
-      }, error:(res)=> {
-        this.info.errorHandler(res);
-      }
-    });
-  }
+  //  getProductImageOrder(): void {
+  //   this.info.setLoadingInfo('Arranging images...', 'info');
+  //   this.api.GET(`image-order/search/${this.id}`).subscribe({
+  //     next:(res)=>{
+  //       if (res.length > 0) {
+  //         const imgOrder = JSON.parse(res[0].order_list);
+  //         let orderedImages: any[] = [];
+  //         for (let x = 0; x < imgOrder.length; x++) {
+  //           const id = imgOrder[x];
+  //           const obj = this.mediaFiles.find(x => x.id == id);
+  //           orderedImages.push(obj);    
+  //         }
+  //         this.imagesAreSorted = true;
+  //         this.mediaFiles = orderedImages;
+  //       } else {
+  //         this.imagesAreSorted = false;
+  //       }
+  //       this.mediaFiles = this.mediaFiles;
+  //       this.info.setLoadingInfo('', 'success');
+  //     }, error:(res)=> {
+  //       this.info.errorHandler(res);
+  //     }
+  //   });
+  // }
 
   /**
    * @todo Get Image order list
@@ -1269,6 +1269,10 @@ export class SingleProductComponent implements OnInit {
             this.info.setLoadingInfo('Changes saved', 'success');
             this.openSnackBar('Changes saved', 'Okay');
             this.info.errorHandler(res);
+          }, error:(e) => {
+            this.designLoader = false;
+            this.info.setLoadingInfo('FABs, Extended FABs or Shoutouts changes failed to update.', 'danger');
+            this.openSnackBar('Changes were not saved, something wrong with input data.', 'Okay');
           }
         });
       }
