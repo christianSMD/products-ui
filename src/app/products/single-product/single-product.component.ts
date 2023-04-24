@@ -914,6 +914,7 @@ export class SingleProductComponent implements OnInit {
           }
           this.openSnackBar(`File deleted...`, 'Okay');
           this.info.setLoadingInfo('File deleted', 'success');
+          this.media();
         }, error:(res)=> {
           this.info.errorHandler(res);
         }

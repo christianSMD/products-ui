@@ -29,9 +29,12 @@ export class ApiService {
 
   private endpoints(): void {  
     if(isDevMode()){
-      this.baseUrl = 'http://127.0.0.1:8000/api/';
-      this.storageUrl = 'http://127.0.0.1:8000/storage/';
-      this.domainUrl = 'http://localhost:4200/login';
+      // this.baseUrl = 'http://127.0.0.1:8000/api/';
+      // this.storageUrl = 'http://127.0.0.1:8000/storage/';
+      // this.domainUrl = 'http://localhost:4200/login';
+      this.baseUrl = 'https://products.smdtechnologies.com/public/api/';
+      this.storageUrl = 'https://products.smdtechnologies.com/public/storage/';
+      this.domainUrl = 'https://products.smdtechnologies.com/login';
     } 
   }
 
