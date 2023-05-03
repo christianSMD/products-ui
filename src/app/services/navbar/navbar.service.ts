@@ -21,6 +21,13 @@ export class NavbarService {
     this.visible = !this.visible; 
   }
 
+  goBack() {
+    javascript:history.back();
+  }
+
+  goForward() {
+    javascript:history.forward();
+  }
 
   doSomethingElseUseful() { }
 }

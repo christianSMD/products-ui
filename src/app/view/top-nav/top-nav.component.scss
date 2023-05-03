@@ -3,6 +3,8 @@
   border-top: #C20F2F solid 2px;
   border-bottom: #a3383813 solid 1px;
   color: #faf9f9;
+  padding-top: 43px;
+  padding-bottom: 37px;
 }
 
 .nav-spacer {
@@ -20,8 +22,35 @@
   margin-top: 11px;
 }
 
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: rgb(173, 173, 173)!important;
+  opacity: 1!important;
+}
+
 .back {
-margin-right: 2rem;
+  margin-right: 2rem;
+}
+
+.search-textbox {
+  border-radius: 15px 0px 0px 15px;
+  width: 10px;
+}
+
+.search-btn {
+  background-color: rgb(36, 36, 36);
+  color: white;
+}
+
+.menu-item {
+  font-size: small;
+  padding-right: 1rem;
+  color: lightgray;
+  font-weight: 200;
+  cursor: pointer;
+}
+
+.menu-item:hover {
+  color: white;
 }
 
 @media only screen and (max-width: 600px) {
@@ -45,6 +74,8 @@ margin-right: 2rem;
 }
 
 /* Small devices (portrait tablets and large phones, 600px and up) */
-@media only screen and (min-width: 600px) {
-
+@media only screen and (max-width: 1000px) {
+  .menu-item {
+    display: none;
+  }
 }

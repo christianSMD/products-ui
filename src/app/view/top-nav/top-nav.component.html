@@ -3,28 +3,35 @@
         <img src="../../../assets/img/nucleus.png" height="40">
     </span>
     
-    <button *ngIf="showIcons" id="user" mat-icon-button (click)="openProfile()" class="user-button">
-        <mat-icon matTooltip="{{userName}}" *ngIf="!adminRole">person_pin</mat-icon>
-        <mat-icon matTooltip="{{userName}} as Admin" *ngIf="adminRole">admin_panel_settings</mat-icon>
+    <button *ngIf="showIcons" id="user" mat-icon-button (click)="goBack()" class="user-button">
+        <mat-icon matTooltip="Go back">arrow_back</mat-icon>
+    </button>
+
+    <button *ngIf="showIcons" id="user" mat-icon-button (click)="goForward()" class="user-button">
+        <mat-icon matTooltip="Go foward">arrow_forward</mat-icon>
     </button>
 
     <span class="nav-spacer"></span>
+
+    <span class="menu-item" routerLink="/">Products</span>
+    <span class="menu-item" routerLink="/">My Products</span>
+    <span class="menu-item" routerLink="brands/manage-brands">Brands</span>
+    <span class="menu-item" (click)="openProfile()">{{userName}}</span>
+    <span class="menu-item" (click)="logout()">Log out</span>
     
     <!-- routerLink= -->
-    <form>
-        <mat-form-field appearance="legacy" color="primary" class="search">
-            <mat-label>Search</mat-label>
-            <input matInput placeholder="Search Product" [(ngModel)]="q">
-            <mat-icon type="submit" matSuffix (click)="search()">search</mat-icon>
+    <form (keydown.enter)="search()">
+        <mat-form-field appearance="outline" color="primary" class="search">
+            <mat-label>Search SKU</mat-label>
+            <input matInput placeholder="Search Product" id="searchQ">
+            <mat-icon matSuffix (click)="search()">search</mat-icon>
         </mat-form-field>   
     </form>
 
-    <mat-icon class="back">arrow_circle_left</mat-icon>
-
+    
     <i class="material-icons" id="slow-connection" style="color: orange; display: none;" matTooltip="Poor internet connection">signal_wifi_statusbar_connected_no_internet_4</i>
     <i class="material-icons" id="no-connection" style="color: red; display: none;" matTooltip="No signal">signal_wifi_connected_no_internet_4</i>
-    <i class="material-icons" *ngIf="devMode" style="color: orange; cursor: pointer;" matTooltip="Development Mode">logo_dev</i>
+    <i class="material-icons" *ngIf="devMode" style="color: orange; cursor: pointer;" matTooltip="Development Mode" (click)="goBack()">logo_dev</i>
 
-   
 </mat-toolbar>
   

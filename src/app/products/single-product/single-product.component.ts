@@ -88,6 +88,7 @@ export class SingleProductComponent implements OnInit {
   attrKey: string;
   requiredField = false;
   regionsForm: FormGroup;
+  socialForm: FormGroup;
   productRegionList: any[] = [];
   pdsAttributes: any[] = [];
   loadingPdsAttributes: boolean = true;
@@ -156,6 +157,8 @@ export class SingleProductComponent implements OnInit {
   mainTabsCls: string = "col-md-11 col-lg-9";
   infoBarCls: string = "col-md-1 col-lg-3";
   loadingInfo: string = "Preparing...";
+
+  socialLinks: any[] = [];
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -238,6 +241,10 @@ export class SingleProductComponent implements OnInit {
       regions: this.formBuilder.array([])
     });
 
+    this.socialForm = this.formBuilder.group({
+      socials: this.formBuilder.array([])
+    });
+
     this.shoutoutsForm = this.formBuilder.group({
       shoutouts: this.formBuilder.array([])
     });
@@ -285,6 +292,10 @@ export class SingleProductComponent implements OnInit {
 
   get regions() {
     return this.regionsForm.get('regions') as FormArray
+  }
+
+  get socials() {
+    return this.socialForm.get('socials') as FormArray
   }
 
   get shoutouts() {
@@ -347,7 +358,7 @@ export class SingleProductComponent implements OnInit {
           this.getPackaging(this.id);
           this.getPdsAttributes(sku);
           this.getProductRegions(this.id);
-          this.imageserver(sku);
+          //this.imageserver(sku);
           this.getDesigns(this.id);
           this.getUsers();
           this.audit(this.id);
@@ -489,6 +500,7 @@ export class SingleProductComponent implements OnInit {
 
   onUpload(fileTypeId: string, type: String): void {
     this.loading = !this.loading;
+    this.info.setLoadingInfo('Uploading media files...', 'info');
     if (this.files.length > 0) {
       for(let x = 0; x < this.files.length; x ++) {
         this.api.upload('upload-media', {
@@ -507,10 +519,12 @@ export class SingleProductComponent implements OnInit {
             if (event.type === HttpEventType.UploadProgress) {
               this.uploadProgress = Math.round(100 * event.loaded / event.total);
               this.uploadProgressBar = `width:${this.uploadProgress}%;height:10px`;
+              this.info.setLoadingInfo(`${this.uploadProgress}% complete...`, 'info');
             } else if (event instanceof HttpResponse) {
               const msg = this.files[x].name + ' ploaded the file successfully.';
               this.info.activity('Media file uploaded', this.product.id);
               this.messages.push(msg);
+              this.info.setLoadingInfo(msg, 'info');
             } 
             this.media();
           }, (err: any) => {
@@ -518,11 +532,13 @@ export class SingleProductComponent implements OnInit {
             this.uploadProgress = 0;
             const msg = '' + this.files[x].name + ' could not upload the file: ';
             this.messages.push(msg);
+            this.info.setLoadingInfo(msg, 'info');
           }
         );
       } 
     } else {
       this.openSnackBar('Please select files', 'Okay')
+      this.info.setLoadingInfo('Uploadig complete.', 'info');
       this.loading = false;
     }
   }
@@ -548,10 +564,12 @@ export class SingleProductComponent implements OnInit {
             if (event.type === HttpEventType.UploadProgress) {
               this.uploadProgress = Math.round(100 * event.loaded / event.total);
               this.uploadProgressBar = `width:${this.uploadProgress}%;height:10px`;
+              this.info.setLoadingInfo(`${this.uploadProgress}% complete...`, 'info');
             } else if (event instanceof HttpResponse) {
               const msg = this.files[x].name + ' ploaded the file successfully.';
               this.info.activity(`${this.files[x].name} uploaded`, this.product.id);
               this.messages.push(msg);
+              this.info.setLoadingInfo(msg, 'info');
             } 
             this.documents();
           }, (err: any) => {
@@ -559,6 +577,7 @@ export class SingleProductComponent implements OnInit {
             this.uploadProgress = 0;
             const msg = '' + this.files[x].name + ' could not upload the file: ';
             this.messages.push(msg);
+            this.info.setLoadingInfo(msg, 'warning');
           }
         );
       } 
@@ -794,6 +813,24 @@ export class SingleProductComponent implements OnInit {
     }
   }
 
+  updateSocials() {
+    for (let index = 0; index < this.socialForm.value.socials.length; index++) {
+      this.api.POST(`social`, { 
+        product_id: this.id,
+        region_id: this.socialForm.value.socials[index].designField 
+      }).subscribe({
+        next:(res)=>{
+          this.getProductRegions(this.id,);
+          this.openSnackBar('Social media link Updated 😃', 'Okay');
+          this.info.setLoadingInfo('Social media link updated...', 'success');
+        }, error:(res)=>{
+          this.info.errorHandler(res);
+          this.info.setLoadingInfo('Failed to update social media...', 'danger');
+        }
+      });
+    }
+  }
+
   filePath(p: string) {
     return p.substring(7);
   }
@@ -979,6 +1016,18 @@ export class SingleProductComponent implements OnInit {
     this.regionsForm.markAsDirty();
   }
 
+  addSocial(): void {
+    const links = this.formBuilder.group({
+      socialField: [],
+    })
+    this.socials.push(links);
+  }
+
+  removeSocial(i: number): void {
+    this.socials.removeAt(i);
+    this.socialForm.markAsDirty();
+  }
+
   checkCategories (c: string) {
     // Check categories on the UI that are available on the Products Categories List this.productCategories
     const obj = this.catFromProductTbl.find(x => x.name == c);
@@ -1146,7 +1195,7 @@ export class SingleProductComponent implements OnInit {
           let child = this.productsList.find((x: any)=>x.id == res[index].child_id);
           this.linkedProductSKUs.push(child?.sku);
           this.linkedProductsIDs.push(child?.id);
-          this.imageserver(child!.sku); 
+          //this.imageserver(child!.sku); 
           this.info.setLoadingInfo('Getting linked products media', 'info');   
           this.api.GET(`product-media-files/${child?.id}`).subscribe({
             next:(res)=>{
@@ -1580,10 +1629,11 @@ export class SingleProductComponent implements OnInit {
     const l = attr[0];
     let pretty: string;
 
-    if(l.match(/[a-z]/i)){
+    if(l.match(/^[A-Za-z0-9]*$/)){
       pretty = attr;
     } else {
-      pretty = attr.replaceAll(l,"<br>•");
+        pretty = attr.replaceAll(l,"<br>•");
+
     }
     return pretty;
   }

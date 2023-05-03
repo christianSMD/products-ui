@@ -1,6 +1,7 @@
 import { Component, isDevMode } from '@angular/core';
 import { InfoService } from './services/info/info.service';
 import { SidenavService } from './services/sidenav/sidenav.service';
+import { NavbarService } from './services/navbar/navbar.service';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +10,7 @@ import { SidenavService } from './services/sidenav/sidenav.service';
 })
 export class AppComponent {
 
-  constructor (private sideNav: SidenavService, private info: InfoService) {}
+  constructor (private sideNav: SidenavService, private info: InfoService, private nav: NavbarService) {}
 
   title = 'products-system';
   sideBtnIcn = 'menu';
@@ -41,5 +42,9 @@ export class AppComponent {
     } else {
       this.width = "109px";
     }
+  }
+
+  goBack() {
+    this.nav.goBack();
   }
 }

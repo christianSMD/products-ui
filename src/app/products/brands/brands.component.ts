@@ -53,6 +53,7 @@ export class BrandsComponent implements OnInit {
   uploadRole: boolean = false;
   detailProgress: number = 0;
   today = new Date();
+  brandsList: any[] = [];
   
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -84,20 +85,23 @@ export class BrandsComponent implements OnInit {
   }
 
   getAllTypes(): void {
+    this.info.setLoadingInfo('Preparing...','info');
     this.api.GET('types').subscribe({
       next:(res)=>{
         this.typesLoader = false;
         this.types = res;
-        const dataSource = this.types.filter((x: Type) => x.grouping == "Brand");
+        this.brandsList = this.types.filter((x: Type) => x.grouping == "Brand");
+        const dataSource = this.brandsList ;
         this.dataSource = new MatTableDataSource(dataSource);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         let temp = this.types.map((x: any) => x.grouping);
         this.groups = Array.from(new Set(temp));
         temp = [];
+        this.info.setLoadingInfo('Preparing Successful', 'success');
       }, error:(res)=>{
         this.typesLoader = false;
-        this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
+        this.info.setLoadingInfo('Failed to communicate with the server', 'danger');
       }
     });
   }
@@ -157,7 +161,8 @@ export class BrandsComponent implements OnInit {
           this.openSnackBar(`${this.newType} has been added.`, 'OKay');
         }, error:(res) => {
           this.typesLoader = false;
-          this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
+          this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay')
+          this.info.setLoadingInfo('Failed to communicate with the server','danger');
         }
       });
     } else {
@@ -166,23 +171,28 @@ export class BrandsComponent implements OnInit {
   }
 
   getUsers() {
+    this.info.setLoadingInfo('Loading...', 'info');
     try {
       this.api.GET('users').subscribe({
         next:(res)=>{
           this.users = res;
           this.loadBrandManager = false;
+          this.info.setLoadingInfo('Done loading users', 'success');
         }, error:(res)=>{
           this.loadBrandManager = false;
           this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
+          this.info.setLoadingInfo('Fetching users failed, having trouble connecting to the server', 'warning');
         }
       });
     } catch (error) {
+      this.info.setLoadingInfo('An uknown error happened trying to het users', 'danger');
       this.loadBrandManager = false;
     }
     
   }
 
   selectUser(e: any, brand_id: number) {
+    this.info.setLoadingInfo('Updating brand manager,...', 'info');
     const userId = e.value;
     this.api.POST(`roles`, {
       user_id: userId,
@@ -192,9 +202,11 @@ export class BrandsComponent implements OnInit {
     }).subscribe({
       next:(res)=> {
         this.openSnackBar('Brand Manager updated', 'Okay');
-        this.info.activity(`Updated Brand Manager`, 0);
+        this.info.setLoadingInfo('Brand manager updated successfully', 'success');
+        this.info.activity(`Updated Brand Manager for brand: ${brand_id}`, 0);
       }, error:(res)=> {
         this.openSnackBar(res.message, 'Okay');
+        this.info.setLoadingInfo(res.message, 'warning');
       }
     });
   }
@@ -202,24 +214,29 @@ export class BrandsComponent implements OnInit {
   changeName(e: any, brand_type_id: number) {
     const newName = e.target.value;
     const brandId = brand_type_id
-
+    this.info.setLoadingInfo('Changing name...', 'info');
     this.api.POST(`types/update/${brandId}`, {
       name: newName
     }).subscribe({
       next:(res)=> {
         console.log(res);
         this.openSnackBar("Brand name changes to " + newName, 'Okay');
+        this.info.setLoadingInfo(`Brand name changes to ${newName}`, 'info');
       }, error:(res)=> {
         this.openSnackBar(res.message, 'Okay');
+        this.info.setLoadingInfo('Failed to update brand name', 'warning');
       }
     });
   }
 
   getRoles() {
+    this.info.setLoadingInfo('Please wait...', 'info');
     this.api.GET('roles').subscribe({
       next:(res)=>{
         this.roles = res;
+        this.info.setLoadingInfo('', 'info');
       }, error:(res)=>{
+        this.info.setLoadingInfo('Failed to get roles for logged in user', 'danger');
       }
     });
   }
@@ -234,8 +251,10 @@ export class BrandsComponent implements OnInit {
   }
 
   countBrandProducts (brand_type_id: number) {
+    this.info.setLoadingInfo('counting products for each brand', 'info');
     this.productsList = this.productService.getProducts();
-    const products = this.productsList.filter((p: any)=> p.brand_type_id == brand_type_id)
+    const products = this.productsList.filter((p: any)=> p.brand_type_id == brand_type_id);
+    this.info.setLoadingInfo('Products loaded for all brands', 'info');
     return products.length;
   }
 

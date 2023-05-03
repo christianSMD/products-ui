@@ -24,7 +24,7 @@
       <mat-card style="background: #EFEFEF;">
         
         <mat-tab-group>
-          <mat-tab label="Product Details">
+          <mat-tab label="Product Details" *ngIf="editRole">
 
             <!-- <div class="row py-3">
               <div class="col-md-6">
@@ -56,7 +56,7 @@
               </div>
                
               <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-5">
                   <mat-card>
                     <form [formGroup]="productForm">
 
@@ -214,9 +214,30 @@
                       <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;" [disabled]="designLoader">Save</button>
                     </form>
                   </mat-card>
+
+                  <br>
+                  <mat-card>
+                    <img src="../../../assets/icons/regions.png" height="25" class="mx-2"> <strong>Social Links </strong><span class="loadingInfo"></span><hr>            
+                    <form [formGroup]="socialForm">
+                      <ng-container formArrayName="socials">
+                        <ng-container *ngFor="let x of socials.controls; let index = index">
+                            <div [formGroupName]="index">
+                              <mat-form-field appearance="outline" style="width: 90%;">
+                                <mat-label>Social Media link</mat-label>
+                                <input matInput type="text" formControlName="socialField" placeholder="" [readonly]="!editRole" required>
+                              </mat-form-field>            
+                            </div>
+                        </ng-container>
+                      </ng-container>
+                      <button mat-raised-button type="button" (click)="addSocial()" style="margin-left: 1rem;" *ngIf="editRole">
+                        Add Link
+                      </button>
+                      <button mat-raised-button type="submit" *ngIf="editRole" [disabled]="!socialForm.dirty" color="primary" (click)="updateSocials()" style="margin-left: 1rem;">Save Region</button>
+                    </form>
+                  </mat-card>
                 </div>
             
-                <div class="col-md-8">
+                <div class="col-md-7">
                   <mat-card *ngIf="isBundle" style="margin-top: 2rem;">
                     <img src="../../../assets/icons/linked.png" height="30" class="mx-2"> <strong> Linked Products</strong><hr> 
                     <mat-progress-bar color="accent" *ngIf="bundleLoader" mode="indeterminate"></mat-progress-bar>
@@ -351,7 +372,7 @@
               <mat-card style="background-color: rgb(255, 255, 255);">
                 <form>
                   <div class="row form-border">
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                       <!-- <section class="categories-section">
                         <ul>
                           <li class="categories-list" *ngFor="let category of categoriesList | parent: '0'" >
@@ -442,7 +463,37 @@
                         </div> -->
                       </div>
                     </div>
-                    
+                    <div class="col-md-6" style="background-color: aliceblue;">
+                      <div style="height: 40rem; overflow-y: scroll;">
+                        <ul>
+                          <li *ngFor="let category of categoriesList | parent: '0'" ><strong>{{ category.name }}</strong>
+                            <ul>
+                              <li *ngFor="let child_1 of categoriesList | parent: category.id">{{ category.name }} > {{ child_1.name }}
+                                <ul>
+                                  <li *ngFor="let child_2 of categoriesList | parent: child_1.id">{{ child_2.name }}
+                                    <ul>
+                                        <li *ngFor="let child_3 of categoriesList | parent: child_2.id">{{ child_3.name }}
+                                          <ul>
+                                            <li *ngFor="let child_4 of categoriesList | parent: child_3.id">{{ child_4.name }}
+                                              <ul>
+                                                <li *ngFor="let child_5 of categoriesList | parent: child_4.id">{{ child_5.name }}
+                                                  <ul>
+                                                    <li *ngFor="let child_6 of categoriesList | parent: child_5.id">{{ child_6.name }}</li>
+                                                  </ul>
+                                                </li>
+                                              </ul>
+                                            </li>
+                                          </ul>
+                                        </li>
+                                      </ul>
+                                    </li>
+                                  </ul>
+                                </li>
+                              </ul>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
                   </div>
                 </form>
               </mat-card>
@@ -515,7 +566,7 @@
               </mat-card>
             </div>
           </mat-tab>
-          <mat-tab label="Packaging">
+          <mat-tab label="Packaging" *ngIf="editRole">
 
             <mat-card style="background-color: rgb(255, 255, 255);">
 
@@ -614,7 +665,7 @@
             </mat-card>
             
           </mat-tab>
-          <mat-tab label="Files">
+          <mat-tab label="Files" *ngIf="editRole">
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <div class="row">
                 <div class="col-md-4">

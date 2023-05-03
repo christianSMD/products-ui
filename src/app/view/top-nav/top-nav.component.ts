@@ -22,7 +22,7 @@ export class TopNavComponent implements OnInit {
   userName: string;
   sideBtnIcn = 'arrow_right_alt';
   showIcons = false;
-  q: string = "";
+  query: string;
   networkSlow: boolean = false;
   networkUnavailable: boolean = false;
   adminRole: boolean = false;
@@ -87,9 +87,17 @@ export class TopNavComponent implements OnInit {
   }
 
   search(): void {
-    console.log('searching ', this.q);
+    const q = document.getElementById("searchQ") as HTMLInputElement | null;
     this.router.navigateByUrl('/', {skipLocationChange: true}).then(()=>
-    this.router.navigate([this.q]));
+    this.router.navigate([q?.value]));
+  }
+
+  goBack() {
+    this.nav.goBack();
+  }
+
+  goForward() {
+    this.nav.goForward();
   }
 
 }

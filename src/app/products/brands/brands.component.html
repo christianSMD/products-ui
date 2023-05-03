@@ -1,4 +1,8 @@
-<div *ngIf="!singleBrand">
+<span class="loadingInfo"></span>
+<hr>
+
+<button mat-raised-button *ngFor="let b of brandsList"  class="brand-btn" (click)="selectBrand(b.name)">{{ b.name }}</button>
+<!-- <div *ngIf="!singleBrand">
 
   <p>Brands</p>
 
@@ -82,7 +86,6 @@
   
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-            <!-- Row shown when there is no matching data. -->
             <tr class="mat-row" *matNoDataRow>
               <td class="mat-cell" colspan="3">No data matching the filter "{{input.value}}"</td>
             </tr>
@@ -91,9 +94,9 @@
       </div>
     </mat-tab>
   </mat-tab-group>
-</div>
+</div> -->
 
-<div *ngIf="singleBrand">
+<!-- <div *ngIf="singleBrand">
   <p>Manage {{currentBrand}}</p>
   <div class="row">
     <div class="col-md-4">
@@ -150,7 +153,6 @@
               <th>Document</th>
               <th>Uploaded</th>
               <th>Expiry Date</th>
-              <!-- <th>Permission</th> -->
             </tr>
           </thead>
           <tbody>
@@ -161,7 +163,6 @@
                 <span *ngIf="today > file.expiry_date">⚠</span>
                 {{ file.expiry_date | date }}
               </td>
-              <!-- <td></td> -->
             </tr>
       
           </tbody>
@@ -169,7 +170,7 @@
       </mat-card>
     </div>
   </div>
-</div>
+</div> -->
 
 
 
