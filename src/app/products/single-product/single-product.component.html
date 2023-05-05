@@ -214,27 +214,6 @@
                       <button mat-raised-button type="submit" *ngIf="editRole" color="primary" (click)="design(type.id)" style="margin-left: 1rem; float: right;" [disabled]="designLoader">Save</button>
                     </form>
                   </mat-card>
-
-                  <br>
-                  <mat-card>
-                    <img src="../../../assets/icons/regions.png" height="25" class="mx-2"> <strong>Social Links </strong><span class="loadingInfo"></span><hr>            
-                    <form [formGroup]="socialForm">
-                      <ng-container formArrayName="socials">
-                        <ng-container *ngFor="let x of socials.controls; let index = index">
-                            <div [formGroupName]="index">
-                              <mat-form-field appearance="outline" style="width: 90%;">
-                                <mat-label>Social Media link</mat-label>
-                                <input matInput type="text" formControlName="socialField" placeholder="" [readonly]="!editRole" required>
-                              </mat-form-field>            
-                            </div>
-                        </ng-container>
-                      </ng-container>
-                      <button mat-raised-button type="button" (click)="addSocial()" style="margin-left: 1rem;" *ngIf="editRole">
-                        Add Link
-                      </button>
-                      <button mat-raised-button type="submit" *ngIf="editRole" [disabled]="!socialForm.dirty" color="primary" (click)="updateSocials()" style="margin-left: 1rem;">Save Region</button>
-                    </form>
-                  </mat-card>
                 </div>
             
                 <div class="col-md-7">
@@ -850,12 +829,17 @@
                       </div>
                     </div>
                     <div class="col-md-8">
+                      <span class="loadingInfo"></span>
                       <div class="row">
 
-                        <div class="col-md-3" *ngFor="let file of mediaFiles">
+                        <div class="col-md-3" style="padding-bottom: 1rem;" *ngFor="let file of mediaFiles">
                           <a style="position: relative; top: 34px;" *ngIf="uploadRole" (click)="deleteFile(file.id)"><mat-icon>delete</mat-icon></a>
                           <img mat-card-image src="{{ storageUrl + filePath(file.path) }}" alt="Photo">
+                          <mat-checkbox (click)="addToSelectedFiles(file.id)"></mat-checkbox>
                         </div>
+
+                        <hr>
+                        <button *ngIf="selectedFiles.length > 1" mat-raised-button color="warn" (click)="bulkDeleteFiles()">Delete Selected Items</button>
                       </div>
                     </div>
                   </div>
@@ -893,9 +877,21 @@
                 </mat-tab>
                 <mat-tab label="Videos">
                   <div class="mt-5 custom-tab" style="overflow: hidden !important;">
-                    <iframe width="420" height="345" src="https://www.youtube.com/watch?v=4nK5uSnRs8A?autoplay=1&mute=1">
-                    </iframe>
-                    
+                    <mat-card>
+                      <mat-form-field appearance="outline">
+                        <mat-label>New Video Link</mat-label>
+                        <input matInput [(ngModel)]="socialLink" placeholder="Enter link here" [readonly]="!editRole">
+                        <button mat-flat-button color="primary" (click)="updateSocials('youtu.be')">Save</button>
+                      </mat-form-field>
+
+                      <div style="padding: 1rem;">
+                        <mat-form-field appearance="legacy" *ngFor="let i of socialLinks">
+                          <mat-label>{{ i.link }}</mat-label>
+                          <input matInput placeholder="{{i.link}}" [readonly]="true">
+                          <mat-icon matSuffix (click)="deleteSocial(i.id, i.link)">delete</mat-icon>
+                        </mat-form-field>
+                      </div>
+                    </mat-card>
                   </div>
                 </mat-tab>
                 
@@ -1006,6 +1002,18 @@
                 </tr>
               </table>
             </div>
+
+            <div class="mt-2 py-3 custom-tab card">
+              <h2>Videos</h2>
+
+              
+              <div class="row">
+                <div *ngFor="let video of videos" class="col-md-6">
+                  <iframe width="420" height="315" [src]="video"></iframe>
+                </div>
+              </div>
+              
+            </div>
            
           </mat-tab>
 
@@ -1073,8 +1081,13 @@
      
           <mat-card-content style="margin-top: 2rem;">
             <hr>
-            <h3 style="text-align: center;">History</h3>
-            <table>
+            <div style="text-align: center; margin-bottom: 1rem;">
+              <button mat-raised-button (click)="toggleHistory()">
+                <span *ngIf="!historyTable">History</span>
+                <span *ngIf="historyTable">Hide history</span>
+              </button>
+            </div>
+            <table *ngIf="historyTable">
               <tr>
                 <th>Action</th>
                 <th>Date</th>

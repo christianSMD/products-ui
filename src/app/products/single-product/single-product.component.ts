@@ -24,6 +24,7 @@ import pptxgen from "pptxgenjs";
 import { User } from 'src/app/interfaces/user';
 import { MatGridTileHeaderCssMatStyler } from '@angular/material/grid-list';
 import { CategoriesComponent } from '../categories/categories.component';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-single-product',
@@ -88,7 +89,6 @@ export class SingleProductComponent implements OnInit {
   attrKey: string;
   requiredField = false;
   regionsForm: FormGroup;
-  socialForm: FormGroup;
   productRegionList: any[] = [];
   pdsAttributes: any[] = [];
   loadingPdsAttributes: boolean = true;
@@ -157,8 +157,12 @@ export class SingleProductComponent implements OnInit {
   mainTabsCls: string = "col-md-11 col-lg-9";
   infoBarCls: string = "col-md-1 col-lg-3";
   loadingInfo: string = "Preparing...";
+  selectedFiles: any[] = [];
+  historyTable: boolean = false;
 
   socialLinks: any[] = [];
+  socialLink: string;
+  videos: any[] = [];
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -173,7 +177,8 @@ export class SingleProductComponent implements OnInit {
     public dialog: MatDialog,
     private lookup: LookupService,
     private http: HttpClient,
-    private products: ProductsService
+    private products: ProductsService,
+    private _sanitizer: DomSanitizer
   ) { }
 
   ngOnInit(): void {
@@ -241,10 +246,6 @@ export class SingleProductComponent implements OnInit {
       regions: this.formBuilder.array([])
     });
 
-    this.socialForm = this.formBuilder.group({
-      socials: this.formBuilder.array([])
-    });
-
     this.shoutoutsForm = this.formBuilder.group({
       shoutouts: this.formBuilder.array([])
     });
@@ -292,10 +293,6 @@ export class SingleProductComponent implements OnInit {
 
   get regions() {
     return this.regionsForm.get('regions') as FormArray
-  }
-
-  get socials() {
-    return this.socialForm.get('socials') as FormArray
   }
 
   get shoutouts() {
@@ -352,17 +349,20 @@ export class SingleProductComponent implements OnInit {
             this.isBundle = true;
             this.getLinkedProducts();
           }
-          this.media();
-          this.documents();
-          this.getProductCategories(this.id);
-          this.getPackaging(this.id);
-          this.getPdsAttributes(sku);
-          this.getProductRegions(this.id);
-          //this.imageserver(sku);
-          this.getDesigns(this.id);
+
           this.getUsers();
           this.audit(this.id);
           this.getProductAttributes(this.id);
+          
+          this.getPackaging(this.id);
+          this.getPdsAttributes(sku);
+          this.getProductRegions(this.id);
+          this.getDesigns(this.id);
+          this.media();
+          this.documents();
+          this.getSocialLinks(this.id);
+          this.getProductCategories(this.id);
+          //this.imageserver(sku);
           this.productForm = this.formBuilder.group({
             id: [{value: this.product.id, disabled: true}],
             sku : [{value: this.product.sku, disabled: true}, Validators.required],
@@ -413,24 +413,7 @@ export class SingleProductComponent implements OnInit {
     this.info.setLoadingInfo('Loading product categories...', 'info');
     this.api.GET(`product-categories/search/${id}`).subscribe({
       next:(res)=>{
-        this.productCategories = res;
-        // let allAttr: any[] = [];
-        // let attrs: any[] =[];
-        // for (let index = 0; index < res.length; index++) {
-        //   attrs = JSON.parse(res[index].attributes);
-        //   for (let x = 0; x < attrs.length; x++) {
-        //     allAttr.push(attrs[x])
-
-        //     const parentAttrs = this.formBuilder.group({
-        //       attrName: [attrs[x], Validators.required],
-        //       attrValue: [0, Validators.required]
-        //     })
-        //     this.attributes.push(parentAttrs);
-        //     this.attrCount = this.attrCount + 1;
-
-        //   }
-        // }
-        
+        this.productCategories = res;      
       }, error:(res)=> {
         console.log(res);
       }
@@ -532,7 +515,7 @@ export class SingleProductComponent implements OnInit {
             this.uploadProgress = 0;
             const msg = '' + this.files[x].name + ' could not upload the file: ';
             this.messages.push(msg);
-            this.info.setLoadingInfo(msg, 'info');
+            this.info.setLoadingInfo(msg, 'warning');
           }
         );
       } 
@@ -602,7 +585,7 @@ export class SingleProductComponent implements OnInit {
           this.mediaFiles = res;
           //this.getProductImageOrder();
         }
-        this.info.setLoadingInfo('', 'success');
+        this.info.setLoadingInfo('Media refreshed', 'success');
       }, error:(res)=> {
         this.info.errorHandler(res);
       }
@@ -813,19 +796,59 @@ export class SingleProductComponent implements OnInit {
     }
   }
 
-  updateSocials() {
-    for (let index = 0; index < this.socialForm.value.socials.length; index++) {
+  updateSocials(channel: string) {
+    this.openSnackBar(`Adding ${channel} link...`, '');
+    if(this.socialLink.includes(channel)) {
       this.api.POST(`social`, { 
         product_id: this.id,
-        region_id: this.socialForm.value.socials[index].designField 
+        link: this.socialLink
       }).subscribe({
         next:(res)=>{
-          this.getProductRegions(this.id,);
-          this.openSnackBar('Social media link Updated 😃', 'Okay');
-          this.info.setLoadingInfo('Social media link updated...', 'success');
+          this.getSocialLinks(this.id);
+          this.openSnackBar(`${channel} link added 😃`, 'Okay');
+          this.info.setLoadingInfo(`${channel} link added 😃`, 'success');
+          this.info.activity(`${this.info.getUserName()} added ${channel} link`, this.product.id);
+          this.socialLink = "";
         }, error:(res)=>{
           this.info.errorHandler(res);
-          this.info.setLoadingInfo('Failed to update social media...', 'danger');
+          this.openSnackBar(`Adding ${channel} failed!`, 'Okay');
+          this.info.setLoadingInfo(`Adding ${channel} failed!`, 'danger');
+        }
+      });
+
+    } else {
+      this.openSnackBar(`Please make sure this is a valid ${channel} link`, 'Okay');
+    }
+    
+  }
+
+  getSocialLinks(id: string) {
+    this.info.setLoadingInfo('Loading external links...', 'info');
+      this.api.GET(`social/${id}`).subscribe({
+        next:(res)=>{
+          this.socialLinks = res;
+          for (let x = 0; x < this.socialLinks.length; x++) {
+            this.videos.push(this._sanitizer.bypassSecurityTrustResourceUrl(res[x].link));
+          }
+        }, error:(res)=> {
+          this.info.errorHandler(res);
+        }
+      });
+  }
+
+  deleteSocial(id: number, link: string) {
+    if(confirm("This link will be deleted")){
+      this.openSnackBar(`Deleting link... `, '');
+      this.api.GET(`delete-social/${id}`).subscribe({
+        next:(res)=>{
+          this.getSocialLinks(this.id);
+          this.openSnackBar(`Link deleted`, 'Okay');
+          this.info.setLoadingInfo(`${link} DELETED 😃`, 'info');
+          this.info.activity(`${this.info.getUserName()} deleted a link`, this.product.id);
+        }, error:(res)=> {
+          this.info.errorHandler(res);
+          this.openSnackBar(`Failed to delete link: ${link}`, 'Okay');
+          this.info.setLoadingInfo(`Failed to delete`, 'warning');
         }
       });
     }
@@ -940,22 +963,26 @@ export class SingleProductComponent implements OnInit {
   }
 
   deleteFile(id: number): void {
-
+    this.info.setLoadingInfo('About to delete file...', 'warn');
     if(confirm("This image / file will be deleted")) {
       this.openSnackBar(`Deleting file...`, '');
-      this.info.setLoadingInfo('Deleting file...', 'info');
+      this.info.setLoadingInfo('Deleting file...', 'warn');
       this.api.GET(`delete-file/${id}`).subscribe({
         next:(res)=>{
           if(res.length > 0) {
             //console.log("delete: ", res);
           }
+          this.media();
           this.openSnackBar(`File deleted...`, 'Okay');
           this.info.setLoadingInfo('File deleted', 'success');
-          this.media();
+          
         }, error:(res)=> {
           this.info.errorHandler(res);
+          this.info.setLoadingInfo('Failed to delete file!', 'danger');
         }
       });
+    } else {
+      this.info.setLoadingInfo('', 'info');
     }
     
   }
@@ -1014,18 +1041,6 @@ export class SingleProductComponent implements OnInit {
   removeRegion(i: number): void {
     this.regions.removeAt(i);
     this.regionsForm.markAsDirty();
-  }
-
-  addSocial(): void {
-    const links = this.formBuilder.group({
-      socialField: [],
-    })
-    this.socials.push(links);
-  }
-
-  removeSocial(i: number): void {
-    this.socials.removeAt(i);
-    this.socialForm.markAsDirty();
   }
 
   checkCategories (c: string) {
@@ -1647,5 +1662,51 @@ export class SingleProductComponent implements OnInit {
       this.mainTabsCls = "col-md-12 col-lg-12";
     }
     
+  }
+
+  addToSelectedFiles(f: number) {
+    
+    const i = this.selectedFiles.indexOf(f);
+
+    if(i> -1) {
+      this.selectedFiles.splice(i, 1);
+    } else {
+      this.selectedFiles.push(f);
+    }
+
+    console.log(this.selectedFiles);
+  }
+
+  bulkDeleteFiles() {
+    if(confirm(`${this.selectedFiles.length} items will be deleted!`)) {
+      this.openSnackBar(`Deleting multiple files`, '');
+      this.info.setLoadingInfo('Deleting multiple files...', 'warn');
+
+      for (let x = 0; x < this.selectedFiles.length; x++) {
+        this.openSnackBar('Please wait...', '');
+        this.info.setLoadingInfo(`Deleting file ${x + 1}`, 'warn');
+        const id = this.selectedFiles[x];
+        this.api.GET(`delete-file/${id}`).subscribe({
+          next:(res)=>{
+            this.media();
+            this.openSnackBar(`${x + 1} files deleted...`, 'Okay');
+            this.openSnackBar(`${x + 1} files deleted...`, '');
+            this.info.setLoadingInfo(`${x + 1} files deleted...`, 'success');
+
+          }, error:(res)=> {
+            this.info.errorHandler(res);
+            this.info.setLoadingInfo('Failed to delete file!', 'danger');
+          }
+        }); 
+      }
+      this.info.setLoadingInfo('Items deleted successfully', 'success');
+      this.selectedFiles = [];
+    } else {
+      this.info.setLoadingInfo('', 'info');
+    }
+  }
+
+  toggleHistory() {
+    this.historyTable = !this.historyTable;
   }
 }
