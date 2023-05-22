@@ -7,6 +7,7 @@ import * as FileSaver from 'file-saver';
 import { Product } from 'src/app/interfaces/product';
 import pptxgen from "pptxgenjs";
 import { Type } from '@angular/compiler';
+import { InfoService } from '../info/info.service';
 
 @Injectable({
   providedIn: 'root'
@@ -36,6 +37,7 @@ export class ApiService {
       this.storageUrl = 'https://products.smdtechnologies.com/public/storage/';
       this.domainUrl = 'https://products.smdtechnologies.com/login';
     } 
+    
   }
 
   public getBaseUrl() {

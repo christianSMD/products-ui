@@ -1,4 +1,6 @@
-
+<div style="width: 100%;">
+  <span class="loadingInfo"></span>
+</div>
 <div style="text-align: center;" *ngIf="!loggedIn">
   <p>Please Wait...</p>
   <mat-progress-bar color="accent" mode="indeterminate"></mat-progress-bar>
@@ -8,13 +10,13 @@
   <p> <a routerLink="/">All Products</a> / Product Manager / My Products</p>
   <div class="row">
     <div class="col-12 col-md-12">
-      <button mat-raised-button matBadge="{{ productsList.length }}" color="accent" class="p-2" (click)="productsToDisplay('active')">
+      <button mat-raised-button matBadge="{{ productsList.length }}" matTooltip="{{ productsList.length }} products" color="accent" class="p-2" (click)="productsToDisplay('active')">
         <mat-icon>check_circle_outline</mat-icon> Active Products
       </button>
-      <button mat-raised-button matBadge="{{ verifiedProducts.length }}" color="accent" class="p-2" style="margin-left: 1rem;" (click)="productsToDisplay('verified')">
+      <button mat-raised-button matBadge="{{ verifiedProducts.length }}" matTooltip="{{ verifiedProducts.length }} products" color="accent" class="p-2" style="margin-left: 1rem;" (click)="productsToDisplay('verified')">
         <mat-icon>verified</mat-icon>  Verfied Products
       </button>
-      <button mat-raised-button matBadge="{{ productsList.length - verifiedProducts.length }}" color="warn" class="p-2" style="margin-left: 1rem;" (click)="productsToDisplay('unverified')">
+      <button mat-raised-button matBadge="{{ productsList.length - verifiedProducts.length }}" matTooltip="{{ productsList.length }} products" color="warn" class="p-2" style="margin-left: 1rem;" (click)="productsToDisplay('unverified')">
         <mat-icon>do_not_disturb</mat-icon> Unverfied Products
       </button>
       
@@ -132,7 +134,7 @@
           <ng-container matColumnDef="thumbnail">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>  </th>
             <td mat-cell *matCellDef="let row" routerLink="{{row.clean_sku}}">
-              <img src="https://images.smdtechnologies.co.za/api/store/{{row.clean_sku}}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" width="45" alt="Photo">
+              <img src="https://images.smdtechnologies.co.za/api/web/{{row.clean_sku}}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" width="45" alt="Photo">
             </td>
           </ng-container>
           <ng-container matColumnDef="sku">

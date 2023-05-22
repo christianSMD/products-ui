@@ -14,6 +14,7 @@
             Cancel
           </span>
         </button>
+        <small class="loadingInfo"></small>
         <!-- <button *ngIf="!addingNewUser" mat-raised-button class="m-1" (click)="exporter.exportTable('csv',{fileName:'products_system'})">
           <mat-icon>download</mat-icon> Export Users
         </button> -->
@@ -193,7 +194,7 @@
           
           <div class="col-md-12 mb-3">
             <button mat-raised-button color="primary" class="m-1" (click)="createTeam()" style="width: 10%;">
-              New Team
+              New Team 
             </button>
           </div>
           <div class="col-md-8">
@@ -218,7 +219,7 @@
             </table>
           </div>
           <div class="col-md-4">
-            <h3>Team Members</h3>
+            <h3>Team Members <small class="loadingInfo"></small></h3>
             <table class="table table-bordered mt-3">
               <thead>
                 <tr>

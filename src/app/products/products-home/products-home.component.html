@@ -1,3 +1,5 @@
+<span class="loadingInfo"></span>
+
 <div style="text-align: center;" *ngIf="!loggedIn">
   <p>Please Wait...</p>
   <mat-progress-bar color="accent" mode="indeterminate"></mat-progress-bar>
@@ -134,17 +136,20 @@
           </ng-container>
           <ng-container matColumnDef="thumbnail">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>  </th>
-            <td mat-cell *matCellDef="let row" routerLink="{{row.clean_sku}}">
-              <img src="https://images.smdtechnologies.co.za/api/web/{{row.clean_sku}}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" width="45" alt="Photo">
+            <td mat-cell *matCellDef="let row">
+              <a routerLink="{{row.clean_sku}}" target="_blank">
+                <img src="https://images.smdtechnologies.co.za/api/web/{{row.clean_sku}}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" width="45" alt="Photo">
+              </a>
             </td>
           </ng-container>
           <ng-container matColumnDef="sku">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> <span class="sku-title">SKU</span> </th>
-            <td mat-cell *matCellDef="let row" routerLink="{{row.clean_sku}}"> {{row.sku}} </td>
+            <td mat-cell *matCellDef="let row"> 
+              <a routerLink="{{row.clean_sku}}" target="_blank"></a>{{row.sku}} </td>
           </ng-container>
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
-            <td mat-cell *matCellDef="let row" routerLink="{{row.clean_sku}}"> {{row.name}} </td>
+            <td mat-cell *matCellDef="let row"> {{row.name}} </td>
           </ng-container>
           <ng-container matColumnDef="brand">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Brand </th>
@@ -186,9 +191,9 @@
           <ng-container matColumnDef="view">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>  </th>
             <td mat-cell *matCellDef="let row">
-              <button mat-raised-button  routerLink="{{row.clean_sku}}" aria-label="Product details">
+              <a mat-raised-button  routerLink="{{row.clean_sku}}" aria-label="Product details" target="_blank">
                 View Details
-              </button>
+              </a>
             </td>
           </ng-container>
           <ng-container matColumnDef="add">

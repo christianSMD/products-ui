@@ -11,6 +11,8 @@ import { ProductManagerComponent } from './product-manager/product-manager.compo
 import { ProductsHomeComponent } from './products-home/products-home.component';
 import { SeriesComponent } from './series/series.component';
 import { SingleProductComponent } from './single-product/single-product.component';
+import { QrCodeComponent } from './qr-code/qr-code.component';
+import { PublicComponent } from './public/public.component';
 
 const routes: Routes = [
   { path: '', component: ProductsHomeComponent },
@@ -23,7 +25,9 @@ const routes: Routes = [
   { path: 'products/dashboard', component: DashboardComponent },
   { path: 'series/:series', component:  SeriesComponent},
   { path: 'brands/manage-brands', component:  BrandsComponent},
-  { path: 'products/product-manager', component:  ProductManagerComponent}
+  { path: 'products/product-manager', component:  ProductManagerComponent},
+  { path: 'qrcode/:sku', component:  QrCodeComponent},
+  { path: 'public/:sku', component:  PublicComponent}
 ];
 
 @NgModule({

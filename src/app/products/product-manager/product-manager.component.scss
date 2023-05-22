@@ -3,6 +3,11 @@ table {
     overflow-x: scroll;
 }
 
+.loadingInfo {
+    float: right;
+  }
+  
+
 .mat-row:hover {
     background-color: rgb(243, 243, 243);
 }

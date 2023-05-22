@@ -42,6 +42,11 @@ import { SeriesComponent } from './series/series.component';
 import { CommonModuleModule } from '../common-module/common-module.module';
 import { BrandsComponent } from './brands/brands.component';
 import { ProductManagerComponent } from './product-manager/product-manager.component';
+import { QRCodeModule } from 'angularx-qrcode';
+import { QrCodeComponent } from './qr-code/qr-code.component';
+import { PublicComponent } from './public/public.component';
+import { RouteReuseStrategy } from '@angular/router';
+import { CustomResuStrategy } from './reuse-strategy';
 
 @NgModule({
   declarations: [
@@ -56,7 +61,9 @@ import { ProductManagerComponent } from './product-manager/product-manager.compo
     DashboardComponent,
     SeriesComponent,
     BrandsComponent,
-    ProductManagerComponent
+    ProductManagerComponent,
+    QrCodeComponent,
+    PublicComponent
   ],
   imports: [
     CommonModule,
@@ -91,7 +98,11 @@ import { ProductManagerComponent } from './product-manager/product-manager.compo
     MatBadgeModule,
     MatCheckboxModule,
     MatTooltipModule,
-    CommonModuleModule
+    CommonModuleModule,
+    QRCodeModule
+  ],
+  providers: [
+    { provide: RouteReuseStrategy, useClass: CustomResuStrategy}
   ]
 })
 export class ProductsModule { }

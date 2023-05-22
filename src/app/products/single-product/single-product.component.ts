@@ -163,6 +163,9 @@ export class SingleProductComponent implements OnInit {
   socialLinks: any[] = [];
   socialLink: string;
   videos: any[] = [];
+  productQr: string;
+  findCategory: string;
+  checkboxLoader: boolean;
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -207,6 +210,8 @@ export class SingleProductComponent implements OnInit {
     this.getDetails(this.sku);
     this.getAllCategories();
     this.entireProducts(); // Need to investigate this
+
+    this.productQr = "https://products.smdtechnologies.com/" + this.sku;
 
     this.productForm = this.formBuilder.group({
       id: [''],
@@ -311,18 +316,8 @@ export class SingleProductComponent implements OnInit {
     return this.packageContentsForm.get('contents') as FormArray
   }
 
-  getAllCategories() {
-    this.info.setLoadingInfo('Loading categories...', 'info');
-    this.api.GET('categories').subscribe({
-      next:(res)=>{
-        this.products.setCategories(res);
-        this.categoriesList = this.products.getCategories();
-        this.primaryCategoriesList = res.filter((c: Category) => c.parent == '0');
-        this.info.setLoadingInfo('', 'success');
-      }, error:(res)=>{
-        console.log(res);
-      }
-    });
+  getAllTypes(): void {
+    this.typesList = this.lookup.getTypes();
   }
 
   getDetails(sku: string): void {
@@ -331,7 +326,6 @@ export class SingleProductComponent implements OnInit {
     this.api.GET(`products/${sku}`).subscribe({
       next:(res)=>{
         this.productsLoader = false;
-        this.info.setLoadingInfo('', 'success');
         if (res.length > 0) {
           this.detailProgress++;
           this.product = res[0];
@@ -343,6 +337,7 @@ export class SingleProductComponent implements OnInit {
           this.productBrand  = productBrand?.name;
           this.productManagerId = this.product.product_manager;
           if(res[0].verified == 1) {
+            this.info.setLoadingInfo('Product verified', 'info');
             this.isVerified = true;
           }
           if (res[0].type != 'Simple') {
@@ -353,7 +348,6 @@ export class SingleProductComponent implements OnInit {
           this.getUsers();
           this.audit(this.id);
           this.getProductAttributes(this.id);
-          
           this.getPackaging(this.id);
           this.getPdsAttributes(sku);
           this.getProductRegions(this.id);
@@ -389,6 +383,7 @@ export class SingleProductComponent implements OnInit {
               const keys = Object.keys(obj[index]);
               const key = keys[0];
               const val = obj[index][key];
+              this.info.setLoadingInfo('Loading attributes: ' + obj[index][key] + '...', 'success');
               const attrs = this.formBuilder.group({
                 attrName: [key, Validators.required],
                 attrValue: [val, Validators.required]
@@ -396,11 +391,26 @@ export class SingleProductComponent implements OnInit {
               this.attributes.push(attrs);
             }
           }
-          
+          this.info.setLoadingInfo('Product loaded', 'success');
         }
       }, error:(res)=>{
         this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
+        this.info.setLoadingInfo('Failed to connect to the server: ' + res.message, 'success');
         this.productsLoader = false;
+      }
+    });
+  }
+
+  getAllCategories() {
+    this.info.setLoadingInfo('Loading categories...', 'info');
+    this.api.GET('categories').subscribe({
+      next:(res)=>{
+        this.products.setCategories(res);
+        this.categoriesList = this.products.getCategories();
+        this.primaryCategoriesList = res.filter((c: Category) => c.parent == '0');
+        this.info.setLoadingInfo('Categories loaded', 'success');
+      }, error:(res)=>{
+        console.log(res);
       }
     });
   }
@@ -413,22 +423,18 @@ export class SingleProductComponent implements OnInit {
     this.info.setLoadingInfo('Loading product categories...', 'info');
     this.api.GET(`product-categories/search/${id}`).subscribe({
       next:(res)=>{
-        this.productCategories = res;      
+        this.productCategories = res;   
+        this.info.setLoadingInfo('', 'success');   
       }, error:(res)=> {
         console.log(res);
       }
     });
   }
 
-  getAllTypes(): void {
-    this.typesList = this.lookup.getTypes();
-    this.info.setLoadingInfo('Loading types...', 'info');
-  }
-
   getPackaging(id: string): void {
     this.packagingCount = 0;
     this.packagingLoading = true;
-    this.info.setLoadingInfo('Fetching packaging ingo...', 'info');
+    this.info.setLoadingInfo('Loading packaging details...', 'info');
     this.api.GET(`packaging/search/${id}`).subscribe({
       next:(res)=>{
         if (res.length > 0) {
@@ -436,6 +442,7 @@ export class SingleProductComponent implements OnInit {
           this.packaging = res;
           this.packagingCount = this.packaging.length;
           this.productBarcode = res[0].barcode;
+          this.info.setLoadingInfo(`Loading packaging: ${res[0].barcode}`, 'info');
           this.productFormPackaging = this.formBuilder.group({ 
             weight : [res[0].weight],  
             length : [res[0].length],
@@ -462,7 +469,7 @@ export class SingleProductComponent implements OnInit {
     this.api.GET(`attributes/search-by-id/${id}`).subscribe({
       next:(res)=>{
         this.productAttributes = res;
-        this.info.setLoadingInfo('', 'success');
+        this.info.setLoadingInfo('Attributes loaded', 'success');
         console.log(res);
       }, error:(res)=>{
         console.log(res);
@@ -672,7 +679,7 @@ export class SingleProductComponent implements OnInit {
             })
             this.regions.push(regs);
           }
-          this.info.setLoadingInfo('', 'success');
+          this.info.setLoadingInfo('Regions loaded', 'success');
         }
       }, error:(res)=> {
         this.info.errorHandler(res);
@@ -1055,12 +1062,56 @@ export class SingleProductComponent implements OnInit {
   }
 
   // If using checkboxes
-  checkedItem (v: any) {
+  checkedItem (v: any, p: number, e: any) {
+    this.openSnackBar('Updating categories, please wait...', '');
+    this.checkboxLoader = true;
+    const temp = this.selectedCategories;
+    this.selectedCategories = [];
+
+    for (let index = 1; index < temp.length; index++) {
+      this.isChecked(temp[index]);
+    }
+
     const i = this.selectedCategories.indexOf(v);
     if(i < 0) {
       this.selectedCategories.push(v);
+
+      const grandParent = this.categoriesList.find((x:any) => x.id == p);
+      if(grandParent) {
+        this.selectedCategories.push(grandParent?.id);
+      }
+
+      const greatParent = this.categoriesList.find((x:any) => x.id == grandParent?.parent);
+      if(greatParent) {
+        this.selectedCategories.push(greatParent?.id);
+      }
+
+      const greatGrandParent = this.categoriesList.find((x:any) => x.id == greatParent?.parent);
+      if(greatGrandParent) {
+        this.selectedCategories.push(greatGrandParent?.id);
+      }
+
+      const greatGrandParent1 = this.categoriesList.find((x:any) => x.id == greatGrandParent?.parent);
+      if(greatGrandParent1) {
+        this.selectedCategories.push(greatGrandParent1?.id);
+      }
+
+      const greatGrandParent2 = this.categoriesList.find((x:any) => x.id == greatGrandParent1?.parent);
+      if(greatGrandParent2) {
+        this.selectedCategories.push(greatGrandParent2?.id);
+      }
+
+      const greatGrandParent3 = this.categoriesList.find((x:any) => x.id == greatGrandParent2?.parent);
+      if(greatGrandParent3) {
+        this.selectedCategories.push(greatGrandParent3?.id);
+      }
+
+      this.saveCategories();
+      this.selectedCategories = [];
     } else {
       this.selectedCategories.splice(i, 1);
+      //this.saveCategories();
+      this.selectedCategories = [];
     }
     console.log(this.selectedCategories);
   }
@@ -1096,23 +1147,29 @@ export class SingleProductComponent implements OnInit {
   }
 
   saveCategories() {
-    this.info.setLoadingInfo('Saving categories...', 'info');
-    const vals = this.selectedCategories;
     this.removePrevCatsFromDb();
+    this.checkboxLoader = true;
+    this.info.setLoadingInfo('Saving categories...', 'info');
+    this.openSnackBar('Updating categories, almost done...', '');
+    const vals = this.selectedCategories.filter((x: any) => x != null);
+    console.log('Categories to save: ', vals);
     if (vals.length > 0) {
-      for(let i=0; i < vals.length; i++) {
-        this.api.POST('product-categories', {
+      for(let i=0; i < 1; i++) {
+        this.api.POST('product-categories-bulk', {
           product_id: this.id,
-          category_id: vals[i]
+          categories: vals
         }).subscribe({
           next:(res)=>{
             this.getProductCategories(this.id);
-            this.openSnackBar(`${this.info.getUserName()} Category Added 😃`, 'Okay');
+            this.openSnackBar(`Categories updated.`, '');
             this.clearTempTiers();
             this.info.setLoadingInfo('Categories updated...', 'success');
+            this.checkboxLoader = false;
           }, error:(res)=>{
+            this.getProductCategories(this.id);
             this.info.errorHandler(res);
             this.openSnackBar('😢 ' + res.message, 'Okay');
+            this.checkboxLoader = false;
             this.info.setLoadingInfo('Failed to update categories...', 'danger');
           }
         });
@@ -1122,7 +1179,9 @@ export class SingleProductComponent implements OnInit {
   }
 
   removePrevCatsFromDb() {
+    this.checkboxLoader = true;
     this.info.setLoadingInfo('Removing categories...', 'info');
+    this.openSnackBar('Removing old categories, please wait...', '');
     this.api.POST('product-categories/clean', {
       product_id: this.id,
     }).subscribe({
@@ -1130,9 +1189,12 @@ export class SingleProductComponent implements OnInit {
         console.log(res);
         this.getProductCategories(this.id);
         this.info.setLoadingInfo('Categories removed...', 'warn');
+        this.openSnackBar('Old categories removed...', '');
+        this.checkboxLoader = false;
       }, error:(res)=>{
         this.info.errorHandler(res);
         this.info.setLoadingInfo('Could not remove categories...', 'danger');
+        this.checkboxLoader = false;
       }
     });
   }
@@ -1147,7 +1209,7 @@ export class SingleProductComponent implements OnInit {
       next:(res)=>{
         this.pdsAttributes = res;
         this.loadingPdsAttributes = false;
-        this.info.setLoadingInfo('', 'success');
+        this.info.setLoadingInfo('PDS attributes loaded', 'success');
       }, error:(res)=> {
         this.info.errorHandler(res);
         this.loadingPdsAttributes = false;
@@ -1377,6 +1439,8 @@ export class SingleProductComponent implements OnInit {
               default:
                 break;
             }
+
+            this.info.setLoadingInfo(`Fetching design data: ${res[index].value}`, 'info');
           }
         }
 
@@ -1708,5 +1772,18 @@ export class SingleProductComponent implements OnInit {
 
   toggleHistory() {
     this.historyTable = !this.historyTable;
+  }
+
+  isChecked(id: number) {
+    const cat = this.productCategories.find((x: any) => x.id == id);
+    if(cat) {
+      return true;
+    }
+    return false;
+  }
+
+  ctrlF() {
+    console.log(this.findCategory);
+    (window as any).find(this.findCategory);
   }
 }

@@ -1,0 +1,159 @@
+<span class="loadingInfo"></span>
+<p>
+  <a routerLink="../products/product-manager" *ngIf="productManagerId !== 0">
+    < Back to My products
+  </a>
+</p>
+
+<div *ngIf="productsLoader == true">
+  <p>Fetching details for {{ sku }}...</p>
+  <mat-progress-bar color="accent" mode="indeterminate"></mat-progress-bar>
+</div>
+
+<div *ngIf="product">
+  <p>
+    <a routerLink="/">Products </a> / Product Details / {{ productName }} 
+    <span style="float: right; cursor: pointer;" (click)="toggleInfoBar()">
+      <i *ngIf="showInfoBar" class="material-icons">arrow_right</i>
+      <i *ngIf="!showInfoBar" class="material-icons">arrow_left</i>
+    </span>
+  </p>
+
+  <div class="row" id="pdfContent">
+    <div [class]="mainTabsCls" style="transition: width 1s;">
+      <mat-card style="background: #EFEFEF;">
+        
+        <mat-tab-group>
+
+          <mat-tab label="E-commerce View">
+            <div class="mt-5 py-3 custom-tab card" style="overflow: hidden !important;">
+              <div class="row">
+                <div class="col-sm-12 col-md-9 col-lg-7">
+                  <table>
+                    <tr>
+                      <td class="img-cell"><img *ngIf="mediaFiles[0] && mediaFiles[0].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[0].path) }}" height="66" width="66" (click)="switchImage(0)"></td>
+                      <td rowspan="4">
+                        <img *ngIf="mediaFiles[0] && mediaFiles[0].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[switchImageMain].path) }}" height="350" width="350">
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="img-cell" (click)="switchImage(1)">
+                        <img *ngIf="mediaFiles[1] && mediaFiles[1].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[1].path) }}" height="66" width="66">
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="img-cell" (click)="switchImage(2)">
+                        <img *ngIf="mediaFiles[2] && mediaFiles[2].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[2].path) }}" height="66" width="66">
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="img-cell" (click)="switchImage(3)">
+                        <img *ngIf="mediaFiles[3] && mediaFiles[3].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[3].path) }}" height="66" width="66">
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                <div class="col-sm-12 col-md-3 col-lg-5">
+                  <h2>{{ product.name }}</h2>
+                  <p>{{ productBrand }}</p>
+                  <ul>
+                    <li *ngFor="let i of shoutOuts">{{ i.value }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-2 py-3 custom-tab card">
+              <h2>Description</h2>
+              <p>{{ product.description }}</p>
+            </div>
+
+            <div class="mt-2 py-3 custom-tab card">
+              <h2>Product Information</h2>
+              <table>
+                <tr>
+                  <td class="table-label-cell">Categories</td>
+                  <td>
+                      <span *ngFor="let cat of productCategories">{{ cat.name }} <span *ngIf="cat.name != ''"> / </span> </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-label-cell">Brand</td>
+                  <td>{{ productBrand }}</td>
+                </tr>
+                <tr>
+                  <td class="table-label-cell">SKU</td>
+                  <td>{{ product.sku }}</td>
+                </tr>
+                <tr>
+                  <td class="table-label-cell">Barcode</td>
+                  <td>{{ productBarcode }}</td>
+                </tr>
+                <tr>
+                  <td class="table-label-cell">What's in the box</td>
+                  <td>
+                    <ul>
+                      <li *ngFor="let i of inTheBox">{{ i.value }}</li>
+                    </ul>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-label-cell">Features and Benefits</td>
+                  <td>
+                    <ul>
+                      <li *ngFor="let i of featuresAndBenefits">{{ i.value }}</li>
+                    </ul>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-label-cell">Extended FABs</td>
+                  <td>
+                    <ul>
+                      <li *ngFor="let i of extendedFabs">{{ i.value }}</li>
+                    </ul>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="table-label-cell">Attributes</td>
+                  <td>
+                    <ul class="attributes-bullets">
+                      <li *ngFor="let i of productAttributes">
+                        <span *ngIf="i.key">• {{ i.key }}: </span>
+                        <span [innerHTML]="beautifyAttr(i.value)"></span>
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="mt-2 py-3 custom-tab card">
+              <h2>Videos</h2>
+
+              
+              <div class="row">
+                <div *ngFor="let video of videos" class="col-md-6">
+                  <iframe width="420" height="315" [src]="video"></iframe>
+                </div>
+              </div>
+              
+            </div>
+           
+          </mat-tab>
+
+        </mat-tab-group>
+      </mat-card>
+    </div>
+    
+
+  </div>
+</div>
+
+<div *ngIf="!product">
+  <div *ngIf="!productsLoader">
+    <h2>🤷‍♂️ Product code "<strong>{{ sku }}</strong>" does not exist.</h2>
+    <p>Please make sure the SKU is correct. If you beleave this is the correct product code, please click report this issue.</p>
+    <button mat-raised-button color="primary" onclick="alert('Issue reported.')">Report Issue</button>
+  </div>
+  
+</div>

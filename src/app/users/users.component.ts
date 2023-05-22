@@ -70,6 +70,7 @@ export class UsersComponent implements OnInit {
   }
 
   getUsers(): void {
+    this.info.setLoadingInfo('Please wait...', 'info');
     this.usersLoader = true;
     this.api.GET('users').subscribe({
       next:(res)=>{
@@ -78,22 +79,26 @@ export class UsersComponent implements OnInit {
         this.dataSource = new MatTableDataSource(this.users);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
+        this.info.setLoadingInfo('', 'info');
       }, error:(res)=>{
         this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
+        this.info.setLoadingInfo('Failed to connect to the server: ' + res.message, 'info');
       }
     });
   }
 
   getUserActivities(): void {
+    this.info.setLoadingInfo('Loading activities...', 'info');
     this.api.GET('activity').subscribe({
-      next:(res)=>{
-        console.log('Activities: ', res);
+      next:(res)=>{      
         this.activities = res;
         this.dataSource2 = new MatTableDataSource(this.activities);
         this.dataSource2.paginator = this.paginator;
         this.dataSource2.sort = this.sort;
+        this.info.setLoadingInfo('', 'info');
       }, error:(res)=>{
         console.log('Failed to connect to the server: ' + res.message, 'Okay');
+        this.info.setLoadingInfo('Failed to connect to the server', 'warn');
       }
     });
   }
@@ -183,14 +188,17 @@ export class UsersComponent implements OnInit {
   }
 
   getTeams(): void {
+    this.info.setLoadingInfo('Loading teams...', 'info');
     this.api.GET('teams').subscribe({
       next:(e) => {
         this.teams = e;
+        this.info.setLoadingInfo('', 'info');
       }
     });
   }
 
   createTeam(): void {
+    this.info.setLoadingInfo('Creating a team...', 'info');
     const name = prompt("Please enter team name", "Team1");
     let description = prompt("Describe your team", ``);
     let leaderEmail = prompt("Enter Team Leader's email adress", ``);
@@ -199,13 +207,16 @@ export class UsersComponent implements OnInit {
 
     if (leader?.id == undefined) {
       alert("No such user in the system");
+      this.info.setLoadingInfo(`${leaderEmail} not found.`, 'warn');
     } else {
       this.api.POST('team',{ name: name, description: description, status: 'active', leader: leader?.id }).subscribe({
         next:(res)=>{
           this.getTeams();
+          this.info.setLoadingInfo('Team created', 'success');
         },
         error:(res)=>{
           alert(res.message);
+          this.info.setLoadingInfo('', 'info');
         }
       });
     }
@@ -213,28 +224,39 @@ export class UsersComponent implements OnInit {
 
   addUserToTeam(userId: number, e: any): void {
     if (confirm("Add this user to team?") == true) {
+      this.info.setLoadingInfo('Adding user to team...', 'info');
       this.api.POST("add-user-to-team", { user_id: userId,  team_id: e.value }).subscribe({
         next:(res)=>{
           console.log(res)
           this.openSnackBar('Member added to team', 'Okay');
+          this.info.setLoadingInfo('User added to team', 'success');
         }, error:(res)=>{
           alert(res.message);
+          this.info.setLoadingInfo(res.message, 'danger');
         }
       });
     } else {
+      this.info.setLoadingInfo('', 'info');
       console.log("Cancelled");
     }
   }
 
   getTeamMembers(id: number) {
+    this.info.setLoadingInfo('Getting team members...', 'info');
     this.api.GET(`team-members/${id}`).subscribe({
       next:(res) => {
+        this.info.setLoadingInfo('', 'info');
         this.teamMembers = res;
       },
       error:(e) => {
+        this.info.setLoadingInfo('', 'info');
         console.log(e);
       }
     });
+  }
+
+  autoSetCat(id: number) {
+    console.log(id);
   }
 
 }

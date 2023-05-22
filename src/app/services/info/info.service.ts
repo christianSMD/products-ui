@@ -72,12 +72,15 @@ export class InfoService {
    * @returns User roles object
    */
   public role (id: number) {
+    this.setLoadingInfo("⏳", "info");
+    console.log("Checking user roles...");
     try {
       this.api.GET(`roles/search/${this.getUserId()}`).subscribe({
         next:(res)=>{
            localStorage.setItem('roles', JSON.stringify(res));
+           this.setLoadingInfo("", "info");
         }, error:(res)=>{
-          console.log(res);
+          this.setLoadingInfo(res, "danger");
           return false;
         }
       })
@@ -95,6 +98,7 @@ export class InfoService {
   }
 
   public activity (activity: string, product_id: number): void {
+    this.setLoadingInfo("Updating audits...", "info");
     this.api.POST('activity', {
       activity: activity,
       user_id: this.getUserId(),
@@ -102,8 +106,10 @@ export class InfoService {
     }).subscribe({
       next:(res)=>{
          console.log(res);
+         this.setLoadingInfo("Audits updated", "info");
       }, error:(res)=>{
         console.log(res);
+        this.setLoadingInfo("Audits not updated", "warn");
       }
     });
   }
@@ -151,7 +157,7 @@ export class InfoService {
     const time = new Date().getHours();
     if (time < 10) {
       return "Good morning";
-    } else if (time < 20) {
+    } else if (time < 17) {
       return "Good day";
     } else {
       return "Good evening";
@@ -168,13 +174,16 @@ export class InfoService {
         if (s == 0) {
           noConnection!.style.display = "block";
           poorConnection!.style.display = "none";
+          this.setLoadingInfo("No internet connection", "danger");
         } else {
           if (s < 12) {
             noConnection!.style.display = "none";
             poorConnection!.style.display = "block";
+            this.setLoadingInfo("Poor internet connection", "warn");
           } else {
             noConnection!.style.display = "none";
             poorConnection!.style.display = "none";
+            this.setLoadingInfo("", "info");
           }
         }
       }
@@ -182,24 +191,29 @@ export class InfoService {
   }
 
   setLoadingInfo(text: string, type: string) {
-    let e = <HTMLElement> document.querySelector(".loadingInfo");
-    e.innerHTML = text;
-    switch (type) {
-      case "info":
-        e.style.color = "lightblue";
-        break;
-      case "success":
-        e.style.color = "green";
-        break;
-      case "warn":
-        e.style.color = "orange";
-        break;
-      case "danger":
-        e.style.color = "red";
-        break;
-      default:
-        break;
+    try {
+      let e = <HTMLElement> document.querySelector(".loadingInfo");
+      e.innerHTML = text;
+      switch (type) {
+        case "info":
+          e.style.color = "#c2d6d6";
+          break;
+        case "success":
+          e.style.color = "#a0c4a0";
+          break;
+        case "warn":
+          e.style.color = "#e6d9b1";
+          break;
+        case "danger":
+          e.style.color = "#ef4252";
+          break;
+        default:
+          e.style.color = "#c2d6d6";
+          break;
+      }
+    } catch (error) {
     }
+    
   }
   
   public errorHandler(error: any) {

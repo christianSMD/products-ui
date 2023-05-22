@@ -138,6 +138,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   ngAfterContentInit(): void {
     console.log('products-home ngAfterContentInit()');
     if(this.loggedIn) {
+      this.info.setLoadingInfo('Preparing...', 'info');
       this.addProductRole = this.info.role(61);
       this.addCategoryRole = this.info.role(60);
       this.productManagerRole = this.info.role(86);
@@ -160,6 +161,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
 
   getAllProducts() {
     let url: string = 'products-verified';
+    this.info.setLoadingInfo('Loading products...', 'info');
     if (this.viewAllProductsRole) {
       url = 'products';
     }
@@ -172,8 +174,10 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
         this.dataSource.sort = this.sort;
         this.productsLoader = false;
         this.blockUI.stop();
+        this.info.setLoadingInfo('Products loaded', 'success');
         this.entireProducts();
       }, error:(res)=>{
+        this.info.setLoadingInfo('Failed to connect to the server: ' + res.message, 'success');
         this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
       }
     });
@@ -184,6 +188,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
    * @todo Populates the Products Service with dataa from the API
    */
   entireProducts() {
+    this.info.setLoadingInfo('Loading more products...', 'info');
     this.entireProductsLoader = true;
     let url: string = 'products-verified';
     if (this.viewAllProductsRole) {
@@ -197,8 +202,9 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
         this.dataSource.sort = this.sort;
         this.products.setProducts(res);
         this.entireProductsLoader = false;
+        this.info.setLoadingInfo('Products loaded', 'success');
       }, error:(res)=>{
-        console.log(res);
+        this.info.setLoadingInfo(res, 'danger');
         this.entireProductsLoader = false;
       }
     });
@@ -214,12 +220,15 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
 
   getAllTypes() {
     this.typesList = this.lookup.getTypes();
+    this.info.setLoadingInfo('Loading types...', 'info');
     this.api.GET('types').subscribe({
       next:(res)=>{
         this.lookup.setTypes(res);
         this.typesList = this.lookup.getTypes();
+        this.info.setLoadingInfo('Types loaded', 'success');
       }, error:(res)=>{
-        this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
+        this.openSnackBar('Failed to communicate with the server', 'Okay');
+        this.info.setLoadingInfo('Failed to communicate with the server: ' + res.message, 'info');
       }
     });
   }
@@ -317,13 +326,15 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   }
 
   getAllCategories(): void {
+    this.info.setLoadingInfo('Loading categories...', 'info');
     this.api.GET('categories').subscribe({
       next:(res)=>{
         this.products.setCategories(res);
         this.categoriesList = this.products.getCategories();
         this.primaryCategoriesList = res.filter((c: Category) => c.parent == '0');
+        this.info.setLoadingInfo('Categories loaded', 'success');
       }, error:(res)=>{
-        console.log(res);
+        this.info.setLoadingInfo(res, 'info');
       }
     });
   }

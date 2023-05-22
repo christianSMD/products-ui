@@ -55,7 +55,6 @@ export class ProductManagerComponent extends CdkTableExporterModule implements O
   verifiedProducts: any[] = [];
   productsViewInfo: string;
 
-
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @BlockUI() blockUI: NgBlockUI;
@@ -157,6 +156,7 @@ export class ProductManagerComponent extends CdkTableExporterModule implements O
   }
 
   getAllProducts() {
+    this.info.setLoadingInfo('Loading your products...', 'info');
     this.productsLoader = true;
     this.api.GET(`product-manager/products/${this.info.getUserId()}`).subscribe({
       next:(res)=>{
@@ -167,9 +167,11 @@ export class ProductManagerComponent extends CdkTableExporterModule implements O
         this.dataSource.sort = this.sort;
         this.productsLoader = false;
         this.blockUI.stop();
+        this.info.setLoadingInfo('Your products loaded successfully', 'info');
         this.checkProductCategories();
       }, error:(res)=>{
         this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
+        this.info.setLoadingInfo('Failed to connect to the server: ' + res.message, 'danger');
       }
     });
   }
@@ -183,11 +185,13 @@ export class ProductManagerComponent extends CdkTableExporterModule implements O
   }
 
   getAllTypes() {
+    this.info.setLoadingInfo('Preparing, please wait...', 'info');
     this.typesList = this.lookup.getTypes();
     this.api.GET('types').subscribe({
       next:(res)=>{
         this.lookup.setTypes(res);
         this.typesList = this.lookup.getTypes();
+        this.info.setLoadingInfo('', 'success');
       }, error:(res)=>{
         this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
       }
@@ -210,7 +214,7 @@ export class ProductManagerComponent extends CdkTableExporterModule implements O
   }
 
   permission(role: number) {
-    console.log('Role check');
+    this.info.setLoadingInfo(`checking permissions...`, 'info');
     if(this.info.role(role)) {
       return true;
     }
@@ -218,6 +222,7 @@ export class ProductManagerComponent extends CdkTableExporterModule implements O
   }
 
   iconClick(s: string): void {
+    this.info.setLoadingInfo(``, 'info');
     this.openSnackBar(s, '😉');
   }
 
@@ -246,27 +251,35 @@ export class ProductManagerComponent extends CdkTableExporterModule implements O
     this.allProducts = (this.activeProducts ||  this.developmentProducts || this.eolProducts) ? false : true;
     if (this.allProducts) {
       results = this.productsList;
+      this.info.setLoadingInfo(`Showing all your products.`, 'info');
     } else {
       if (this.activeProducts && this.eolProducts && this.developmentProducts) {
         this.allProducts = true;
         results = this.productsList;
+        this.info.setLoadingInfo(`Showing Active, EOL, and In Development products`, 'info');
       } else {
         if (this.activeProducts && this.developmentProducts) {
           results = this.productsList.filter(x => x.is_in_development == 1 && x.is_active == 1);
+          this.info.setLoadingInfo(`Showing Active and In Development products`, 'info');
         } else {
           if (this.activeProducts && this.eolProducts) {
             results = this.productsList.filter(x => x.is_active == 1 && x.is_eol == 1);
+            this.info.setLoadingInfo(`Showing Active and EOL products`, 'info');
           } else {
             if (this.developmentProducts && this.eolProducts) {
               results = this.productsList.filter(x => x.is_in_development == 1 && x.is_eol == 1);
+              this.info.setLoadingInfo(`Showing EOL and In Development products`, 'info');
             } else {
               if (this.activeProducts) {
                 results = this.productsList.filter(x => x.is_active == 1);
+                this.info.setLoadingInfo(`Showing Active products`, 'info');
               } else if (this.developmentProducts) {
                 results = this.productsList.filter(x => x.is_in_development == 1);
+                this.info.setLoadingInfo(`Showing  In Development products`, 'info');
               } else {
                 //EOL
                 results = this.productsList.filter(x => x.is_eol == 1);
+                this.info.setLoadingInfo(`Showing EOL products`, 'info');
               }
             }
           }
@@ -287,13 +300,15 @@ export class ProductManagerComponent extends CdkTableExporterModule implements O
   }
 
   getAllCategories(): void {
+    this.info.setLoadingInfo('Loading categories', 'info');
     this.api.GET('categories').subscribe({
       next:(res)=>{
         this.products.setCategories(res);
         this.categoriesList = this.products.getCategories();
         this.primaryCategoriesList = res.filter((c: Category) => c.parent == '0');
+        this.info.setLoadingInfo('Categories loaded', 'success');
       }, error:(res)=>{
-        console.log(res);
+        this.info.setLoadingInfo(res, 'warn');
       }
     });
   }
@@ -338,6 +353,7 @@ export class ProductManagerComponent extends CdkTableExporterModule implements O
   }
 
   checkProductCategories() {
+    this.info.setLoadingInfo('Loading product categories...', 'success');
     this.productsLoader = true;
     this.api.GET(`product-manager-catrgories/products/${this.info.getUserId()}`).subscribe({
       next:(res)=>{
@@ -345,6 +361,7 @@ export class ProductManagerComponent extends CdkTableExporterModule implements O
         this.productsMissingCategories = res;
         this.productsLoader = false;
         this.blockUI.stop();
+        this.info.setLoadingInfo('Product categories loaded', 'success');
       }, error:(res)=>{ }
     });
   }

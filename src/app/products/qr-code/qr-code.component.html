@@ -1,0 +1,15 @@
+
+<div style="text-align: center;">
+    <strong>SKU:</strong> {{ sku }}
+    <div *ngIf="product">
+        <strong>Name:</strong> {{ product.name }} <br>
+        {{ product.description }} <br>
+    </div>
+    <div *ngIf="!product">
+        <small>
+            <i>Loading information...</i>
+        </small>
+        <mat-progress-bar color="accent" mode="indeterminate"></mat-progress-bar>
+    </div>
+    <qrcode qrdata="https://products.smdtechnologies.com/{{sku}}" [width]="300" [errorCorrectionLevel]="'M'"></qrcode>
+</div>

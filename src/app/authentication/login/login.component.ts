@@ -7,6 +7,7 @@ import { NavbarService } from 'src/app/services/navbar/navbar.service';
 import { SidenavService } from 'src/app/services/sidenav/sidenav.service';
 import { TreeService } from 'src/app/services/tree/tree.service';
 import { ApiService } from '../../services/api/api.service';
+import { timer } from 'rxjs';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -41,6 +42,11 @@ export class LoginComponent implements OnInit {
   }
 
   login(): void {
+    this.openSnackBar('Logging in...', '');
+    setTimeout(() => {
+      this.openSnackBar('This is taking longer, please wait...', '');
+    }, 6000);
+
     if(this.userForm.valid) {
       this.api.POST('login', this.userForm.value).subscribe({
         next:(res)=>{
@@ -54,7 +60,7 @@ export class LoginComponent implements OnInit {
             localStorage.setItem('refreshed', 'no');
             localStorage.setItem('blockui', 'yes');
             this.info.role(0); // Trigger local storage for permissions
-            this.openSnackBar('✔ Logging in...', '');
+            this.openSnackBar('✔ Preparing...', '');
             this.router.navigate(['/']);
           } else {
             this.openSnackBar('⛔ Your account has not been approved yet, or has been deactivated. Please contact your administrator.' , 'Okay');

@@ -352,48 +352,6 @@
                 <form>
                   <div class="row form-border">
                     <div class="col-md-6">
-                      <!-- <section class="categories-section">
-                        <ul>
-                          <li class="categories-list" *ngFor="let category of categoriesList | parent: '0'" >
-                            <span>
-                              <mat-checkbox (click)="checkedItem(category.id)" [checked]="checkCategories(category.category)">{{ category.name }}</mat-checkbox>
-                            </span>
-                            <span>
-                              <ul>
-                                <li class="categories-list" *ngFor="let child_1 of categoriesList | parent: category.id">
-                                  <mat-checkbox (click)="checkedItem(child_1.id)" [checked]="checkCategories(child_1.name)">{{ child_1.name }}</mat-checkbox>
-                                  <ul>
-                                    <li class="categories-list" *ngFor="let child_2 of categoriesList | parent: child_1.id">
-                                      <mat-checkbox (click)="checkedItem(child_2.id)" [checked]="checkCategories(child_2.name)">{{ child_2.name }}</mat-checkbox>
-                                      <ul>
-                                        <li class="categories-list" *ngFor="let child_3 of categoriesList | parent: child_2.id">
-                                          <mat-checkbox (click)="checkedItem(child_3.id)" [checked]="checkCategories(child_3.name)">{{ child_3.name }}</mat-checkbox>
-                                          <ul>
-                                            <li class="categories-list" *ngFor="let child_4 of categoriesList | parent: child_3.id">
-                                              <mat-checkbox (click)="checkedItem(child_4.id)" [checked]="checkCategories(child_4.name)">{{ child_4.name }}</mat-checkbox>
-                                              <ul>
-                                                <li class="categories-list" *ngFor="let child_5 of categoriesList | parent: child_4.id">
-                                                  <mat-checkbox (click)="checkedItem(child_5.id)" [checked]="checkCategories(child_5.name)">{{ child_5.name }}</mat-checkbox>
-                                                  <ul>
-                                                    <li class="categories-list" *ngFor="let child_6 of categoriesList | parent: child_5.id">
-                                                      <mat-checkbox (click)="checkedItem(child_6.id)" [checked]="checkCategories(child_6.name)">{{ child_6.name }}</mat-checkbox>
-                                                    </li>
-                                                  </ul>
-                                                </li>
-                                              </ul>
-                                            </li>
-                                          </ul>
-                                        </li>
-                                      </ul>
-                                    </li>
-                                  </ul>
-                                </li>
-                              </ul>
-                            </span>
-                          </li>
-                        </ul>   
-                      </section> -->
-
                       <span *ngFor="let cat of productCategories">
                         {{ cat.name }} <span *ngIf="cat.name != ''"> / </span>
                       </span>
@@ -435,29 +393,31 @@
 
                       <div class="col-md-row">
                         <div class="col-md-2">
-                          <button *ngIf="modifyingCategories" mat-raised-button type="submit" color="primary" (click)="saveCategories()" >Save Changes</button>
+                          <!-- <button *ngIf="modifyingCategories" mat-raised-button type="submit" color="primary" (click)="saveCategories()" >Save Changes</button> -->
+                          <button mat-raised-button type="submit" color="primary" (click)="saveCategories()" >Save Changes</button>
                         </div>
-                        <!-- <div class="col-md-2">
-                          <button *ngIf="tier1 > 0" mat-raised-button type="submit" color="default" (click)="clearTempTiers()" >Clear</button>
-                        </div> -->
+
                       </div>
                     </div>
                     <div class="col-md-6" style="background-color: aliceblue;">
+                      <small *ngIf="!checkboxLoader"><i>Ctrl + F</i> to find category</small>
+                      <small *ngIf="checkboxLoader"><i>Please wait...</i></small>
+                      <hr>
                       <div style="height: 40rem; overflow-y: scroll;">
                         <ul>
-                          <li *ngFor="let category of categoriesList | parent: '0'" ><strong>{{ category.name }}</strong>
-                            <ul>
-                              <li *ngFor="let child_1 of categoriesList | parent: category.id">{{ category.name }} > {{ child_1.name }}
-                                <ul>
-                                  <li *ngFor="let child_2 of categoriesList | parent: child_1.id">{{ child_2.name }}
-                                    <ul>
-                                        <li *ngFor="let child_3 of categoriesList | parent: child_2.id">{{ child_3.name }}
-                                          <ul>
-                                            <li *ngFor="let child_4 of categoriesList | parent: child_3.id">{{ child_4.name }}
-                                              <ul>
-                                                <li *ngFor="let child_5 of categoriesList | parent: child_4.id">{{ child_5.name }}
-                                                  <ul>
-                                                    <li *ngFor="let child_6 of categoriesList | parent: child_5.id">{{ child_6.name }}</li>
+                          <li *ngFor="let category of categoriesList | parent: '0'" ><mat-checkbox (change)="checkedItem(category.id, category.parent, $event)" [checked]="isChecked(category.id)" [disabled]="isChecked(category.id)"></mat-checkbox> <strong> {{ category.name }}</strong>
+                            <ul class="category-chechbox">
+                              <li *ngFor="let child_1 of categoriesList | parent: category.id"><mat-checkbox (change)="checkedItem(child_1.id, child_1.parent, $event)" [checked]="isChecked(child_1.id)" [disabled]="isChecked(child_1.id)"></mat-checkbox> {{ child_1.name }}
+                                <ul class="category-chechbox">
+                                  <li *ngFor="let child_2 of categoriesList | parent: child_1.id"><mat-checkbox (change)="checkedItem(child_2.id, child_2.parent, $event)" [checked]="isChecked(child_2.id)" [disabled]="isChecked(child_2.id)"></mat-checkbox> {{ child_2.name }}
+                                    <ul class="category-chechbox">
+                                        <li *ngFor="let child_3 of categoriesList | parent: child_2.id"><mat-checkbox (change)="checkedItem(child_3.id, child_3.parent, $event)" [checked]="isChecked(child_3.id)" [disabled]="isChecked(child_3.id)"></mat-checkbox> {{ child_3.name }}
+                                          <ul class="category-chechbox">
+                                            <li *ngFor="let child_4 of categoriesList | parent: child_3.id"><mat-checkbox (change)="checkedItem(child_4.id, child_4.parent, $event)" [checked]="isChecked(child_4.id)" [disabled]="isChecked(child_4.id)"></mat-checkbox> {{ child_4.name }}
+                                              <ul class="category-chechbox">
+                                                <li *ngFor="let child_5 of categoriesList | parent: child_4.id"><mat-checkbox (change)="checkedItem(child_5.id, child_5.parent, $event)" [checked]="isChecked(child_5.id)" [disabled]="isChecked(child_5.id)"></mat-checkbox> {{ child_5.name }}
+                                                  <ul class="category-chechbox">
+                                                    <li *ngFor="let child_6 of categoriesList | parent: child_5.id"><mat-checkbox (change)="checkedItem(child_6.id, child_6.parent, $event)" [checked]="isChecked(child_6.id)" [disabled]="isChecked(child_6.id)"></mat-checkbox> {{ child_6.name }}</li>
                                                   </ul>
                                                 </li>
                                               </ul>
@@ -894,11 +854,8 @@
                     </mat-card>
                   </div>
                 </mat-tab>
-                
               </mat-tab-group>
-              
             </div>
-            
           </mat-tab>
 
           <mat-tab label="E-commerce View">
@@ -1046,6 +1003,7 @@
             <br>
             <div style="text-align: center;">
               <h3>{{ progressPercentage() }}% Complete</h3>
+              <!-- <small *ngIf="productManagerRole">Managed by you</small> -->
             </div>
             <hr>
             <mat-list role="list" (click)="autoInfo()">
@@ -1074,9 +1032,10 @@
                 <mat-icon *ngIf="mediaFiles.length > 0">check_circle</mat-icon> Images ({{mediaFiles.length}})
               </mat-list-item>
             </mat-list>
-          </mat-card-content>          
+          </mat-card-content>         
           <div style="text-align: center;">
             <!-- <button mat-raised-button color="primary" (click)="presentation()"><img src="../../../assets/icons/presentation.png" height="40" class="mx-2"> Create Presentation</button> -->
+            <qrcode qrdata="https://products.smdtechnologies.com/{{sku}}" [width]="200" [errorCorrectionLevel]="'M'"></qrcode>
           </div>
      
           <mat-card-content style="margin-top: 2rem;">
@@ -1099,11 +1058,9 @@
             </table>
           </mat-card-content>          
         </mat-card>
-
       </div>
     </div>
   </div>
-
 </div>
 
 <div *ngIf="!product">
