@@ -481,7 +481,7 @@ export class SingleProductComponent implements OnInit {
   onChange(event: any): void {
     this.files = event.target.files;
     for(let x = 0; x < this.files.length; x ++) {
-      if(this.files[x].size > 9000000) {
+      if(this.files[x].size > 20000000) {
         const msg = "🚫 " + this.files[x].name + " is too large!";
         this.messages.push(msg);
       }
