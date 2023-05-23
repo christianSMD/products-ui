@@ -866,22 +866,22 @@
                     <tr>
                       <td class="img-cell"><img *ngIf="mediaFiles[0] && mediaFiles[0].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[0].path) }}" height="66" width="66" (click)="switchImage(0)"></td>
                       <td rowspan="4">
-                        <img *ngIf="mediaFiles[0] && mediaFiles[0].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[switchImageMain].path) }}" height="350" width="350">
+                        <img *ngIf="mediaFiles[0] && mediaFiles[0].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[switchImageMain].path) }}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" height="350" width="350">
                       </td>
                     </tr>
                     <tr>
                       <td class="img-cell" (click)="switchImage(1)">
-                        <img *ngIf="mediaFiles[1] && mediaFiles[1].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[1].path) }}" height="66" width="66">
+                        <img *ngIf="mediaFiles[1] && mediaFiles[1].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[1].path) }}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" height="66" width="66">
                       </td>
                     </tr>
                     <tr>
                       <td class="img-cell" (click)="switchImage(2)">
-                        <img *ngIf="mediaFiles[2] && mediaFiles[2].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[2].path) }}" height="66" width="66">
+                        <img *ngIf="mediaFiles[2] && mediaFiles[2].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[2].path) }}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" height="66" width="66">
                       </td>
                     </tr>
                     <tr>
                       <td class="img-cell" (click)="switchImage(3)">
-                        <img *ngIf="mediaFiles[3] && mediaFiles[3].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[3].path) }}" height="66" width="66">
+                        <img *ngIf="mediaFiles[3] && mediaFiles[3].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[3].path) }}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" height="66" width="66">
                       </td>
                     </tr>
                   </table>
@@ -958,6 +958,35 @@
                   </td>
                 </tr>
               </table>
+            </div>
+
+            <div class="mt-2 py-3 custom-tab card">
+              <h2>Packaging</h2>
+              <div class="row">
+                <div class="col-md-12">
+                  <mat-progress-bar *ngIf="packagingLoader" color="accent" mode="indeterminate"></mat-progress-bar>
+              
+                  <table class="table table-bordered mt-2">
+                    <tr>
+                      <th>Type</th>
+                      <th>Length</th>
+                      <th>Height</th>
+                      <th>Width</th>
+                      <th>Weight</th>
+                      <th>Barcode</th>
+                    </tr>
+                    <tr *ngFor="let i of packaging">
+                      <td>{{ returnTypeName(i.packaging_type_id) }}</td>
+                      <td><input id="length{{i.id}}" matInput placeholder="Length" [value]="i.length" readonly></td>
+                      <td><input id="height{{i.id}}" matInput placeholder="Height" [value]="i.height" readonly></td>
+                      <td><input id="width{{i.id}}" matInput placeholder="Width" [value]="i.width" readonly></td>
+                      <td><input id="weight{{i.id}}" matInput placeholder="Weight" [value]="i.weight" readonly></td>
+                      <td><input id="barcode{{i.id}}" matInput placeholder="Barcode" [value]="i.barcode" readonly></td>
+                    
+                    </tr>
+                  </table>
+                </div>
+              </div>
             </div>
 
             <div class="mt-2 py-3 custom-tab card">

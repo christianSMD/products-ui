@@ -862,6 +862,7 @@ export class SingleProductComponent implements OnInit {
   }
 
   filePath(p: string) {
+    console.log("PATH: ", p);
     return p.substring(7);
   }
 
