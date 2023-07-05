@@ -1,7 +1,7 @@
 
 import { HttpClient, HttpEvent, HttpRequest, HttpHeaders } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, timeout } from 'rxjs';
 import {saveAs} from 'file-saver';
 import * as FileSaver from 'file-saver';
 import { Product } from 'src/app/interfaces/product';
@@ -36,7 +36,7 @@ export class ApiService {
       this.baseUrl = 'https://products.smdtechnologies.com/public/api/';
       this.storageUrl = 'https://products.smdtechnologies.com/public/storage/';
       this.domainUrl = 'https://products.smdtechnologies.com/login';
-    } 
+    }
     
   }
 
@@ -57,7 +57,9 @@ export class ApiService {
 
   public GET (endpoint: string): Observable<any[]>{
     this.endpoints();
-    return this.http.get<any[]>(this.baseUrl + endpoint);
+    const timeoutDuration = 120000;
+    return this.http.get<any[]>(this.baseUrl + endpoint)
+    .pipe(timeout(timeoutDuration));
   }
 
   public IMAGESERVER(sku: string): Observable<any[]> {

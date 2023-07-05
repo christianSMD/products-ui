@@ -225,6 +225,7 @@ export class SingleProductComponent implements OnInit {
       is_in_development : [0, Validators.required],
       is_active: [0, Validators.required],
       verified: [0, Validators.required],
+      requires_icasa: [0, Validators.required],
       family_grouping : ['']
     });
 
@@ -356,7 +357,7 @@ export class SingleProductComponent implements OnInit {
           this.documents();
           this.getSocialLinks(this.id);
           this.getProductCategories(this.id);
-          //this.imageserver(sku);
+          this.imageserver(sku);
           this.productForm = this.formBuilder.group({
             id: [{value: this.product.id, disabled: true}],
             sku : [{value: this.product.sku, disabled: true}, Validators.required],
@@ -368,6 +369,7 @@ export class SingleProductComponent implements OnInit {
             is_active: [this.product.is_active],
             is_eol: [this.product.is_eol],
             verified: [this.product.verified],
+            requires_icasa: [this.product.requires_icasa],
             family_grouping: [this.product.family_grouping],
           });
 
@@ -862,7 +864,6 @@ export class SingleProductComponent implements OnInit {
   }
 
   filePath(p: string) {
-    console.log("PATH: ", p);
     return p.substring(7);
   }
 

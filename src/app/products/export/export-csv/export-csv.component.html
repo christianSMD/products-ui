@@ -2,25 +2,34 @@
     <a routerLink="/">Products</a> / Export Products
 </p>
 
-<button mat-raised-button class="m-1" color="accent" (click)="exporter.exportTable('csv',{fileName:'products_system'})">
+<button mat-raised-button style="float: right;" class="m-1" color="accent" (click)="exporter.exportTable('csv',{fileName:'products_system'})">
     <mat-icon>download</mat-icon> Download CSV
-</button>
-<button mat-raised-button class="m-1" disabled>
-    <mat-icon>file_upload</mat-icon> Import Products
 </button>
 
 <div class="row">
     <div class="col-md-12 mt-3">
+      
+      <mat-form-field appearance="outline" color="primary" style="width: 30%;">
+        <mat-label>Search Brand</mat-label>
+        <input matInput placeholder="Search for sku, mame, brand, description etc" [(ngModel)]="query">
+        <mat-icon matSuffix (click)="getProducts()">search</mat-icon>
+      </mat-form-field> &nbsp;
       <mat-form-field appearance="legacy" color="primary" style="width: 30%;">
-        <mat-label>Search</mat-label>
+        <mat-label>Filter results</mat-label>
         <input matInput (keyup)="applyFilter($event)" placeholder="Search for sku, mame, brand, description etc" #input>
-        <mat-icon matSuffix>search</mat-icon>
+        <mat-icon matSuffix>funnel</mat-icon>
       </mat-form-field>
+
       <div class="mat-elevation-z8">
         <mat-progress-bar color="accent" *ngIf="productsLoader == true" mode="indeterminate"></mat-progress-bar>
         
         <table matTableExporter mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)" #exporter="matTableExporter">
           
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
+            <td mat-cell *matCellDef="let row"> {{row.type}} </td>
+          </ng-container>
+
           <ng-container matColumnDef="sku">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> SKU </th>
             <td mat-cell *matCellDef="let row"> {{row.sku}} </td>
@@ -31,9 +40,24 @@
             <td mat-cell *matCellDef="let row"> {{row.name}} </td>
           </ng-container>
 
+          <ng-container matColumnDef="published">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Published</th>
+            <td mat-cell *matCellDef="let row"> 1 </td>
+          </ng-container>
+
+          <ng-container matColumnDef="isFeatured">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Is featured</th>
+            <td mat-cell *matCellDef="let row"> 1 </td>
+          </ng-container>
+
+          <ng-container matColumnDef="visibility">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Short description</th>
+            <td mat-cell *matCellDef="let row"> 1 </td>
+          </ng-container>
+
           <ng-container matColumnDef="shortDescription">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Short description</th>
-            <td mat-cell *matCellDef="let row"> {{ row.shortDescription }} </td>
+            <td mat-cell *matCellDef="let row"> {{ row.description }}  </td>
           </ng-container>
 
           <ng-container matColumnDef="description">
@@ -41,11 +65,48 @@
             <td mat-cell *matCellDef="let row"> {{ row.description }} </td>
           </ng-container>
 
+          <ng-container matColumnDef="taxStatus">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Tax status</th>
+            <td mat-cell *matCellDef="let row"> taxable </td>
+          </ng-container>
+
+          <ng-container matColumnDef="inStock">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>In stock</th>
+            <td mat-cell *matCellDef="let row"> 1 </td>
+          </ng-container>
+
           <ng-container matColumnDef="categories">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Categories</th>
             <td mat-cell *matCellDef="let row">
-              {{ setProductCategories(row.id) }}
+              {{ row.categories }}
             </td>
+          </ng-container>
+
+          <ng-container matColumnDef="images">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Images</th>
+            <td mat-cell *matCellDef="let row">
+             {{ filePath(row.images) }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="weight">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Weight (kg)</th>
+            <td mat-cell *matCellDef="let row"> 0 </td>
+          </ng-container>
+
+          <ng-container matColumnDef="length">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Weight (kg)</th>
+            <td mat-cell *matCellDef="let row"> 0 </td>
+          </ng-container>
+
+          <ng-container matColumnDef="width">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Weight (kg)</th>
+            <td mat-cell *matCellDef="let row"> 0 </td>
+          </ng-container>
+
+          <ng-container matColumnDef="height">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Weight (kg)</th>
+            <td mat-cell *matCellDef="let row"> 0 </td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

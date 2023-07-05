@@ -65,7 +65,7 @@ export class NewProductComponent implements OnInit {
   doneBtn = false;
   savedFiles: any[] = [];
   storageUrl: string;
-  skuPattern = "^[a-zA-Z0-9_-]{4,12}$";
+  skuPattern = "^[a-zA-Z0-9_()-]{4,20}$";
   invalidSku = true
   newProductType: any; // New Product or new Linked/Bundle products
   autocompleteControl = new FormControl('');

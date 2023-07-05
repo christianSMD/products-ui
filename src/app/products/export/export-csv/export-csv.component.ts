@@ -28,13 +28,25 @@ export class ExportCSVComponent extends CdkTableExporterModule implements OnInit
   productCategoryList: any[] = [];
   typesList: Type[] = [];
   images: any[] = [];
+  query: string = "";
 
   displayedColumns: string[] = [
+    'type',
     'sku', 
     'name', 
+    'published',
+    'isFeatured',
+    'visibility',
     'shortDescription', 
-    'description',	
+    'description',
+    'taxStatus',
+    'inStock',
+    'weight',
+    'length',
+    'width',
+    'height',
     'categories',	
+    'images'
   ];
 
   dataSource: MatTableDataSource<Product>;
@@ -69,14 +81,39 @@ export class ExportCSVComponent extends CdkTableExporterModule implements OnInit
       this.topNav.show();
       this.sideNav.show();
       this.treeNav.hide();
-      this.getAllProducts();
-      this.getAllTypes();
-      this.getImages();
-      this.getProductCategories();
-      this.getAllCategories();
       this.storageUrl = this.api.getStorageUrl();
     }
     this.info.auth();
+  }
+
+  getProducts() {
+    console.log("getting: " + this.query);
+    this.info.setLoadingInfo('Loading products...', 'info');
+    this.productsLoader = true;
+    this.api.GET(`wordpress-export/${this.query}`).subscribe({
+        next:(res)=>{
+          this.productsList = res;
+          this.dataSource = new MatTableDataSource(this.productsList);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+          this.productsLoader = false;
+          this.info.setLoadingInfo('Products loaded', 'success');
+        }, error:(res)=>{
+          this.info.setLoadingInfo('Failed to connect to the server: ' + res.message, 'success');
+          this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
+        }
+      });
+  }
+
+  filePath(p: string) {
+   
+    // var str = "https://products.smdtechnologies.com/" + p;
+    // var modifiedStr = str.split(",").join(",https://products.smdtechnologies.com/");
+    // var modifiedUrl = modifiedStr.replaceAll("/public/files", "/public/storage/files");
+    // return modifiedUrl;
+    var modifiedStr = p.split(",").join(",");
+    return modifiedStr;
+    
   }
 
   applyFilter(event: Event) {
@@ -86,34 +123,6 @@ export class ExportCSVComponent extends CdkTableExporterModule implements OnInit
       this.dataSource.paginator.firstPage();
     }
   }
-
-  getAllProducts() {
-    this.productsList = this.products.getProducts();
-    this.dataSource = new MatTableDataSource(this.productsList);
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-
-  getAllCategories(): void {
-    this.categoriesList = this.products.getCategories();
-  }
-
-  getImages() {
-    this.productsLoader = true;
-    this.api.GET('images').subscribe({
-      next:(res)=>{
-        console.log(res);
-        this.images = res;
-      }, error:(res)=>{
-        this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
-      }
-    });
-  }
-
-  productImages(id: number) {
-    return this.images.filter(x => x.product_id == id);
-  }
-
 
   openSnackBar(message: string, action: string) {
     this._snackBar.open(message, action);
@@ -131,17 +140,6 @@ export class ExportCSVComponent extends CdkTableExporterModule implements OnInit
     this.typesList = this.lookup.getTypes();
   }
 
-  getProductCategories () {
-    this.api.GET('product-categories').subscribe({
-      next:(res)=>{
-        console.log('Products categories', res);
-        this.productCategoryList = res;
-      }, error:(res)=>{
-        console.log('Failed to communicate with the server: ' + res.message);
-      }
-    });
-  }
-
   getBrandName(id: string) {
      let i = 0;
      i = parseInt(id) - 1;
@@ -149,44 +147,6 @@ export class ExportCSVComponent extends CdkTableExporterModule implements OnInit
       return '';
     }
      return this.typesList[i].name;
-  }
-
-  setAttributesName(a: any, i: number) {
-    const attr = JSON.parse(a)
-    if(attr.attributes[i]) {
-      return attr.attributes[i].attrName;
-    }
-    return '';
-  }
-
-  setAttributesValue(a: any, i: number) {
-    const attr = JSON.parse(a)
-    if(attr.attributes[i]) {
-      return attr.attributes[i].attrValue;
-    }
-    return '';
-  }
-
-  setProductCategories(id: number) {;
-    let catIds: any[] = [];
-    let final: any[] = [];
-    let str: string = '';
-
-    for(let x = 0; x < this.productCategoryList.length; x++) {
-      if (this.productCategoryList[x].product_id == id) {
-        catIds.push(this.productCategoryList[x].category_id);
-      }
-    }
-
-    for(let x = 0; x < catIds.length; x++) {
-      try {
-        let result = this.categoriesList.find(item => item.id == catIds[x]);
-        final.push(result!.name);
-      } catch (error) {
-        return '';
-      }
-    }
-    return final;
   }
 
 }

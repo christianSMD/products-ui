@@ -153,7 +153,7 @@ export class PublicComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.info.auth();
+    //this.info.auth();
     this.info.setLoadingInfo('Preparing...', 'info');
     window.scroll({ 
       top: 0, 

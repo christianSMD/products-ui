@@ -27,11 +27,11 @@ export class HomeComponent implements OnInit {
     }
 
   ngOnInit(): void {
-    this.router.navigate(['/products']);
-    // this.info.auth();
-    // this.topNav.show();
-    // this.sideNav.show();
-    // this.treeNav.hide();
+    //this.router.navigate(['/products']);
+    this.info.auth();
+    this.topNav.show();
+    this.sideNav.show();
+    this.treeNav.hide();
   }
 
 }
