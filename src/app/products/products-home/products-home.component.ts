@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from 'src/app/services/api/api.service';
 import { NavbarService } from '../../services/navbar/navbar.service';
 import { SidenavService } from '../../services/sidenav/sidenav.service';
@@ -18,13 +18,14 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LookupService } from 'src/app/services/lookup/lookup.service';
 import { ProductsService } from 'src/app/services/products/products.service';
+import { Chart, registerables } from 'chart.js';
 
 @Component({
   selector: 'app-products-home',
   templateUrl: './products-home.component.html',
   styleUrls: ['./products-home.component.scss']
 })
-export class ProductsHomeComponent extends CdkTableExporterModule implements OnInit {
+export class ProductsHomeComponent extends CdkTableExporterModule implements OnInit, AfterViewInit {
 
   productsList: Product[] = [];
   categoriesList: Category[] = [];
@@ -58,6 +59,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @BlockUI() blockUI: NgBlockUI;
+  @ViewChild('myChart1') myChart1!: ElementRef;
 
   constructor(
     public navbar: NavbarService, 
@@ -78,9 +80,68 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
       this.loggedIn = value;
     });
   }
+
+
+  ngAfterViewInit() {
+
+    this.info.setLoadingInfo('Loading stats...', 'info');
+    this.api.GET('home').subscribe({
+      next:(res: any)=>{
+
+        const verified = res.verified;
+
+        Chart.register(...registerables); // Register the necessary components
+
+        const canvas = this.myChart1.nativeElement as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) {
+          console.error('Could not retrieve 2D context for canvas');
+          return;
+        }
+
+        const myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Verified', 'Active', 'Eol', 'Development', 'All'],
+            datasets: [{
+              label: '# of Products',
+              data: [res.verified, res.active,  res.eol,  res.dev, res.all],
+              backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)'
+              ],
+              borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+
+        this.info.setLoadingInfo('', 'success');
+      }, error:(res)=>{
+        this.info.setLoadingInfo(res, 'info');
+      }
+    });
+  }
+
  
   ngOnInit(): void {
-
     this.loggedInUser = this.info.getUserId();
 
     window.scroll({ 

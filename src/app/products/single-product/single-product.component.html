@@ -867,7 +867,8 @@
                 </div>
                 <div class="col-sm-12 col-md-3 col-lg-5">
                   <h2>{{ product.name }}</h2>
-                  <p>{{ productBrand }}</p>
+                  <p>Brand: {{ productBrand }}</p>
+                  <p>{{ product.description }}</p>
                   <ul>
                     <li *ngFor="let i of shoutOuts">{{ i.value }}</li>
                   </ul>
