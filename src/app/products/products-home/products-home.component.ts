@@ -60,6 +60,8 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   @ViewChild(MatSort) sort: MatSort;
   @BlockUI() blockUI: NgBlockUI;
   @ViewChild('myChart1') myChart1!: ElementRef;
+  @ViewChild('myChart2') myChart2!: ElementRef;
+  
 
   constructor(
     public navbar: NavbarService, 
@@ -88,19 +90,17 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     this.api.GET('home').subscribe({
       next:(res: any)=>{
 
-        const verified = res.verified;
-
         Chart.register(...registerables); // Register the necessary components
 
-        const canvas = this.myChart1.nativeElement as HTMLCanvasElement;
-        const ctx = canvas.getContext('2d');
+        const canvas = (this.myChart1.nativeElement as HTMLCanvasElement).getContext('2d');
+        const canvas2 = (this.myChart2.nativeElement as HTMLCanvasElement).getContext('2d');
 
-        if (!ctx) {
+        if (!canvas || !canvas2) {
           console.error('Could not retrieve 2D context for canvas');
           return;
         }
 
-        const myChart = new Chart(ctx, {
+        const myChart = new Chart(canvas, {
           type: 'bar',
           data: {
             labels: ['Verified', 'Active', 'Eol', 'Development', 'All'],
@@ -120,6 +120,43 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
                 'rgba(255, 206, 86, 1)',
                 'rgba(75, 192, 192, 1)',
                 'rgba(153, 102, 255, 1)',
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+// 'audio', 'bags', 'toys', 'food', 'electrical', 'furniture', 'gaming', 'computing'
+        const myChart2 = new Chart(canvas2, {
+          type: 'pie',
+          data: {
+            labels: ['Audio', 'Bags', 'Food', 'Electrical', 'Furniture', 'Gaming', 'Computing'],
+            datasets: [{
+              label: '# of Products',
+              data: [res.audio, res.bags,  res.food,  res.electrical, res.furniture, res.gaming, res.computing],
+              backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)'
+              ],
+              borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)'
               ],
               borderWidth: 1
             }]
