@@ -166,6 +166,7 @@ export class SingleProductComponent implements OnInit {
   productQr: string;
   findCategory: string;
   checkboxLoader: boolean;
+  canManageThisProduct = false;
 
   @ViewChild('pdfContent') content:ElementRef;  
 
@@ -345,7 +346,7 @@ export class SingleProductComponent implements OnInit {
             this.isBundle = true;
             this.getLinkedProducts();
           }
-
+          this.canManage(this.id);
           this.getUsers();
           this.audit(this.id);
           this.getProductAttributes(this.id);
@@ -1707,16 +1708,22 @@ export class SingleProductComponent implements OnInit {
   }
 
   beautifyAttr(attr: string) {
-    const l = attr[0];
-    let pretty: string;
 
-    if(l.match(/^[A-Za-z0-9]*$/)){
-      pretty = attr;
-    } else {
+    if (attr && attr.length > 0) {
+      const l = attr[0];
+      let pretty: string;
+
+      if(l.match(/^[A-Za-z0-9]*$/)){
+        pretty = attr;
+      } else {
         pretty = attr.replaceAll(l,"<br>•");
+      }
 
+      return pretty;
+
+    } else {
+      return attr;
     }
-    return pretty;
   }
 
   toggleInfoBar () {
@@ -1770,6 +1777,22 @@ export class SingleProductComponent implements OnInit {
     } else {
       this.info.setLoadingInfo('', 'info');
     }
+  }
+
+  canManage(productId: string): void {
+    this.api.POST('can-manage-product', {
+      product: productId,
+      user: this.info.getUserId()
+    }).subscribe({
+      next:(res)=>{
+        if(res > 0) {
+          // The below line should be uncommented if PDs should update products from the Product Repo
+          //this.canManageThisProduct = true; 
+        }
+      }, error:(res)=>{
+        console.log(res);
+      }
+    });
   }
 
   toggleHistory() {

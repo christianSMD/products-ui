@@ -24,7 +24,7 @@
       <mat-card style="background: #EFEFEF;">
         
         <mat-tab-group>
-          <mat-tab label="Product Details" *ngIf="editRole">
+          <mat-tab label="Product Details" *ngIf="canManageThisProduct">
 
             <div class="mt-3" style="overflow: hidden !important;">
               <div style="margin-bottom: 1rem; padding-left: 10px; color: #545454;">
@@ -325,7 +325,7 @@
             </div>
             
           </mat-tab>
-          <mat-tab *ngIf="editRole" label="Manage Categories">
+          <mat-tab label="Manage Categories" *ngIf="canManageThisProduct">
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <mat-card style="background-color: rgb(255, 255, 255);">
                 <form>
@@ -417,7 +417,7 @@
               </mat-card>
             </div>
           </mat-tab>
-          <mat-tab *ngIf="editRole" label="Manage Attributes">
+          <mat-tab label="Manage Attributes" *ngIf="canManageThisProduct">
 
             <div class="mt-2 custom-tab form-border" style="overflow: hidden !important;">
               <mat-card style="background-color: rgb(255, 255, 255);">
@@ -484,7 +484,7 @@
               </mat-card>
             </div>
           </mat-tab>
-          <mat-tab label="Packaging" *ngIf="editRole">
+          <mat-tab label="Packaging" *ngIf="canManageThisProduct">
 
             <mat-card style="background-color: rgb(255, 255, 255);">
 
@@ -583,7 +583,7 @@
             </mat-card>
             
           </mat-tab>
-          <mat-tab label="Files" *ngIf="editRole">
+          <mat-tab label="Files" *ngIf="canManageThisProduct">
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <div class="row">
                 <div class="col-md-4">
@@ -717,7 +717,7 @@
               </div>
             </div>
           </mat-tab> -->
-          <mat-tab label="Media" *ngIf="uploadRole">
+          <mat-tab label="Media" *ngIf="canManageThisProduct">
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
               <mat-tab-group>
                 <!-- <mat-tab label="Images">
@@ -866,6 +866,7 @@
                   </table>
                 </div>
                 <div class="col-sm-12 col-md-3 col-lg-5">
+                  <small *ngIf="isVerified"><mat-icon style="font-size: 20px;">check_circle</mat-icon> Verified</small>
                   <h2>{{ product.name }}</h2>
                   <p>Brand: {{ productBrand }}</p>
                   <p>{{ product.description }}</p>
@@ -1034,7 +1035,7 @@
             <br>
             <div style="text-align: center;">
               <h3>{{ progressPercentage() }}% Complete</h3>
-              <small *ngIf="productManagerRole">Managed by you</small>
+              <small *ngIf="canManageThisProduct">Managed by you</small>
             </div>
             <hr>
             <mat-list role="list" (click)="autoInfo()">
