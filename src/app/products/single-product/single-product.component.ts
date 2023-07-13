@@ -1787,7 +1787,7 @@ export class SingleProductComponent implements OnInit {
       next:(res)=>{
         if(res > 0) {
           // The below line should be uncommented if PDs should update products from the Product Repo
-          //this.canManageThisProduct = true; 
+          this.canManageThisProduct = true; 
         }
       }, error:(res)=>{
         console.log(res);
