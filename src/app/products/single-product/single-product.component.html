@@ -89,7 +89,7 @@
                         <div *ngIf="productCategories.length < 1" class="card warning">
                           ⚠ Please set categories for this product
                         </div>
-                        <mat-checkbox [disabled]="productCategories.length < 1" #verified formControlName="verified">Verified</mat-checkbox><br>
+                        <mat-checkbox [disabled]="productCategories.length < 1 || mediaFiles.length < 1" #verified formControlName="verified">Verified</mat-checkbox><br>
                         <span *ngIf="productManagerId == 0"><i class="text-muted">Product Manager is needed to verify this product</i></span>
                         <hr>
                         <button mat-raised-button [disabled]="!productForm.dirty" *ngIf="editRole" type="submit" color="primary" (click)="updateProduct()">Save Changes</button>

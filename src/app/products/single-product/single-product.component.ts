@@ -869,13 +869,23 @@ export class SingleProductComponent implements OnInit {
   }
 
   returnTypeName(id: any) {
-    id=id-1;
-    return this.typesList[id].name;
+    try {
+      id=id-1;
+      return this.typesList[id].name;
+    } catch (error) {
+      return null;
+    }
+    
   }
 
   returnTypeGroup(id: any) {
-    id=id-1;
-    return this.typesList[id].grouping;
+    try {
+      id=id-1;
+      return this.typesList[id].grouping;
+    } catch (error) {
+      return null;
+    }
+    
   }
 
   drop(event: CdkDragDrop<string[]>): void {
@@ -1067,6 +1077,8 @@ export class SingleProductComponent implements OnInit {
   // If using checkboxes
   checkedItem (v: any, p: number, e: any) {
     this.openSnackBar('Updating categories, please wait...', '');
+    console.log('category: ', v);
+    console.log('parent: ', p);
     this.checkboxLoader = true;
     const temp = this.selectedCategories;
     this.selectedCategories = [];
