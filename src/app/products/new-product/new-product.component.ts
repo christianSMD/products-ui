@@ -207,7 +207,8 @@ export class NewProductComponent implements OnInit {
         //this.nextTab();
         this.router.navigate([res.sku]);
       }, error:(res)=>{
-        this.openSnackBar('😢 ' + res.message, 'Okay');
+        this.openSnackBar('😢 ' + res.error.error, 'Okay');
+        console.log(res);
       }
     });
   }

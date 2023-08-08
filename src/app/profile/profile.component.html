@@ -103,5 +103,21 @@
                 </ul>
             </div>
         </mat-card>
+
+        <mat-card style="margin-top: 1rem;">
+            <h3>My Teams</h3>
+            <div class="pt-1">
+                <table class="table table-bordered">
+                    <tr>
+                      <th>Team</th>
+                      <th>Description</th>
+                    </tr>
+                    <tr *ngFor="let team of myTeams">
+                      <td>{{ team.name }}</td>
+                      <td>{{ team.description }}</td>
+                    </tr>
+                  </table>
+            </div>
+        </mat-card>
     </div>
 </div>

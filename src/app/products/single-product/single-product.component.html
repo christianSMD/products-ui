@@ -65,7 +65,7 @@
                             {{option}}
                           </mat-option>
                         </mat-autocomplete>
-                        <mat-icon class="save-icon" matSuffix matTooltip="Save series" (click)="addNonExistingType()">check_circle_outline</mat-icon>
+                        <!-- <mat-icon class="save-icon" matSuffix matTooltip="Save series" (click)="addNonExistingType()">check_circle_outline</mat-icon> -->
                       </mat-form-field>
                       <strong>Description</strong><br><br>
                       <mat-form-field style="width: 90%;" appearance="outline">
@@ -89,7 +89,7 @@
                         <div *ngIf="productCategories.length < 1" class="card warning">
                           ⚠ Please set categories for this product
                         </div>
-                        <mat-checkbox [disabled]="productCategories.length < 1 || mediaFiles.length < 1" #verified formControlName="verified">Verified</mat-checkbox><br>
+                        <mat-checkbox [disabled]="!canVerify" #verified formControlName="verified">Verified</mat-checkbox><br>
                         <span *ngIf="productManagerId == 0"><i class="text-muted">Product Manager is needed to verify this product</i></span>
                         <hr>
                         <button mat-raised-button [disabled]="!productForm.dirty" *ngIf="editRole" type="submit" color="primary" (click)="updateProduct()">Save Changes</button>
@@ -841,7 +841,7 @@
             <div class="mt-5 py-3 custom-tab card" style="overflow: hidden !important;">
               <div class="row">
                 <div class="col-sm-12 col-md-9 col-lg-7">
-                  <table>
+                  <table *ngIf="mediaFiles.length > 0">
                     <tr>
                       <td class="img-cell"><img *ngIf="mediaFiles[0] && mediaFiles[0].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[0].path) }}" height="66" width="66" (click)="switchImage(0)"></td>
                       <td rowspan="4">
@@ -861,6 +861,30 @@
                     <tr>
                       <td class="img-cell" (click)="switchImage(3)">
                         <img *ngIf="mediaFiles[3] && mediaFiles[3].ecommerce == 1" src="{{ storageUrl + filePath(mediaFiles[3].path) }}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" height="66" width="66">
+                      </td>
+                    </tr>
+                  </table>
+
+                  <table *ngIf="mediaFiles.length < 1">
+                    <tr>
+                      <td class="img-cell"><img src="https://images.smdtechnologies.co.za/uploads/{{ imageServerFiles[0] }}" height="66" width="66" (click)="switchImage(0)"></td>
+                      <td rowspan="4">
+                        <img src="https://images.smdtechnologies.co.za/uploads/{{ imageServerFiles[1] }}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" height="350" width="350">
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="img-cell" (click)="switchImage(1)">
+                        <img src="https://images.smdtechnologies.co.za/uploads/{{ imageServerFiles[2] }}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" height="66" width="66">
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="img-cell" (click)="switchImage(2)">
+                        <img src="https://images.smdtechnologies.co.za/uploads/{{ imageServerFiles[3] }}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" height="66" width="66">
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="img-cell" (click)="switchImage(3)">
+                        <img src="https://images.smdtechnologies.co.za/uploads/{{ imageServerFiles[4]  }}" onerror="this.src='https://products.smdtechnologies.com/public/storage/files/default.png'" height="66" width="66">
                       </td>
                     </tr>
                   </table>

@@ -31,7 +31,7 @@ export class ProfileComponent implements OnInit {
   authRole: boolean = false;
   notFound: string = '';
   adminRole: boolean = false;
-  myteams:any[] = [];
+  myTeams:any[] = [];
 
   constructor(
     public navbar: NavbarService, 
@@ -91,23 +91,26 @@ export class ProfileComponent implements OnInit {
   }
 
   getUserRoles(): void {
+    this.loader = true;
     this.api.GET(`roles/search/${this.id}`).subscribe({
       next:(res)=>{
-        console.log('User Roles: ', res);
+        this.loader = false;
         this.userRoles = res;
         this.loader = false;
       }, error:(res)=>{
-        console.log(res);
+        this.loader = true;
       }
     });
   }
 
   getUserTeams(): void {
+    this.loader = true;
     this.api.GET(`teams/${this.id}`).subscribe({
       next:(res) => {
-        console.log(res);
+        this.myTeams = res;
+        this.loader = false;
       }, error:(e) => {
-        console.log(e);
+        this.loader = true;
       }
     });
   }

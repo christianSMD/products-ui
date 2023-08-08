@@ -186,6 +186,7 @@ export class SingleProductComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.canVerify = false;
     this.info.auth();
     this.info.setLoadingInfo('Preparing...', 'info');
     window.scroll({ 
@@ -428,6 +429,7 @@ export class SingleProductComponent implements OnInit {
       next:(res)=>{
         this.productCategories = res;   
         this.info.setLoadingInfo('', 'success');   
+        this.progressPercentage();
       }, error:(res)=> {
         console.log(res);
       }
@@ -712,6 +714,7 @@ export class SingleProductComponent implements OnInit {
       next:(res)=>{
         this.progressPercentage();
         this.getDetails(this.sku);
+        this.addNonExistingType();
         this.info.activity(`${this.info.getUserName()} Updated product general details`, this.product.id);
         this.openSnackBar('Product Updated 😃', 'Okay');
       }, error:(res)=>{
@@ -1026,12 +1029,12 @@ export class SingleProductComponent implements OnInit {
     const attributes = (this.attributes.length > 0 || this.productAttributes.length > 0) ? 1 : 0;
     const packaging = (this.packagingCount > 0) ? 1 : 0;
     const documents = (this.documentFiles.length > 0) ? 1 : 0;
-    // const media = (this.mediaFiles.length > 0 || this.imageServerFiles.length > 0) ? 1 : 0;
-    const media = (this.mediaFiles.length > 0) ? 1 : 0;
+    const media = (this.mediaFiles.length > 0 || this.imageServerFiles.length > 0) ? 1 : 0;
+    //const media = (this.mediaFiles.length > 0) ? 1 : 0;
     const brand = (this.productForm.value.brand_type_id) ? 1 : 0;
     const total = categories + attributes + packaging + documents + media + brand + status + verified;
     const p = (total / 8) * 100;
-    if(this.mediaFiles.length > 0 && this.productCategories.length > 0){
+    if(categories > 0){ //if(media > 0 && categories > 0){
       this.canVerify = true;
     }
     return Math.round(p);
@@ -1167,7 +1170,6 @@ export class SingleProductComponent implements OnInit {
     this.info.setLoadingInfo('Saving categories...', 'info');
     this.openSnackBar('Updating categories, almost done...', '');
     const vals = this.selectedCategories.filter((x: any) => x != null);
-    console.log('Categories to save: ', vals);
     if (vals.length > 0) {
       for(let i=0; i < 1; i++) {
         this.api.POST('product-categories-bulk', {
@@ -1180,6 +1182,7 @@ export class SingleProductComponent implements OnInit {
             this.clearTempTiers();
             this.info.setLoadingInfo('Categories updated...', 'success');
             this.checkboxLoader = false;
+            this.progressPercentage();
           }, error:(res)=>{
             this.getProductCategories(this.id);
             this.info.errorHandler(res);
@@ -1206,6 +1209,7 @@ export class SingleProductComponent implements OnInit {
         this.info.setLoadingInfo('Categories removed...', 'warn');
         this.openSnackBar('Old categories removed...', '');
         this.checkboxLoader = false;
+        this.progressPercentage();
       }, error:(res)=>{
         this.info.errorHandler(res);
         this.info.setLoadingInfo('Could not remove categories...', 'danger');
@@ -1243,6 +1247,7 @@ export class SingleProductComponent implements OnInit {
           this.getProductAttributes(product_id);
           this.info.activity(`${this.info.getUserName()} deleted attribute: ${key}.`, parseInt(product_id));
           this.info.setLoadingInfo('Attribute(s) removed', 'success');
+          this.progressPercentage();
         }, error:(res)=> {
           this.info.errorHandler(res);
           this.info.setLoadingInfo('Failed to delete ttribute(s)', 'danger');
@@ -1364,6 +1369,7 @@ export class SingleProductComponent implements OnInit {
       next:(res)=>{
         this.openSnackBar('Item removed', 'Okay');
         this.designLoader = false;
+        this.progressPercentage();
         //this.getDesigns(this.id)
         //this.info.activity(`${this.info.getUserName()} deleted design item`, parseInt(product_id));
       }, error:(res)=> {
@@ -1411,6 +1417,7 @@ export class SingleProductComponent implements OnInit {
             this.info.setLoadingInfo('Changes saved', 'success');
             this.openSnackBar('Changes saved', 'Okay');
             this.info.errorHandler(res);
+            this.progressPercentage();
           }, error:(e) => {
             this.designLoader = false;
             this.info.setLoadingInfo('FABs, Extended FABs or Shoutouts changes failed to update.', 'danger');
@@ -1458,7 +1465,7 @@ export class SingleProductComponent implements OnInit {
             this.info.setLoadingInfo(`Fetching design data: ${res[index].value}`, 'info');
           }
         }
-
+        this.progressPercentage();
       }, error:(res)=>{
         this.info.errorHandler(res);
         //this.designLoader = false;
@@ -1479,7 +1486,8 @@ export class SingleProductComponent implements OnInit {
         this.getLinkedProducts();
         const id = parseInt(this.id);
         this.info.activity('Added new SKU to linked products', id);
-        this.openSnackBar('Product added ' , 'Okay')
+        this.openSnackBar('Product added ' , 'Okay');
+        this.progressPercentage();
       }, error:(res)=>{
         this.info.errorHandler(res);
         this.openSnackBar('😢 ' + res.message, 'Okay');
@@ -1560,7 +1568,7 @@ export class SingleProductComponent implements OnInit {
   }
 
   addNonExistingType () {
-    console.log(this.newSeriesType);
+    this.info.setLoadingInfo('Updating series...', 'info');
     const typeExists = this.typesList.find((x: Type) => x.name.toLowerCase() == this.newSeriesType.toLowerCase());
     if(!typeExists) {
       this.api.POST('types', {
@@ -1571,7 +1579,8 @@ export class SingleProductComponent implements OnInit {
           this.productForm.patchValue({
             family_grouping: res.id
           });
-          this.updateProduct();
+          //this.updateProduct();
+          this.openSnackBar('Series saved', '');
         }, error:(res) => {
           this.typesLoader = false;
           this.openSnackBar('Failed to communicate with the server: ' + res.message, 'Okay');
@@ -1777,7 +1786,7 @@ export class SingleProductComponent implements OnInit {
             this.openSnackBar(`${x + 1} files deleted...`, 'Okay');
             this.openSnackBar(`${x + 1} files deleted...`, '');
             this.info.setLoadingInfo(`${x + 1} files deleted...`, 'success');
-
+            this.progressPercentage();
           }, error:(res)=> {
             this.info.errorHandler(res);
             this.info.setLoadingInfo('Failed to delete file!', 'danger');
