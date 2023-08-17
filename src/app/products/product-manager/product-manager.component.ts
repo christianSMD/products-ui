@@ -15,7 +15,7 @@ import { CdkTableExporterModule } from 'cdk-table-exporter';
 import { InfoService } from 'src/app/services/info/info.service';
 import { Router } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { LookupService } from 'src/app/services/lookup/lookup.service';
 import { ProductsService } from 'src/app/services/products/products.service';
 
@@ -48,7 +48,7 @@ export class ProductManagerComponent extends CdkTableExporterModule implements O
   newPamphlet: any[] = [];
   newPamphletSKUs: any[] = [];
   showNewPamphletPanel: boolean = false;
-  newProductForm !: FormGroup;
+  newProductForm !: UntypedFormGroup;
   productManagerProducts: Product[] = [];
   productsMissingCategories: Product[] = [];
   productManagerRole: boolean = false;
@@ -69,7 +69,7 @@ export class ProductManagerComponent extends CdkTableExporterModule implements O
     public _liveAnnouncer: LiveAnnouncer,
     public info: InfoService,
     public router: Router,
-    public formBuilder : FormBuilder,
+    public formBuilder : UntypedFormBuilder,
     public lookup: LookupService,
     public products: ProductsService
   ) {

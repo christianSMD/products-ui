@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators, FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { InfoService } from 'src/app/services/info/info.service';
@@ -15,12 +15,12 @@ import { timer } from 'rxjs';
 })
 export class LoginComponent implements OnInit {
 
-  userForm !: FormGroup;
+  userForm !: UntypedFormGroup;
   hide = true;
   userRoles:any;
 
   constructor(
-    private formBuilder : FormBuilder, 
+    private formBuilder : UntypedFormBuilder, 
     private router: Router,
     private api: ApiService,
     public nav: NavbarService,

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api/api.service';
 import { InfoService } from 'src/app/services/info/info.service';
@@ -14,7 +14,7 @@ import { SidenavService } from 'src/app/services/sidenav/sidenav.service';
 export class MinisidenavComponent implements OnInit {
 
   showFiller = false;
-  searchForm !: FormGroup;
+  searchForm !: UntypedFormGroup;
   brandsLoader = false;
   loggedIn: boolean;
   authRole: boolean = false;
@@ -25,7 +25,7 @@ export class MinisidenavComponent implements OnInit {
   constructor(
     public sideNav: SidenavService, 
     private router: Router,
-    private formBuilder : FormBuilder,
+    private formBuilder : UntypedFormBuilder,
     private api: ApiService,
     private info: InfoService
   ) { 

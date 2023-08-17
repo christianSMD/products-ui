@@ -1,6 +1,6 @@
 import { ValueConverter } from '@angular/compiler/src/render3/view/template';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { User } from '../interfaces/user';
@@ -25,8 +25,8 @@ export class ProfileComponent implements OnInit {
   roles: any[] = [];
   userRoles: any[] = [];
   typesList: any[] = [];
-  userForm !: FormGroup;
-  rolesForm !: FormGroup
+  userForm !: UntypedFormGroup;
+  rolesForm !: UntypedFormGroup
   isActive = false;
   authRole: boolean = false;
   notFound: string = '';
@@ -40,7 +40,7 @@ export class ProfileComponent implements OnInit {
     private _snackBar: MatSnackBar, 
     private route: ActivatedRoute,
     private router: Router,
-    private formBuilder : FormBuilder,
+    private formBuilder : UntypedFormBuilder,
     private info: InfoService
   ) { }
 

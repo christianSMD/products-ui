@@ -1,6 +1,6 @@
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild, ɵɵsetComponentScope } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { File } from 'src/app/interfaces/file';
@@ -50,10 +50,10 @@ export class SingleProductComponent implements OnInit {
   linkedImagesLoader: boolean = false;
   filePermissions: any[] = [];
   parent: string;
-  productForm !: FormGroup;
-  productFormAttributes !: FormGroup;
-  productFormAttributesBulk !: FormGroup;
-  productFormPackaging !: FormGroup;
+  productForm !: UntypedFormGroup;
+  productFormAttributes !: UntypedFormGroup;
+  productFormAttributesBulk !: UntypedFormGroup;
+  productFormPackaging !: UntypedFormGroup;
   productName: string;
   isInDev: number;
   isEol: number;
@@ -89,7 +89,7 @@ export class SingleProductComponent implements OnInit {
   catFromProductTbl: any[] = [];
   attrKey: string;
   requiredField = false;
-  regionsForm: FormGroup;
+  regionsForm: UntypedFormGroup;
   productRegionList: any[] = [];
   pdsAttributes: any[] = [];
   loadingPdsAttributes: boolean = true;
@@ -103,8 +103,8 @@ export class SingleProductComponent implements OnInit {
   linkedProductsIDs: any = [];
   linkedProductSKUs: any = [];
   bundleLoader: boolean = true;
-  autocompleteControl = new FormControl('');
-  autocompleteControl1 = new FormControl('');
+  autocompleteControl = new UntypedFormControl('');
+  autocompleteControl1 = new UntypedFormControl('');
   productsList: Product[] = [];
   newPamphlet: any[] = [];
   newPamphletSKUs: any[] = [];
@@ -112,13 +112,13 @@ export class SingleProductComponent implements OnInit {
   options: string[] = []; // SKUs
   filteredOptions: Observable<string[]>;
   filteredSeries: Observable<string[]>;
-  newProductForm !: FormGroup;
+  newProductForm !: UntypedFormGroup;
 
   // Design
-  shoutoutsForm: FormGroup;
-  featuresAndBenefitsForm: FormGroup;
-  extendedFabsForm: FormGroup;
-  packageContentsForm: FormGroup;
+  shoutoutsForm: UntypedFormGroup;
+  featuresAndBenefitsForm: UntypedFormGroup;
+  extendedFabsForm: UntypedFormGroup;
+  packageContentsForm: UntypedFormGroup;
   designLoader: boolean = false;
   
   parentChildCategories: any[] = [];
@@ -180,7 +180,7 @@ export class SingleProductComponent implements OnInit {
     private _snackBar: MatSnackBar,
     private route: ActivatedRoute, 
     private router: Router,
-    private formBuilder : FormBuilder,
+    private formBuilder : UntypedFormBuilder,
     private info: InfoService,
     public dialog: MatDialog,
     private lookup: LookupService,
@@ -309,27 +309,27 @@ export class SingleProductComponent implements OnInit {
   }
 
   get attributes() {
-    return this.productFormAttributes.get('attributes') as FormArray
+    return this.productFormAttributes.get('attributes') as UntypedFormArray
   }
 
   get regions() {
-    return this.regionsForm.get('regions') as FormArray
+    return this.regionsForm.get('regions') as UntypedFormArray
   }
 
   get shoutouts() {
-    return this.shoutoutsForm.get('shoutouts') as FormArray
+    return this.shoutoutsForm.get('shoutouts') as UntypedFormArray
   }
 
   get features() {
-    return this.featuresAndBenefitsForm.get('features') as FormArray
+    return this.featuresAndBenefitsForm.get('features') as UntypedFormArray
   }
 
   get fabs() {
-    return this.extendedFabsForm.get('fabs') as FormArray
+    return this.extendedFabsForm.get('fabs') as UntypedFormArray
   }
 
   get contents() {
-    return this.packageContentsForm.get('contents') as FormArray
+    return this.packageContentsForm.get('contents') as UntypedFormArray
   }
 
   getAllTypes(): void {

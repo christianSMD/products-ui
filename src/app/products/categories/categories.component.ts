@@ -1,5 +1,5 @@
 import { Component, OnInit, Directive, EventEmitter, Input, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, FormControl, UntypedFormArray } from '@angular/forms';
 import { ApiService } from 'src/app/services/api/api.service';
 import { NavbarService } from 'src/app/services/navbar/navbar.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -20,12 +20,12 @@ declare var swal: any;
  */
 export class CategoriesComponent implements OnInit {
 
-  addCategory !: FormGroup;
-  updateCategory !: FormGroup;
+  addCategory !: UntypedFormGroup;
+  updateCategory !: UntypedFormGroup;
   newCategoryId: number = 0;
   newCategoryName: string = "";
   categoriesList: Category[] = [];
-  categoryForm: FormGroup;
+  categoryForm: UntypedFormGroup;
   attrCount: number;
   attributesFields: any[] = [];
   selectedCatName: string = "";
@@ -47,7 +47,7 @@ export class CategoriesComponent implements OnInit {
   constructor(
     public navbar: NavbarService, 
     private api: ApiService, 
-    private formBuilder : FormBuilder, 
+    private formBuilder : UntypedFormBuilder, 
     private _snackBar: MatSnackBar, 
     public info: InfoService,
     private products: ProductsService
@@ -109,7 +109,7 @@ export class CategoriesComponent implements OnInit {
   
 
   get attributes() {
-    return this.categoryForm.get('attributes') as FormArray
+    return this.categoryForm.get('attributes') as UntypedFormArray
   }
 
   addNewAttribute(): void {

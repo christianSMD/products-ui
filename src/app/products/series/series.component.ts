@@ -1,6 +1,6 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, Sort } from '@angular/material/sort';
@@ -61,7 +61,7 @@ export class SeriesComponent implements OnInit {
     public info: InfoService,
     private route: ActivatedRoute, 
     private router: Router,
-    public formBuilder : FormBuilder,
+    public formBuilder : UntypedFormBuilder,
     public lookup: LookupService,
     public products: ProductsService
   ) {

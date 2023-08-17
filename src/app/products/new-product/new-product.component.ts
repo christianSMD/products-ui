@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators, UntypedFormControl } from '@angular/forms';
 import { ApiService } from 'src/app/services/api/api.service';
 import { NavbarService } from 'src/app/services/navbar/navbar.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -23,10 +23,10 @@ import { ProductsService } from 'src/app/services/products/products.service';
 })
 export class NewProductComponent implements OnInit {
 
-  newProductForm !: FormGroup;
-  newProductCategoriesForm !: FormGroup;
-  newProductFormAttributes !: FormGroup;
-  newProductFormPackaging !: FormGroup;
+  newProductForm !: UntypedFormGroup;
+  newProductCategoriesForm !: UntypedFormGroup;
+  newProductFormAttributes !: UntypedFormGroup;
+  newProductFormPackaging !: UntypedFormGroup;
   productsList: Product[] = [];
   categoriesList: Category[] = [];
   selectedCategories: any[] = [];
@@ -68,7 +68,7 @@ export class NewProductComponent implements OnInit {
   skuPattern = "^[a-zA-Z0-9_()-]{4,20}$";
   invalidSku = true
   newProductType: any; // New Product or new Linked/Bundle products
-  autocompleteControl = new FormControl('');
+  autocompleteControl = new UntypedFormControl('');
   options: string[] = [];
   filteredOptions: Observable<string[]>;
 
@@ -81,7 +81,7 @@ export class NewProductComponent implements OnInit {
   constructor(
     public navbar: NavbarService,
     private api: ApiService,
-    private formBuilder : FormBuilder,
+    private formBuilder : UntypedFormBuilder,
     private _snackBar: MatSnackBar,
     public info: InfoService,
     private route: ActivatedRoute,
@@ -164,7 +164,7 @@ export class NewProductComponent implements OnInit {
   }
 
   get attributes() {
-    return this.newProductFormAttributes.get('attributes') as FormArray
+    return this.newProductFormAttributes.get('attributes') as UntypedFormArray
   }
 
   get sku() {

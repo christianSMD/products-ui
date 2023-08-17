@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NavbarService } from 'src/app/services/navbar/navbar.service';
 import { SidenavService } from 'src/app/services/sidenav/sidenav.service';
@@ -12,10 +12,10 @@ import { ApiService } from '../../services/api/api.service';
 })
 export class RegisterComponent implements OnInit {
 
-  userForm !: FormGroup;
+  userForm !: UntypedFormGroup;
   hide = true;
   constructor(
-    private formBuilder : FormBuilder,
+    private formBuilder : UntypedFormBuilder,
     private router: Router,
     private api : ApiService,
     public nav: NavbarService,

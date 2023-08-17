@@ -1,6 +1,6 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, Sort } from '@angular/material/sort';
@@ -30,7 +30,7 @@ export class UsersComponent implements OnInit {
   usersLoader = false;
   addingNewUser= false;
   pageTitle = "Manage Users";
-  userForm !: FormGroup;
+  userForm !: UntypedFormGroup;
   teams: any[] = [];
   teamMembers: any[] = [];
   editRole: boolean = false;
@@ -52,7 +52,7 @@ export class UsersComponent implements OnInit {
     private router: Router,
     private info: InfoService,
     private _liveAnnouncer: LiveAnnouncer,
-    private formBuilder : FormBuilder,
+    private formBuilder : UntypedFormBuilder,
   ) { }
 
   ngOnInit(): void {

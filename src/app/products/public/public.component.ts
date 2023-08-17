@@ -1,6 +1,6 @@
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild, ɵɵsetComponentScope } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { File } from 'src/app/interfaces/file';
@@ -91,8 +91,8 @@ export class PublicComponent implements OnInit {
   linkedProductsIDs: any = [];
   linkedProductSKUs: any = [];
   bundleLoader: boolean = true;
-  autocompleteControl = new FormControl('');
-  autocompleteControl1 = new FormControl('');
+  autocompleteControl = new UntypedFormControl('');
+  autocompleteControl1 = new UntypedFormControl('');
   productsList: Product[] = [];
   newPamphlet: any[] = [];
   newPamphletSKUs: any[] = [];
@@ -100,7 +100,7 @@ export class PublicComponent implements OnInit {
   options: string[] = []; // SKUs
   filteredOptions: Observable<string[]>;
   filteredSeries: Observable<string[]>;
-  newProductForm !: FormGroup;
+  newProductForm !: UntypedFormGroup;
   designLoader: boolean = false;
   parentChildCategories: any[] = [];
   series: any[] = [];
@@ -142,7 +142,7 @@ export class PublicComponent implements OnInit {
     private _snackBar: MatSnackBar,
     private route: ActivatedRoute, 
     private router: Router,
-    private formBuilder : FormBuilder,
+    private formBuilder : UntypedFormBuilder,
     private info: InfoService,
     public dialog: MatDialog,
     private lookup: LookupService,

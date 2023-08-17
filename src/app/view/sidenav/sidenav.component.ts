@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Type } from 'src/app/interfaces/type';
 import { ApiService } from 'src/app/services/api/api.service';
@@ -18,7 +18,7 @@ export class SidenavComponent {
   userName: string = "";
   showFiller = false;
   listBrands: string[] = [];
-  searchForm !: FormGroup;
+  searchForm !: UntypedFormGroup;
   brandsLoader = false;
   loggedIn: boolean;
   authRole: boolean = false;
@@ -31,7 +31,7 @@ export class SidenavComponent {
   constructor(
     public sideNav: SidenavService, 
     private router: Router,
-    private formBuilder : FormBuilder,
+    private formBuilder : UntypedFormBuilder,
     private api: ApiService,
     private info: InfoService,
     private lookup: LookupService

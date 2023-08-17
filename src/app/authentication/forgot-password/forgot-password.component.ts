@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api/api.service';
@@ -15,7 +15,7 @@ import { TreeService } from 'src/app/services/tree/tree.service';
 })
 export class ForgotPasswordComponent implements OnInit {
 
-  userForm !: FormGroup;
+  userForm !: UntypedFormGroup;
   submitted: boolean = false;
   resettingPassword: boolean = false;
   submitNewPasswordBtn: boolean= false;
@@ -25,7 +25,7 @@ export class ForgotPasswordComponent implements OnInit {
   userId: any;
   
   constructor(
-    private formBuilder : FormBuilder, 
+    private formBuilder : UntypedFormBuilder, 
     private router: Router,
     private api: ApiService,
     public nav: NavbarService,
