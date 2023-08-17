@@ -19,6 +19,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LookupService } from 'src/app/services/lookup/lookup.service';
 import { ProductsService } from 'src/app/services/products/products.service';
 import { Chart, registerables } from 'chart.js';
+import { User } from 'src/app/interfaces/user';
 
 @Component({
   selector: 'app-products-home',
@@ -55,6 +56,17 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
   productManagerRole: boolean = false;
   loggedInUser: any;
   addingToMyProducts: boolean = false;
+  users: User[] = [];
+  user: User;
+  usersLoader = true;
+  displayMode = 'home';
+  selectedUser: string;
+  selectedUserAllProducts: number;
+  selectedUserVerifiedProducts: number;
+  selectedUserEolProducts: number;
+  selectedUserInDevelopmentProducts: number;
+  selectedUserActiveProducts: number;
+  brands: any[];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -85,126 +97,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
 
 
   ngAfterViewInit() {
-
-    this.info.setLoadingInfo('Loading stats...', 'info');
-
-    this.api.GET('home').subscribe({
-      next:(res: any)=>{
-
-        Chart.register(...registerables); // Register the necessary components
-
-        const canvas = (this.myChart1.nativeElement as HTMLCanvasElement).getContext('2d');
-
-        if (!canvas) {
-          console.error('Could not retrieve 2D context for canvas');
-          return;
-        }
-
-        const myChart = new Chart(canvas, {
-          type: 'bar',
-          data: {
-            labels: ['Verified', 'Active', 'Eol', 'Development', 'All'],
-            datasets: [{
-              label: 'Verified Products',
-              data: [res.verified, res.active,  res.eol,  res.dev, res.all],
-              backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)'
-              ],
-              borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-              ],
-              borderWidth: 1
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                position: 'bottom',
-              },
-              title: {
-                display: true,
-                text: 'Products'
-              }
-            }
-          },
-        });
-
-        this.info.setLoadingInfo('', 'success');
-      }, error:(res)=>{
-        this.info.setLoadingInfo(res, 'info');
-      }
-    });
-
-    const d: number = 7;
-    this.api.GET(`home/${d}`).subscribe({
-      
-      next:(res: any)=>{
-       
-        this.api.GET(`home-verification/${d}`).subscribe({
-          
-          next:(e: any)=>{
-
-            Chart.register(...registerables); // Register the necessary components
-            const canvas2 = (this.myChart2.nativeElement as HTMLCanvasElement).getContext('2d');
-
-            if (!canvas2) {
-              console.error('Could not retrieve 2D context for canvas');
-              return;
-            }
-            
-            const myChart2 = new Chart(canvas2, {
-              type: 'line',
-              data: {
-                labels: [res[22]?.date, res[21]?.date, res[20]?.date, res[19]?.date, res[18]?.date, res[17]?.date, res[16]?.date, res[15]?.date, res[14]?.date, res[13]?.date, res[12]?.date, res[11]?.date, res[10]?.date, res[9]?.date, res[8]?.date, res[7]?.date, res[6]?.date, res[5]?.date, res[4]?.date, res[3]?.date, res[2]?.date, res[1]?.date, res[0]?.date],
-                datasets: [
-                  {
-                    label: 'Updated',
-                    data: [res[22]?.total_updates, res[21]?.total_updates, res[20]?.total_updates, res[19]?.total_updates, res[18]?.total_updates, res[17]?.total_updates, res[16]?.total_updates, res[15]?.total_updates, res[14]?.total_updates, res[13]?.total_updates, res[12]?.total_updates, res[11]?.total_updates, res[10]?.total_updates, res[9]?.total_updates, res[8]?.total_updates, res[7]?.total_updates, res[6]?.total_updates, res[5]?.total_updates, res[4]?.total_updates, res[3]?.total_updates, res[2]?.total_updates, res[1]?.total_updates, res[0]?.total_updates],
-                    borderWidth: 1,
-                    fill: false
-                  },
-                  {
-                    label: 'Verified',
-                    data: [e[22]?.total_updates, e[21]?.total_updates, e[20]?.total_updates, e[19]?.total_updates, e[18]?.total_updates, e[17]?.total_updates, e[16]?.total_updates, e[15]?.total_updates, e[14]?.total_updates, e[13]?.total_updates, e[12]?.total_updates, e[11]?.total_updates, e[10]?.total_updates, e[9]?.total_updates, e[8]?.total_updates, e[7]?.total_updates, e[6]?.total_updates, e[5]?.total_updates, e[4]?.total_updates, e[3]?.total_updates, e[2]?.total_updates, e[1]?.total_updates, e[0]?.total_updates],
-                    borderWidth: 1,
-                    fill: true
-                  }
-                ]
-              },
-              options: {
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: 'bottom',
-                  },
-                  title: {
-                    display: true,
-                    text: 'Product Activity'
-                  }
-                }
-              },
-            });
-          }, error:(res)=>{
-            this.info.setLoadingInfo(res, 'info');
-          }
-      });
-
-        
-
-        this.info.setLoadingInfo('', 'success');
-      }, error:(res)=>{
-        this.info.setLoadingInfo(res, 'info');
-      }
-    });
+    this.charts('home', 0);
   }
 
  
@@ -304,6 +197,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
         this.blockUI.stop();
         this.info.setLoadingInfo('Products loaded', 'success');
         this.entireProducts();
+        this.getUsers();
       }, error:(res)=>{
         this.info.setLoadingInfo('Failed to connect to the server: ' + res.message, 'success');
         this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
@@ -353,6 +247,7 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
       next:(res)=>{
         this.lookup.setTypes(res);
         this.typesList = this.lookup.getTypes();
+        this.brands = this.typesList.filter((x: any) => x.grouping == "Brand")
         this.info.setLoadingInfo('Types loaded', 'success');
       }, error:(res)=>{
         this.openSnackBar('Failed to communicate with the server', 'Okay');
@@ -503,6 +398,45 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
     });
   }
 
+  getUsers(): void {
+    this.info.setLoadingInfo('Loading users, please wait...', 'info');
+    this.usersLoader = true;
+    this.api.GET('users').subscribe({
+      next:(res)=>{
+        this.usersLoader = false;
+        this.users = res;
+        console.log(this.users);
+        this.info.setLoadingInfo('', 'info');
+      }, error:(res)=>{
+        this.info.setLoadingInfo('Failed to connect to the server: ' + res.message, 'info');
+      }
+    });
+  }
+
+  filterByUser(e: any) {
+    const u = this.users.find((x: any) => x.id == e.value);
+    this.selectedUser = `${u?.name}'s products:`;
+    this.displayMode = 'user';
+    const userId = e.value;
+    this.info.setLoadingInfo('Loading user products...', 'info');
+    this.productsLoader = true;
+    this.api.GET(`product-manager/products/${userId}`).subscribe({
+      next:(res)=>{
+        this.productsList = res;
+        this.dataSource = new MatTableDataSource(this.productsList);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        this.productsLoader = false;
+        this.blockUI.stop();
+        this.info.setLoadingInfo('Products loaded successfully', 'info');
+        this.charts('user', userId);
+      }, error:(res)=>{
+        this.openSnackBar('Failed to connect to the server: ' + res.message, 'Okay');
+        this.info.setLoadingInfo('Failed to connect to the server: ' + res.message, 'danger');
+      }
+    });
+  }
+
   addToPamphlet (productId: string, sku: string, e: any) {
     // Moved to New Product
   }
@@ -510,6 +444,151 @@ export class ProductsHomeComponent extends CdkTableExporterModule implements OnI
 
   saveProduct() {
     // Moved to New Product
+  }
+
+
+  charts (mode: string, id: number) {
+    try {
+      const endpoint = (mode == 'home') ? 'home' : `home-user/${id}`;
+      this.displayMode = (mode == 'home') ? 'home' : 'user';
+      this.info.setLoadingInfo('Loading stats...', 'info');
+
+      this.api.GET(endpoint).subscribe({
+        next:(res: any)=>{
+
+          // User mode
+          this.selectedUserAllProducts = res.all;
+          this.selectedUserVerifiedProducts = res.verified;
+          this.selectedUserActiveProducts = res.active;
+          this.selectedUserInDevelopmentProducts = res.dev;
+          this.selectedUserEolProducts = res.eol;
+
+          // Home mode
+          Chart.register(...registerables); // Register the necessary components
+
+          try {
+            const canvas = (this.myChart1.nativeElement as HTMLCanvasElement).getContext('2d');
+
+            if (!canvas) {
+              console.error('Could not retrieve 2D context for canvas');
+              return;
+            }
+
+            const myChart = new Chart(canvas, {
+              type: 'bar',
+              data: {
+                labels: ['Verified', 'Active', 'Eol', 'Development', 'All'],
+                datasets: [{
+                  label: 'Verified Products',
+                  data: [res.verified, res.active,  res.eol,  res.dev, res.all],
+                  backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)'
+                  ],
+                  borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                  ],
+                  borderWidth: 1
+                }]
+              },
+              options: {
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: 'bottom',
+                  },
+                  title: {
+                    display: true,
+                    text: 'Products'
+                  }
+                }
+              },
+            });
+
+            this.info.setLoadingInfo('', 'success');
+          } catch (error) {
+          
+          }
+          
+        }, error:(res)=>{
+          this.info.setLoadingInfo(res, 'info');
+        }
+      });
+
+      const d: number = 7;
+      this.api.GET(`home/${d}`).subscribe({
+        
+        next:(res: any)=>{
+          
+          if(this.displayMode == 'home') {
+            this.api.GET(`home-verification/${d}`).subscribe({
+            
+              next:(e: any)=>{
+  
+                Chart.register(...registerables); // Register the necessary components
+                const canvas2 = (this.myChart2.nativeElement as HTMLCanvasElement).getContext('2d');
+  
+                if (!canvas2) {
+                  console.error('Could not retrieve 2D context for canvas');
+                  return;
+                }
+                
+                const myChart2 = new Chart(canvas2, {
+                  type: 'line',
+                  data: {
+                    labels: [res[22]?.date, res[21]?.date, res[20]?.date, res[19]?.date, res[18]?.date, res[17]?.date, res[16]?.date, res[15]?.date, res[14]?.date, res[13]?.date, res[12]?.date, res[11]?.date, res[10]?.date, res[9]?.date, res[8]?.date, res[7]?.date, res[6]?.date, res[5]?.date, res[4]?.date, res[3]?.date, res[2]?.date, res[1]?.date, res[0]?.date],
+                    datasets: [
+                      {
+                        label: 'Updated',
+                        data: [res[22]?.total_updates, res[21]?.total_updates, res[20]?.total_updates, res[19]?.total_updates, res[18]?.total_updates, res[17]?.total_updates, res[16]?.total_updates, res[15]?.total_updates, res[14]?.total_updates, res[13]?.total_updates, res[12]?.total_updates, res[11]?.total_updates, res[10]?.total_updates, res[9]?.total_updates, res[8]?.total_updates, res[7]?.total_updates, res[6]?.total_updates, res[5]?.total_updates, res[4]?.total_updates, res[3]?.total_updates, res[2]?.total_updates, res[1]?.total_updates, res[0]?.total_updates],
+                        borderWidth: 1,
+                        fill: false
+                      },
+                      {
+                        label: 'Verified',
+                        data: [e[22]?.total_updates, e[21]?.total_updates, e[20]?.total_updates, e[19]?.total_updates, e[18]?.total_updates, e[17]?.total_updates, e[16]?.total_updates, e[15]?.total_updates, e[14]?.total_updates, e[13]?.total_updates, e[12]?.total_updates, e[11]?.total_updates, e[10]?.total_updates, e[9]?.total_updates, e[8]?.total_updates, e[7]?.total_updates, e[6]?.total_updates, e[5]?.total_updates, e[4]?.total_updates, e[3]?.total_updates, e[2]?.total_updates, e[1]?.total_updates, e[0]?.total_updates],
+                        borderWidth: 1,
+                        fill: true
+                      }
+                    ]
+                  },
+                  options: {
+                    responsive: true,
+                    plugins: {
+                      legend: {
+                        position: 'bottom',
+                      },
+                      title: {
+                        display: true,
+                        text: 'Product Activity'
+                      }
+                    }
+                  },
+                });
+  
+  
+              }, error:(res)=>{
+                this.info.setLoadingInfo(res, 'info');
+              }
+          
+            });
+  
+          }
+          this.info.setLoadingInfo('', 'success');
+        }, error:(res)=>{
+          this.info.setLoadingInfo(res, 'info');
+        }
+      });
+    } catch (error) {
+      console.info("chart error handled")
+    }
   }
 
 }

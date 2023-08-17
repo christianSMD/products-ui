@@ -544,6 +544,7 @@ export class NewProductComponent implements OnInit {
   }
 
   checkProductName(e: any) {
+    console.log(e.target.value);
     this.similarProduct = this.products.searchProductByName(e.target.value);
   }
 }

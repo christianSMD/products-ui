@@ -2,11 +2,11 @@
 <mat-tab-group>
   <mat-tab>
     <ng-template mat-tab-label>
-      <p *ngIf="!addingNewUser"><mat-icon>manage_accounts</mat-icon> Manage Users</p>
+      <p *ngIf="!addingNewUser">Users</p>
       <p *ngIf="addingNewUser"><mat-icon>person_add</mat-icon> Add User</p>
     </ng-template>
       <div style="margin-top: 1rem;">
-        <button mat-raised-button [color]="(addingNewUser) ? 'accent' : 'primary'" class="m-1" (click)="addNewUser()">
+        <button *ngIf="authRole || adminRole" mat-raised-button [color]="(addingNewUser) ? 'accent' : 'primary'" class="m-1" (click)="addNewUser()">
           <span *ngIf="!addingNewUser">
             Add User
           </span>
@@ -53,25 +53,31 @@
                 <!-- Email Column -->
                 <ng-container matColumnDef="email">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
-                  <td mat-cell *matCellDef="let row"> {{ row.email }} </td>
+                  <td mat-cell *matCellDef="let row"> {{ row.email }} <a href="mailto:{{row.email}}">✉</a></td>
                 </ng-container>
                 <ng-container matColumnDef="is_active">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Account Status </th>
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> 
+                    <span *ngIf="authRole || adminRole">Account Status </span>
+                  </th>
                   <td mat-cell *matCellDef="let row">
-                    <span *ngIf="row.is_active == 1">Active</span>
-                    <span *ngIf="row.is_active == 0">Inactive</span>
+                    <div *ngIf="authRole || adminRole">
+                      <span *ngIf="row.is_active == 1">Active</span>
+                      <span *ngIf="row.is_active == 0">Inactive</span>
+                    </div>
                   </td>
                 </ng-container>
                 <ng-container matColumnDef="view">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> User </th>
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
                   <td mat-cell *matCellDef="let row">
-                    <a matTooltip="More about {{row.name}}" color="basic" routerLink="/profile/{{row.id}}">Edit</a>
+                    <a *ngIf="adminRole" matTooltip="More about {{row.name}}" color="basic" routerLink="/profile/{{row.id}}">Edit</a>
                   </td>
                 </ng-container>
                 <ng-container matColumnDef="team">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Team </th>
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <span *ngIf="authRole || adminRole">Team</span>
+                  </th>
                   <td mat-cell *matCellDef="let row">
-                    <mat-form-field appearance="outline" class="mt-3">
+                    <mat-form-field appearance="outline" class="mt-3" *ngIf="authRole || adminRole">
                       <mat-label>Add to Team</mat-label>
                       <mat-select (selectionChange)="addUserToTeam(row.id, $event)">
                           <mat-option *ngFor="let t of teams" value="{{t.id}}">{{ t.teamName }}</mat-option>
@@ -186,7 +192,7 @@
         </div>
       </div>
     </mat-tab>
-    <mat-tab>
+    <mat-tab *ngIf="authRole || adminRole">
       <ng-template mat-tab-label>
         <mat-icon>group</mat-icon> Teams
       </ng-template>
@@ -197,12 +203,11 @@
               New Team 
             </button>
           </div>
-          <div class="col-md-8">
+          <div class="col-md-6">
             <h3>Teams</h3>
             <table class="table table-bordered mt-3">
               <thead>
                 <tr>
-                  <th>Team ID</th>
                   <th>Team Name</th>
                   <th>Description</th>
                   <th>Team Leader</th>
@@ -210,7 +215,6 @@
               </thead>
               <tbody>
                 <tr *ngFor="let t of teams" (click)="getTeamMembers(t.id)">
-                  <td>{{ t.id }}</td>
                   <td>{{ t.teamName }}</td>
                   <td>{{ t.description }}</td>
                   <td>{{ t.firstname + " " + t.lastname}}</td>
@@ -218,19 +222,22 @@
               </tbody>
             </table>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-6">
             <h3>Team Members <small class="loadingInfo"></small></h3>
             <table class="table table-bordered mt-3">
               <thead>
                 <tr>
                   <td>Member</td>
-                  <td>Email</td>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let t of teamMembers" (click)="getTeamMembers(t.id)">
-                  <td>{{ t.firstname + " " + t.lastname}}</td>
-                  <td>{{ t.email }}</td>
+                <tr *ngFor="let t of teamMembers">
+                  <td>{{ t.firstname + " " + t.lastname}} <a href="mailto:{{t.email}}">✉</a></td>
+                  <td *ngIf="editRole">
+                    <button mat-stroked-button (click)="removeUserFromTeam(t.userId, t.teamId)" style="background-color: rgb(245, 245, 245); font-size: smaller;color: rgb(155, 155, 155);">
+                      Remove
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>

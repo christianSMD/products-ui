@@ -26,13 +26,13 @@
                 <h3><img src="../../../assets/icons/categories.png" height="30" class="mx-2">Categories</h3>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option class="menu-item" [matMenuTriggerFor]="usersMenu" *ngIf="authRole">
+            <mat-list-option class="menu-item" [matMenuTriggerFor]="usersMenu" routerLink="users/manage">
                 <h3><img src="../../../assets/icons/users.png" height="30" class="mx-2">Users</h3>
             </mat-list-option>
             <mat-menu #usersMenu="matMenu">
                 <button mat-menu-item routerLink="users/manage">
                     <mat-icon matListIcon>manage_accounts</mat-icon>
-                    <span>Manage Users</span>
+                    <span>Users</span>
                 </button>
             </mat-menu>
             <mat-divider></mat-divider>

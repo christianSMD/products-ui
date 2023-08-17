@@ -33,6 +33,9 @@ export class UsersComponent implements OnInit {
   userForm !: FormGroup;
   teams: any[] = [];
   teamMembers: any[] = [];
+  editRole: boolean = false;
+  adminRole: boolean = false;
+  authRole: boolean = false;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -60,6 +63,9 @@ export class UsersComponent implements OnInit {
     this.getUsers();
     this.getUserActivities();
     this.getTeams();
+    this.editRole = this.info.role(56);
+    this.authRole = this.info.role(58);
+    this.adminRole = this.info.role(90);
     this.userForm = this.formBuilder.group({
       name : ['', Validators.required],
       surname : ['', Validators.required],
@@ -241,10 +247,32 @@ export class UsersComponent implements OnInit {
     }
   }
 
+  removeUserFromTeam(userId: number, teamId: number): void {
+    if (confirm("Removed this user from team?") == true) {
+      console.log('Removing: ', userId);
+      this.info.setLoadingInfo('Removing user from team...', 'info');
+      this.api.GET(`remove-user-from-team/${userId}`).subscribe({
+        next:(res)=>{
+          console.log(res);
+          this.openSnackBar('Member removed from team', 'Okay');
+          this.info.setLoadingInfo('User removed from team', 'success');
+          this.getTeamMembers(teamId);
+        }, error:(res)=>{
+          alert(res.message);
+          this.info.setLoadingInfo(res.message, 'danger');
+        }
+      });
+    } else {
+      this.info.setLoadingInfo('', 'info');
+      console.log("Cancelled");
+    }
+  }
+
   getTeamMembers(id: number) {
     this.info.setLoadingInfo('Getting team members...', 'info');
     this.api.GET(`team-members/${id}`).subscribe({
       next:(res) => {
+        console.log(res);
         this.info.setLoadingInfo('', 'info');
         this.teamMembers = res;
       },

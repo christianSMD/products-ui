@@ -25,6 +25,7 @@ import { User } from 'src/app/interfaces/user';
 import { MatGridTileHeaderCssMatStyler } from '@angular/material/grid-list';
 import { CategoriesComponent } from '../categories/categories.component';
 import { DomSanitizer } from '@angular/platform-browser';
+//import { QuillModules } from 'ngx-quill';
 
 @Component({
   selector: 'app-single-product',
@@ -168,6 +169,9 @@ export class SingleProductComponent implements OnInit {
   checkboxLoader: boolean;
   canManageThisProduct = false;
 
+  editorContent = '';
+  //editorModules: QuillModules = {};
+
   @ViewChild('pdfContent') content:ElementRef;  
 
   constructor(public navbar: NavbarService,
@@ -186,6 +190,15 @@ export class SingleProductComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+
+    // this.editorModules = {
+    //   toolbar: [
+    //     ['bold', 'italic', 'underline'],
+    //     [{ 'list': 'ordered'}, { 'list': 'bullet' }]
+    //   ]
+    // };
+
+    
     this.canVerify = false;
     this.info.auth();
     this.info.setLoadingInfo('Preparing...', 'info');

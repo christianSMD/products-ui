@@ -22,13 +22,13 @@
                 <img matTooltip="Categories" src="../../../assets/icons/categories.png" height="33" width="33">
             </mat-list-option>
             
-            <mat-list-option class="menu-item" [matMenuTriggerFor]="usersMenu" *ngIf="authRole">
+            <mat-list-option class="menu-item" [matMenuTriggerFor]="usersMenu">
                 <img matTooltip="Users" src="../../../assets/icons/users.png" height="33" width="33">
             </mat-list-option>
             <mat-menu #usersMenu="matMenu">
                 <button mat-menu-item routerLink="users/manage">
                     <mat-icon matListIcon>group</mat-icon>
-                    <span>Manage Users</span>
+                    <span>Users</span>
                 </button>
             </mat-menu>
 

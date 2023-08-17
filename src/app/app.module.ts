@@ -47,7 +47,6 @@ import { CommonModuleModule } from './common-module/common-module.module';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SpeedTestModule } from 'ng-speed-test';
 
-
 @NgModule({
   declarations: [
     AppComponent,

@@ -44,11 +44,22 @@
     </div> -->
   </div>
 
-  <div class="row mt-5">
-    <div class="col-md-6">
+  <div class="row mt-5 g-1">
+
+    <div *ngIf="displayMode == 'user'" class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+      <h3>{{ selectedUser }}</h3>
+      {{selectedUserAllProducts}} <strong>Products</strong> <mat-progress-bar mode="determinate" [value]="(selectedUserAllProducts / selectedUserAllProducts) * 100" class="mb-3"></mat-progress-bar>
+      {{selectedUserVerifiedProducts}} <strong>Verified Products </strong> <mat-progress-bar mode="determinate" color="accent" [value]="(selectedUserVerifiedProducts / selectedUserAllProducts) * 100" class="mb-3"></mat-progress-bar>
+      {{selectedUserActiveProducts}} <strong>Active Products</strong> <mat-progress-bar mode="determinate" color="var(--my-custom-green)" [value]="(selectedUserActiveProducts /  selectedUserAllProducts) * 100" class="mb-3"></mat-progress-bar>
+      {{selectedUserInDevelopmentProducts}} <strong>In Development Products </strong><mat-progress-bar mode="determinate" [value]="(selectedUserInDevelopmentProducts /  selectedUserAllProducts) * 100" class="mb-3"></mat-progress-bar>
+      {{selectedUserEolProducts}} <strong>End of Life Products </strong><mat-progress-bar mode="determinate" color="warn" [value]="(selectedUserEolProducts /  selectedUserAllProducts) * 100" class="mb-3"></mat-progress-bar>
+
+    </div>
+
+    <div *ngIf="displayMode == 'home'" class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
       <canvas #myChart1 class="myCharts"></canvas>
     </div>
-    <div class="col-md-6" style="padding-left: 1rem;">
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" style="padding-left: 1rem;">
       <canvas #myChart2  class="myCharts"></canvas>
     </div>
   </div>
@@ -96,21 +107,37 @@
 
   <div class="row">
     <div class="col-md-12 mt-3">
-      <mat-form-field appearance="legacy" color="primary" class="table-search">
-        <mat-label *ngIf="entireProductsLoader">Please wait...</mat-label>
-        <mat-label *ngIf="!entireProductsLoader">Search</mat-label>
-        <input matInput (keyup)="applyFilter($event)" placeholder="Enter sku, mame, brand, description etc" [disabled]="entireProductsLoader" #input>
-        <mat-icon matSuffix>search</mat-icon>
-      </mat-form-field>
 
-      <mat-form-field appearance="legacy" class="table-category">
-        <mat-label>Categories</mat-label>
-        <mat-select (selectionChange)="filterByCategory($event)" [disabled]="entireProductsLoader">
-            <mat-option [value]="category.id" *ngFor="let category of primaryCategoriesList">
-              {{ category.name }}
-            </mat-option>
-        </mat-select>
-      </mat-form-field> 
+      <div class="row">
+        <div class="col-md-4">
+          <mat-form-field appearance="legacy" color="primary" >
+            <mat-label *ngIf="entireProductsLoader">Please wait...</mat-label>
+            <mat-label *ngIf="!entireProductsLoader">Search</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Enter sku, mame, brand, description etc" [disabled]="entireProductsLoader" #input>
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+        </div>
+        <div class="col-md-4">
+          <mat-form-field appearance="legacy">
+            <mat-label *ngIf="usersLoader">Loading Users...</mat-label>
+            <mat-label *ngIf="!usersLoader">Filter By User</mat-label>
+            <mat-select matInput (selectionChange)="filterByUser($event)">
+              <mat-option *ngFor="let user of users" [value]="user.id">{{ user.name + " " + user.surname }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-4">
+          <mat-form-field appearance="legacy">
+            <mat-label>Categories</mat-label>
+            <mat-select (selectionChange)="filterByCategory($event)" [disabled]="entireProductsLoader">
+                <mat-option [value]="category.id" *ngFor="let category of primaryCategoriesList">
+                  {{ category.name }}
+                </mat-option>
+            </mat-select>
+          </mat-form-field> 
+        </div>
+      </div>
 
       <div class="mat-elevation-z8">
 
