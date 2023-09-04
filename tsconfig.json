@@ -24,7 +24,11 @@
       "dom",
       "ES2021.String"
     ],
-    "allowSyntheticDefaultImports": true // custom
+    "allowSyntheticDefaultImports": true, // custom
+    "types": [
+      "quill",
+      // ... other types
+    ]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

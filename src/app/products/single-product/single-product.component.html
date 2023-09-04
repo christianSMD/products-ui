@@ -12,7 +12,7 @@
 
 <div *ngIf="product">
   <p>
-    <a routerLink="/">Products </a> / Product Details / {{ productName }} 
+    <a routerLink="/">Products </a> / Product Details / {{ productName }}
     <span style="float: right; cursor: pointer;" (click)="toggleInfoBar()">
       <i *ngIf="showInfoBar" class="material-icons">arrow_right</i>
       <i *ngIf="!showInfoBar" class="material-icons">arrow_left</i>
@@ -22,7 +22,7 @@
   <div class="row" id="pdfContent">
     <div [class]="mainTabsCls" style="transition: width 1s;">
       <mat-card style="background: #EFEFEF;">
-        
+
         <mat-tab-group>
           <mat-tab label="Product Details" *ngIf="canManageThisProduct">
 
@@ -32,13 +32,13 @@
                   {{ cat.name }} <span *ngIf="cat.name != ''"> / </span>
                 </span>
               </div>
-               
+
               <div class="row">
                 <div class="col-md-5">
                   <mat-card>
                     <form [formGroup]="productForm">
 
-                      <img src="../../../assets/icons/details.png" height="30" class="mx-2"> <strong> General Details</strong><hr> 
+                      <img src="../../../assets/icons/details.png" height="30" class="mx-2"> <strong> General Details</strong><hr>
                       <mat-form-field *ngIf="adminRole" appearance="outline" style="width: 90%;">
                         <mat-label>ID</mat-label>
                         <input #id matInput formControlName="id">
@@ -76,7 +76,10 @@
                         <mat-label>Description</mat-label>
                         <textarea #description rows="15" matInput formControlName="description" placeholder="Enter product description..." [readonly]="!editRole"></textarea>
                       </mat-form-field>
-                      <br>
+                      <!-- <br>
+
+                      <ngx-summernote [(ngModel)]="yourModel"></ngx-summernote> -->
+<hr>
                       <div style="padding-left: 1rem;">
                         <mat-checkbox #is_in_development formControlName="is_in_development" [disabled]="!editRole">Is In Development</mat-checkbox><br>
                         <mat-checkbox #is_eol formControlName="is_eol" [disabled]="!editRole">Is EOL</mat-checkbox><br>
@@ -98,7 +101,7 @@
                   </mat-card>
                   <br>
                   <mat-card>
-                    <img src="../../../assets/icons/regions.png" height="25" class="mx-2"> <strong>Regions </strong><span class="loadingInfo"></span><hr>            
+                    <img src="../../../assets/icons/regions.png" height="25" class="mx-2"> <strong>Regions </strong><span class="loadingInfo"></span><hr>
                     <form [formGroup]="regionsForm">
                       <ng-container formArrayName="regions">
                         <ng-container *ngFor="let x of regions.controls; let index = index">
@@ -108,7 +111,7 @@
                                 <mat-select #regionField matInput formControlName="regionField">
                                   <mat-option *ngFor="let type of typesList | typeGroup : 'Region'" value="{{ type.id }}" [disabled]="!editRole">{{ type.name }}</mat-option>
                                 </mat-select>
-                              </mat-form-field>            
+                              </mat-form-field>
                             </div>
                         </ng-container>
                       </ng-container>
@@ -120,7 +123,7 @@
                   </mat-card>
 
                   <mat-card *ngFor="let type of typesList | typeGroup : 'Design'" style="margin-top: 1rem;">
-                    <img src="../../../assets/icons/{{type.name}}.png" height="30" class="mx-2"> <strong> {{type.name}} </strong><hr>  
+                    <img src="../../../assets/icons/{{type.name}}.png" height="30" class="mx-2"> <strong> {{type.name}} </strong><hr>
                     <form *ngIf="type.id == 80" [formGroup]="shoutoutsForm">
                       <ng-container formArrayName="shoutouts">
                         <ng-container *ngFor="let x of shoutouts.controls; let index = index">
@@ -129,7 +132,7 @@
                                 <mat-label>{{ type.name }}:</mat-label>
                                 <textarea rows="6" matInput #designField formControlName="designField" placeholder="" [readonly]="!editRole" required></textarea>
                                 <mat-icon *ngIf="editRole" matSuffix (click)="removeDesign(index, type.id)">delete</mat-icon>
-                              </mat-form-field>              
+                              </mat-form-field>
                             </div>
                         </ng-container>
                       </ng-container>
@@ -147,7 +150,7 @@
                                 <mat-label>{{ type.name }}:</mat-label>
                                 <textarea rows="6" matInput formControlName="designField" placeholder="" [readonly]="!editRole" required></textarea>
                                 <mat-icon matSuffix *ngIf="editRole" (click)="removeDesign(index, type.id)">delete</mat-icon>
-                              </mat-form-field>              
+                              </mat-form-field>
                             </div>
                         </ng-container>
                       </ng-container>
@@ -165,7 +168,7 @@
                                 <mat-label>{{ type.name }}:</mat-label>
                                 <textarea rows="6" matInput formControlName="designField" placeholder="" [readonly]="!editRole" required></textarea>
                                 <mat-icon *ngIf="editRole" matSuffix (click)="removeDesign(index, type.id)">delete</mat-icon>
-                              </mat-form-field>              
+                              </mat-form-field>
                             </div>
                         </ng-container>
                       </ng-container>
@@ -183,7 +186,7 @@
                                 <mat-label>{{ type.name }}:</mat-label>
                                 <input matInput type="text" formControlName="designField" placeholder="" [readonly]="!editRole" required>
                                 <mat-icon *ngIf="editRole" matSuffix (click)="removeDesign(index, type.id)">delete</mat-icon>
-                              </mat-form-field>              
+                              </mat-form-field>
                             </div>
                         </ng-container>
                       </ng-container>
@@ -194,10 +197,10 @@
                     </form>
                   </mat-card>
                 </div>
-            
+
                 <div class="col-md-7">
                   <mat-card *ngIf="isBundle" style="margin-top: 2rem;">
-                    <img src="../../../assets/icons/linked.png" height="30" class="mx-2"> <strong> Linked Products</strong><hr> 
+                    <img src="../../../assets/icons/linked.png" height="30" class="mx-2"> <strong> Linked Products</strong><hr>
                     <mat-progress-bar color="accent" *ngIf="bundleLoader" mode="indeterminate"></mat-progress-bar>
                     <br><br>
                     <mat-form-field appearance="outline" *ngFor="let sku of linkedProductSKUs" style="margin-bottom: 1rem; width: 50%;">
@@ -229,7 +232,7 @@
                   </mat-card>
 
                   <mat-card style="height: auto;">
-                    <img src="../../../assets/icons/gallery.png" height="30" class="mx-2"> <strong> Images</strong><hr> 
+                    <img src="../../../assets/icons/gallery.png" height="30" class="mx-2"> <strong> Images</strong><hr>
                     <mat-progress-bar color="accent" *ngIf="loadingPdsAttributes" mode="indeterminate"></mat-progress-bar>
                     <br><br>
                     <div class="row">
@@ -271,7 +274,7 @@
                   </mat-card>
 
                   <!-- <mat-card style="margin-top: 30px !important; height: auto;">
-                    <img src="../../../assets/icons/gallery.png" height="30" class="mx-2"> <strong>More Images</strong><hr> 
+                    <img src="../../../assets/icons/gallery.png" height="30" class="mx-2"> <strong>More Images</strong><hr>
                     <div class="row">
                       <div class="col-md-3  p-3" *ngFor="let image of imageServerFiles;">
                         <div class="flip-card">
@@ -292,7 +295,7 @@
                   </mat-card> -->
 
                   <mat-card style="margin-top: 30px !important; height: auto;">
-                    <img src="../../../assets/icons/attributes.png" height="30" class="mx-2"> <strong>Attributes</strong><hr> 
+                    <img src="../../../assets/icons/attributes.png" height="30" class="mx-2"> <strong>Attributes</strong><hr>
                     <mat-progress-bar color="accent" *ngIf="loadingPdsAttributes" mode="indeterminate"></mat-progress-bar>
                     <br>
                     <div *ngIf="!loadingPdsAttributes">
@@ -300,14 +303,14 @@
                         <li *ngFor="let i of productAttributes">
                           <span *ngIf="i.key">• {{ i.key }}: </span>
                           <span [innerHTML]="beautifyAttr(i.value)"></span>
-                          
+
                         </li>
                       </ul>
                     </div>
                   </mat-card>
 
                   <mat-card style="margin-top: 30px !important; height: auto;">
-                    <img src="../../../assets/icons/attributes.png" height="30" class="mx-2"> <strong> PDS Attributes</strong><hr> 
+                    <img src="../../../assets/icons/attributes.png" height="30" class="mx-2"> <strong> PDS Attributes</strong><hr>
                     <mat-progress-bar color="accent" *ngIf="loadingPdsAttributes" mode="indeterminate"></mat-progress-bar>
                     <br>
                     <div *ngIf="!loadingPdsAttributes">
@@ -319,11 +322,11 @@
                       </table>
                     </div>
                   </mat-card>
-                                        
+
                 </div>
               </div>
             </div>
-            
+
           </mat-tab>
           <mat-tab label="Manage Categories" *ngIf="canManageThisProduct">
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
@@ -347,21 +350,21 @@
                             <mat-option *ngFor="let category of primaryCategoriesList" [value]="category.id">{{ category.name }}</mat-option>
                           </mat-select>
                         </mat-form-field>
-  
+
                         <mat-form-field *ngIf="tier1 > 0" appearance="outline" style="width: 90%;">
                           <mat-label>{{ tierLabels[1] }}</mat-label>
                           <mat-select [(value)]="tier2" (selectionChange)="chosenItem($event, 2)">
                             <mat-option *ngFor="let category of descedantsCategories" [value]="category.id">{{ category.name }}</mat-option>
                           </mat-select>
                         </mat-form-field>
-  
+
                         <mat-form-field *ngIf="tier2 > 0" appearance="outline" style="width: 90%;">
                           <mat-label>{{ tierLabels[2] }}</mat-label>
                           <mat-select [(value)]="tier3" (selectionChange)="chosenItem($event,3)">
                             <mat-option *ngFor="let category of descedantsCategories" [value]="category.id">{{ category.name }}</mat-option>
                           </mat-select>
                         </mat-form-field>
-  
+
                         <mat-form-field *ngIf="tier3 > 0" appearance="outline" style="width: 90%;">
                           <mat-label>{{ tierLabels[3] }}</mat-label>
                           <mat-select [(value)]="tier4" (selectionChange)="chosenItem($event,4)">
@@ -440,7 +443,7 @@
                                 <mat-grid-tile>
                                     <button class="mb-3" mat-raised-button type="button" (click)="removeNewAttribute(index)" color="warn"><mat-icon>delete</mat-icon> Remove This Field</button>
                                 </mat-grid-tile>
-                            </mat-grid-list>                
+                            </mat-grid-list>
                         </div>
                     </ng-container>
                   </ng-container>
@@ -465,7 +468,7 @@
 
                 <ul class="attributes-bullets">
                   <li *ngFor="let i of productAttributes">
-                    <span *ngIf="i.key">• {{ i.key }}: </span> 
+                    <span *ngIf="i.key">• {{ i.key }}: </span>
                     <span [innerHTML]="beautifyAttr(i.value)"></span>
                     <span *ngIf="editRole" style="width: 7px;">
                       <button mat-button [matMenuTriggerFor]="menu" aria-label="Options">
@@ -480,7 +483,7 @@
                     </span>
                   </li>
                 </ul>
-              
+
               </mat-card>
             </div>
           </mat-tab>
@@ -491,7 +494,7 @@
               <h2>Packaging Information</h2>
               <span *ngIf="packagingCount < 0" class="warning">No information to show</span>
               <mat-progress-bar *ngIf="packagingLoader" color="accent" mode="indeterminate"></mat-progress-bar>
-              
+
                 <table class="table table-bordered mt-2">
                   <tr>
                     <th>Type</th>
@@ -574,14 +577,14 @@
                       </mat-form-field>
 
                       <div class="m-3">
-                        <button *ngIf="editRole" [disabled]="!productFormPackaging.dirty" (click)="updatePackaging()" mat-raised-button type="submit" color="primary">Save Packaging</button>  
+                        <button *ngIf="editRole" [disabled]="!productFormPackaging.dirty" (click)="updatePackaging()" mat-raised-button type="submit" color="primary">Save Packaging</button>
                       </div>
                     </div>
                   </div>
                 </div>
               </form>
             </mat-card>
-            
+
           </mat-tab>
           <mat-tab label="Files" *ngIf="canManageThisProduct">
             <div class="mt-5 custom-tab" style="overflow: hidden !important;">
@@ -643,7 +646,7 @@
                           </td>
                           <!-- <td>{{ typesList[file.typeGroup].name}}</td> -->
                         </tr>
-                  
+
                       </tbody>
                     </table>
                   </mat-card>
@@ -709,7 +712,7 @@
                           </td>
                           <td></td>
                         </tr>
-                  
+
                       </tbody>
                     </table>
                   </mat-card>
@@ -734,15 +737,15 @@
                             </mat-chip-list>
                           </mat-card-content>
                           <mat-card-actions class="img-action">
-                          </mat-card-actions>       
+                          </mat-card-actions>
                         </mat-card>
                       </div>
-                      
+
                     </div>
                   </div>
                 </mat-tab> -->
                 <mat-tab label="Manage Images">
-                  <div class="row py-3">   
+                  <div class="row py-3">
                     <div class="col-md-4">
                       <div cdkDropList class="file-list" (cdkDropListDropped)="drop($event)" *ngIf="mediaFiles.length > 0">
                         <div class="file-box" *ngFor="let file of mediaFiles; let i = index">
@@ -802,7 +805,7 @@
                         </div>
                       </div>
                     </div>
-      
+
                     <div *ngIf="!uploadRole" class="row">
                       <div class="col-md-12">
                         <div class="upload-role">
@@ -811,7 +814,7 @@
                         </div>
                       </div>
                     </div>
-      
+
                   </mat-card>
                 </mat-tab>
                 <mat-tab label="Videos">
@@ -971,7 +974,7 @@
               <div class="row">
                 <div class="col-md-12">
                   <mat-progress-bar *ngIf="packagingLoader" color="accent" mode="indeterminate"></mat-progress-bar>
-              
+
                   <table class="table table-bordered mt-2">
                     <tr>
                       <th>Type</th>
@@ -988,7 +991,7 @@
                       <td><input id="width{{i.id}}" matInput placeholder="Width" [value]="i.width" readonly></td>
                       <td><input id="weight{{i.id}}" matInput placeholder="Weight" [value]="i.weight" readonly></td>
                       <td><input id="barcode{{i.id}}" matInput placeholder="Barcode" [value]="i.barcode" readonly></td>
-                    
+
                     </tr>
                   </table>
                 </div>
@@ -1013,7 +1016,7 @@
                     </div>
                   </div>
                 </div>
-                
+
               </div>
             </div>
 
@@ -1025,15 +1028,15 @@
                   <iframe width="420" height="315" [src]="video"></iframe>
                 </div>
               </div>
-              
+
             </div>
-           
+
           </mat-tab>
 
         </mat-tab-group>
       </mat-card>
     </div>
-    
+
     <div [class]="infoBarCls" *ngIf="showInfoBar" style="transition: display 1s;">
       <div class="text-muted">
         <mat-card>
@@ -1045,12 +1048,12 @@
                   <mat-option *ngFor="let user of users" [value]="user.id">{{ user.name + " " + user.surname }}</mat-option>
                 </mat-select>
               </mat-form-field>
-            </div> 
+            </div>
 
             <mat-grid-list cols="3" rowHeight="100px">
               <mat-grid-tile colspan="3">
                 <mat-progress-spinner
-                  [color]="progressPercentage() > 50 ? 'primary' : 'warn'" 
+                  [color]="progressPercentage() > 50 ? 'primary' : 'warn'"
                   [mode]="progressMode"
                   [value]="progressPercentage()">
                 </mat-progress-spinner>
@@ -1088,12 +1091,12 @@
                 <mat-icon *ngIf="mediaFiles.length > 0">check_circle</mat-icon> Images ({{mediaFiles.length}})
               </mat-list-item>
             </mat-list>
-          </mat-card-content>         
+          </mat-card-content>
           <div style="text-align: center;">
             <!-- <button mat-raised-button color="primary" (click)="presentation()"><img src="../../../assets/icons/presentation.png" height="40" class="mx-2"> Create Presentation</button> -->
             <qrcode qrdata="https://products.smdtechnologies.com/{{sku}}" [width]="200" [errorCorrectionLevel]="'M'"></qrcode>
           </div>
-     
+
           <mat-card-content style="margin-top: 2rem;">
             <hr>
             <div style="text-align: center; margin-bottom: 1rem;">
@@ -1112,7 +1115,7 @@
                 <td>{{x.created_at | date: 'dd/MM/yyyy'}}</td>
               </tr>
             </table>
-          </mat-card-content>          
+          </mat-card-content>
         </mat-card>
       </div>
     </div>
@@ -1125,5 +1128,5 @@
     <p>Please make sure the SKU is correct. If you believe this is the correct product code, please click report this issue.</p>
     <button mat-raised-button color="primary" onclick="alert('Issue reported.')">Report Issue</button>
   </div>
-  
+
 </div>

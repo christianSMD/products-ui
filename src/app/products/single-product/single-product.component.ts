@@ -120,7 +120,7 @@ export class SingleProductComponent implements OnInit {
   extendedFabsForm: UntypedFormGroup;
   packageContentsForm: UntypedFormGroup;
   designLoader: boolean = false;
-  
+
   parentChildCategories: any[] = [];
   audits: any[] = [];
   series: any[] = [];
@@ -167,18 +167,18 @@ export class SingleProductComponent implements OnInit {
   productQr: string;
   findCategory: string;
   checkboxLoader: boolean;
-  canManageThisProduct = false;
+  canManageThisProduct = true;
 
-  editorContent = '';
+  yourModel: string = '<p>Initial content</p>';
   //editorModules: QuillModules = {};
 
-  @ViewChild('pdfContent') content:ElementRef;  
+  @ViewChild('pdfContent') content:ElementRef;
 
   constructor(public navbar: NavbarService,
     public treeNav: TreeService,
     private api: ApiService,
     private _snackBar: MatSnackBar,
-    private route: ActivatedRoute, 
+    private route: ActivatedRoute,
     private router: Router,
     private formBuilder : UntypedFormBuilder,
     private info: InfoService,
@@ -198,14 +198,14 @@ export class SingleProductComponent implements OnInit {
     //   ]
     // };
 
-    
+
     this.canVerify = false;
     this.info.auth();
     this.info.setLoadingInfo('Preparing...', 'info');
-    window.scroll({ 
-      top: 0, 
-      left: 0, 
-      behavior: 'smooth' 
+    window.scroll({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
     });
     this.getAllTypes();
     localStorage.setItem('route', this.router.url);
@@ -258,7 +258,7 @@ export class SingleProductComponent implements OnInit {
       attrKey : [''],
       attrValue : [''],
     });
-    
+
     this.productFormAttributes = this.formBuilder.group({
       attributes: this.formBuilder.array([])
     });
@@ -440,8 +440,8 @@ export class SingleProductComponent implements OnInit {
     this.info.setLoadingInfo('Loading product categories...', 'info');
     this.api.GET(`product-categories/search/${id}`).subscribe({
       next:(res)=>{
-        this.productCategories = res;   
-        this.info.setLoadingInfo('', 'success');   
+        this.productCategories = res;
+        this.info.setLoadingInfo('', 'success');
         this.progressPercentage();
       }, error:(res)=> {
         console.log(res);
@@ -461,8 +461,8 @@ export class SingleProductComponent implements OnInit {
           this.packagingCount = this.packaging.length;
           this.productBarcode = res[0].barcode;
           this.info.setLoadingInfo(`Loading packaging: ${res[0].barcode}`, 'info');
-          this.productFormPackaging = this.formBuilder.group({ 
-            weight : [res[0].weight],  
+          this.productFormPackaging = this.formBuilder.group({
+            weight : [res[0].weight],
             length : [res[0].length],
             width : [res[0].width],
             height : [res[0].height],
@@ -522,7 +522,7 @@ export class SingleProductComponent implements OnInit {
         }).subscribe(
           (event: any) => {
             if (typeof (event) === 'object') {
-              this.loading = false; 
+              this.loading = false;
             }
             if (event.type === HttpEventType.UploadProgress) {
               this.uploadProgress = Math.round(100 * event.loaded / event.total);
@@ -533,7 +533,7 @@ export class SingleProductComponent implements OnInit {
               this.info.activity('Media file uploaded', this.product.id);
               this.messages.push(msg);
               this.info.setLoadingInfo(msg, 'info');
-            } 
+            }
             this.media();
           }, (err: any) => {
             this.info.errorHandler(err);
@@ -543,7 +543,7 @@ export class SingleProductComponent implements OnInit {
             this.info.setLoadingInfo(msg, 'warning');
           }
         );
-      } 
+      }
     } else {
       this.openSnackBar('Please select files', 'Okay')
       this.info.setLoadingInfo('Uploadig complete.', 'info');
@@ -567,7 +567,7 @@ export class SingleProductComponent implements OnInit {
         }).subscribe(
           (event: any) => {
             if (typeof (event) === 'object') {
-              this.loading = false; 
+              this.loading = false;
             }
             if (event.type === HttpEventType.UploadProgress) {
               this.uploadProgress = Math.round(100 * event.loaded / event.total);
@@ -578,7 +578,7 @@ export class SingleProductComponent implements OnInit {
               this.info.activity(`${this.files[x].name} uploaded`, this.product.id);
               this.messages.push(msg);
               this.info.setLoadingInfo(msg, 'info');
-            } 
+            }
             this.documents();
           }, (err: any) => {
             this.info.errorHandler(err);
@@ -588,7 +588,7 @@ export class SingleProductComponent implements OnInit {
             this.info.setLoadingInfo(msg, 'warning');
           }
         );
-      } 
+      }
     } else {
       this.openSnackBar('Please select files', 'Okay')
       this.loading = false;
@@ -600,7 +600,7 @@ export class SingleProductComponent implements OnInit {
       duration: 4000
     });
   }
-  
+
   media(): void {
     this.info.setLoadingInfo('Loading media...', 'info');
     this.api.GET(`product-media-files/${this.id}`).subscribe({
@@ -618,8 +618,8 @@ export class SingleProductComponent implements OnInit {
   }
 
   imageserver(productSku: string) {
-    this.api.IMAGESERVERHIRES(productSku).subscribe({  
-      next:(res)=>{   
+    this.api.IMAGESERVERHIRES(productSku).subscribe({
+      next:(res)=>{
         if(res.length > 0) {
           for (let index = 0; index < res.length; index++) {
             const filename: string = res[index].filename;
@@ -635,7 +635,7 @@ export class SingleProductComponent implements OnInit {
       }, error:(res)=> {
         console.log(res);
       }
-    });   
+    });
   }
 
   documents(): void {
@@ -666,7 +666,7 @@ export class SingleProductComponent implements OnInit {
   //         for (let x = 0; x < imgOrder.length; x++) {
   //           const id = imgOrder[x];
   //           const obj = this.mediaFiles.find(x => x.id == id);
-  //           orderedImages.push(obj);    
+  //           orderedImages.push(obj);
   //         }
   //         this.imagesAreSorted = true;
   //         this.mediaFiles = orderedImages;
@@ -721,7 +721,7 @@ export class SingleProductComponent implements OnInit {
   setFocusType(event: any): void {
     this.focusType = event.target.value;
   }
-  
+
   updateProduct(): void {
     this.api.POST(`products/update/${this.id}`, this.productForm.value).subscribe({
       next:(res)=>{
@@ -772,7 +772,7 @@ export class SingleProductComponent implements OnInit {
         }
       });
     }
-    
+
   }
 
   savePackagingChanges(id: number): void {
@@ -806,9 +806,9 @@ export class SingleProductComponent implements OnInit {
   updateRegion() {
     this.info.setLoadingInfo('Updating regions...', 'info');
     for (let index = 0; index < this.regionsForm.value.regions.length; index++) {
-      this.api.POST(`products-regions`, { 
+      this.api.POST(`products-regions`, {
         product_id: this.id,
-        region_id: this.regionsForm.value.regions[index].designField 
+        region_id: this.regionsForm.value.regions[index].designField
       }).subscribe({
         next:(res)=>{
           this.getProductRegions(this.id,);
@@ -825,7 +825,7 @@ export class SingleProductComponent implements OnInit {
   updateSocials(channel: string) {
     this.openSnackBar(`Adding ${channel} link...`, '');
     if(this.socialLink.includes(channel)) {
-      this.api.POST(`social`, { 
+      this.api.POST(`social`, {
         product_id: this.id,
         link: this.socialLink
       }).subscribe({
@@ -845,7 +845,7 @@ export class SingleProductComponent implements OnInit {
     } else {
       this.openSnackBar(`Please make sure this is a valid ${channel} link`, 'Okay');
     }
-    
+
   }
 
   getSocialLinks(id: string) {
@@ -891,7 +891,7 @@ export class SingleProductComponent implements OnInit {
     } catch (error) {
       return null;
     }
-    
+
   }
 
   returnTypeGroup(id: any) {
@@ -901,7 +901,7 @@ export class SingleProductComponent implements OnInit {
     } catch (error) {
       return null;
     }
-    
+
   }
 
   drop(event: CdkDragDrop<string[]>): void {
@@ -922,7 +922,7 @@ export class SingleProductComponent implements OnInit {
 
   /**
    * @description Add or remove categorie's attributes
-   * @param action - Can be 'New' or 'Update' 
+   * @param action - Can be 'New' or 'Update'
    */
   updateAttributesBulk() {
     this.info.setLoadingInfo('Updating attributes...', 'info');
@@ -1011,7 +1011,7 @@ export class SingleProductComponent implements OnInit {
           this.media();
           this.openSnackBar(`File deleted...`, 'Okay');
           this.info.setLoadingInfo('File deleted', 'success');
-          
+
         }, error:(res)=> {
           this.info.errorHandler(res);
           this.info.setLoadingInfo('Failed to delete file!', 'danger');
@@ -1020,7 +1020,7 @@ export class SingleProductComponent implements OnInit {
     } else {
       this.info.setLoadingInfo('', 'info');
     }
-    
+
   }
 
   hideFile(id: number): void {
@@ -1035,7 +1035,7 @@ export class SingleProductComponent implements OnInit {
     });
   }
 
-  progressPercentage() { 
+  progressPercentage() {
     const verified = (this.product.verified) ? 1 : 0;
     const status = (this.product.is_in_development > 0 || this.product.is_eol > 0 || this.product.is_active > 0) ? 1 : 0;
     const categories = (this.productCategories.length > 0) ? 1 : 0;
@@ -1168,7 +1168,7 @@ export class SingleProductComponent implements OnInit {
       default:
         break;
     }
-    
+
     const cat = this.categoriesList.find((n: any) => n.id == v);
     this.tierLabels.push(cat?.name);
     this.descedantsCategories = this.categoriesList.filter((c: any) => c.parent == v);
@@ -1266,13 +1266,13 @@ export class SingleProductComponent implements OnInit {
           this.info.setLoadingInfo('Failed to delete ttribute(s)', 'danger');
         }
       });
-    } 
+    }
 
-    
+
   }
 
   downloadURI(uri: any, id: number, name: string, file: File) {
-    let path = file.path; 
+    let path = file.path;
     this.api.download('download-file-api', uri, this.product.id, this.product.sku, file.type_id, path.replace("public/", "storage/"), id).subscribe((res: BlobPart) => {
       const blob = new Blob([res], { type: 'application/octet-stream' });
       FileSaver.saveAs(blob, `${this.product.sku}${file.type_id}.jpg`);
@@ -1281,8 +1281,8 @@ export class SingleProductComponent implements OnInit {
     });
   }
 
-  downloadImageServer(uri: any, id: number, name: string, file: File) { 
-    let path = file.path; 
+  downloadImageServer(uri: any, id: number, name: string, file: File) {
+    let path = file.path;
     this.api.download('download-file-api', uri, this.product.id, this.product.sku, file.type_id, uri, id).subscribe((res: BlobPart) => {
       const blob = new Blob([res], { type: 'application/octet-stream' });
       FileSaver.saveAs(blob, `imageserver${this.product.sku}.jpg`);
@@ -1305,8 +1305,8 @@ export class SingleProductComponent implements OnInit {
           let child = this.productsList.find((x: any)=>x.id == res[index].child_id);
           this.linkedProductSKUs.push(child?.sku);
           this.linkedProductsIDs.push(child?.id);
-          //this.imageserver(child!.sku); 
-          this.info.setLoadingInfo('Getting linked products media', 'info');   
+          //this.imageserver(child!.sku);
+          this.info.setLoadingInfo('Getting linked products media', 'info');
           this.api.GET(`product-media-files/${child?.id}`).subscribe({
             next:(res)=>{
               if(res.length > 0) {
@@ -1316,9 +1316,9 @@ export class SingleProductComponent implements OnInit {
               this.info.errorHandler(res);
             }
           });
-        } 
-        this.bundleLoader = false; 
-        this.info.setLoadingInfo('', 'success');      
+        }
+        this.bundleLoader = false;
+        this.info.setLoadingInfo('', 'success');
       }, error:(res)=> {
         this.info.errorHandler(res);
         this.bundleLoader = false;
@@ -1347,14 +1347,14 @@ export class SingleProductComponent implements OnInit {
         break;
       default:
         break;
-    }    
+    }
   }
-  
+
   removeDesign(i: number, type: number): void {
     this.designLoader = true;
     let deleteId: number = 0;
     switch (type) {
-      case 80:   
+      case 80:
         deleteId = this.shoutoutsForm.value.shoutouts[i].designId;
         this.shoutouts.removeAt(i);
         this.shoutoutsForm.markAsDirty();
@@ -1376,7 +1376,7 @@ export class SingleProductComponent implements OnInit {
         break;
       default:
         break;
-    } 
+    }
 
     this.api.GET(`delete-design/${deleteId}`).subscribe({
       next:(res)=>{
@@ -1408,7 +1408,7 @@ export class SingleProductComponent implements OnInit {
         break;
       default:
         break;
-    } 
+    }
   }
 
   saveDesign (formObj: any, typeId: number) {
@@ -1420,7 +1420,7 @@ export class SingleProductComponent implements OnInit {
       const valueFound = formObj.find((x: any) => x.designField == checkValue);
       const insertId = valueFound.designId;
       if (insertId == undefined) {
-        this.api.POST(`design`, { 
+        this.api.POST(`design`, {
           product_id: this.id,
           design_type_id: typeId,
           value: checkValue
@@ -1510,10 +1510,10 @@ export class SingleProductComponent implements OnInit {
 
   /**
    * @todo get products from the service, or pull from the server if not available on the service.
-   * 
+   *
    */
   entireProducts() {
-    this.productsList = this.products.getProducts();  
+    this.productsList = this.products.getProducts();
     if (this.productsList.length < 1) {
       this.api.GET('products').subscribe({
         next:(res)=>{
@@ -1531,7 +1531,7 @@ export class SingleProductComponent implements OnInit {
   }
 
   /**
-   * 
+   *
    * @param value Input from the searchbox
    * @todo This functions filters SKUs from an array of over 20k products
    * @todo The filter will only trigger when the input string has more than 4 chars
@@ -1647,7 +1647,7 @@ export class SingleProductComponent implements OnInit {
               console.log(res);
             }
           })
-          
+
           this.loadpProductManager = false;
         }, error:(res)=>{
           this.loadpProductManager = false;
@@ -1657,7 +1657,7 @@ export class SingleProductComponent implements OnInit {
     } catch (error) {
       this.loadpProductManager = false;
     }
-    
+
   }
 
   selectManager(e: any) {
@@ -1768,11 +1768,11 @@ export class SingleProductComponent implements OnInit {
     } else {
       this.mainTabsCls = "col-md-12 col-lg-12";
     }
-    
+
   }
 
   addToSelectedFiles(f: number) {
-    
+
     const i = this.selectedFiles.indexOf(f);
 
     if(i> -1) {
@@ -1804,7 +1804,7 @@ export class SingleProductComponent implements OnInit {
             this.info.errorHandler(res);
             this.info.setLoadingInfo('Failed to delete file!', 'danger');
           }
-        }); 
+        });
       }
       this.info.setLoadingInfo('Items deleted successfully', 'success');
       this.selectedFiles = [];
@@ -1821,7 +1821,7 @@ export class SingleProductComponent implements OnInit {
       next:(res)=>{
         if(res > 0) {
           // The below line should be uncommented if PDs should update products from the Product Repo
-          this.canManageThisProduct = true; 
+          this.canManageThisProduct = true;
         }
       }, error:(res)=>{
         console.log(res);

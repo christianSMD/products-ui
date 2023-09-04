@@ -46,6 +46,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { CommonModuleModule } from './common-module/common-module.module';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SpeedTestModule } from 'ng-speed-test';
+import { NgxSummernoteModule } from 'ngx-summernote';
 
 @NgModule({
   declarations: [
@@ -97,7 +98,8 @@ import { SpeedTestModule } from 'ng-speed-test';
     MatAutocompleteModule,
     CommonModuleModule,
     MatCheckboxModule,
-    SpeedTestModule
+    SpeedTestModule,
+    NgxSummernoteModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true },

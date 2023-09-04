@@ -47,6 +47,7 @@ import { QrCodeComponent } from './qr-code/qr-code.component';
 import { PublicComponent } from './public/public.component';
 import { RouteReuseStrategy } from '@angular/router';
 import { CustomResuStrategy } from './reuse-strategy';
+import { NgxSummernoteModule } from 'ngx-summernote';
 
 @NgModule({
   declarations: [
@@ -99,7 +100,8 @@ import { CustomResuStrategy } from './reuse-strategy';
     MatCheckboxModule,
     MatTooltipModule,
     CommonModuleModule,
-    QRCodeModule
+    QRCodeModule,
+    NgxSummernoteModule
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: CustomResuStrategy}
